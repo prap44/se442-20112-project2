@@ -3,6 +3,7 @@
 	<name>HMS-NursingStation</name>
 	<comment></comment>
 	<projects>
+		<project>HMS-Common</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

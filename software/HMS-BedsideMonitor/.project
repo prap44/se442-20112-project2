@@ -3,6 +3,7 @@
 	<name>HMS-BedsideMonitor</name>
 	<comment></comment>
 	<projects>
+		<project>HMS-Common</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
