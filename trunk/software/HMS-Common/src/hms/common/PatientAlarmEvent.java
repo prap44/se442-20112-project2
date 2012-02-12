@@ -1,3 +1,4 @@
+package hms.common;
 
 public class PatientAlarmEvent {
 	private Patient patient;

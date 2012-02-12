@@ -1,3 +1,4 @@
+package hms.common;
 
 public class Sensor {
 	private String name;

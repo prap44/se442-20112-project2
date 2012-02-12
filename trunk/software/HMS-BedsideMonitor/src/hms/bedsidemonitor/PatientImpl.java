@@ -1,3 +1,10 @@
+package hms.bedsidemonitor;
+
+import hms.common.Patient;
+import hms.common.PatientAlarmListener;
+import hms.common.PatientCallButtonListener;
+import hms.common.PatientDataListener;
+
 import java.rmi.RemoteException;
 
 
