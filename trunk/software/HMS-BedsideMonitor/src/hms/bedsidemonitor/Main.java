@@ -8,6 +8,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Main {
+	
+	static final String BEDSIDE_SERVER_NAME = "hms.bedsidemonitor";
 
 	/**
 	 * @param args
@@ -27,7 +29,7 @@ public class Main {
 		
 		// Register an external name for the service
 		try {
-			Naming.rebind("hms.bedsidemonitor", server);
+			Naming.rebind(BEDSIDE_SERVER_NAME, server);
 		} catch (RemoteException re) {
 			re.printStackTrace();
 		} catch (MalformedURLException murle) {
