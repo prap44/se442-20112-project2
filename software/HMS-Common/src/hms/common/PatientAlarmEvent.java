@@ -1,6 +1,8 @@
 package hms.common;
 
-public class PatientAlarmEvent {
+import java.io.Serializable;
+
+public class PatientAlarmEvent implements Serializable {
 	private Patient patient;
 	private String vital;
 	

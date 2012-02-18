@@ -1,6 +1,8 @@
 package hms.common;
 
-public class PatientCallButtonEvent {
+import java.io.Serializable;
+
+public class PatientCallButtonEvent implements Serializable {
 	private Patient patient;
 	
 	public PatientCallButtonEvent(Patient patient) {

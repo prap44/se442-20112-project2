@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
 	
@@ -48,6 +49,10 @@ public class Main {
 			patient.setPatientFirstName("Philip");
 			patient.setPatientMiddleName("Thomas");
 			patient.setPatientLastName("Rodriguez");
+			
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
+			
 			server.raisePatientDataEvent(new PatientDataEvent(patient, patientVitals));
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
