@@ -30,7 +30,9 @@ public class MonitorImpl implements Monitor {
 	@Override
 	public void addPatientAlarmListener(PatientAlarmListener listener)
 			throws RemoteException {
+		System.out.println("[MonitorImpl] entering addPatientAlarmListener");
 		this.listenerList.add(PatientAlarmListener.class, listener);
+		System.out.println("[MonitorImpl] exiting addPatientAlarmListener");
 	}
 
 	@Override
@@ -63,15 +65,15 @@ public class MonitorImpl implements Monitor {
 		this.listenerList.remove(PatientDataListener.class, listener);
 	}
 
-	private void raisePatientAlarmEvent(PatientAlarmEvent event)
+	public void raisePatientAlarmEvent(PatientAlarmEvent event)
 			throws RemoteException {
 		for (PatientAlarmListener listener : this.listenerList
 				.getListeners(PatientAlarmListener.class)) {
-			listener.patientDataReceived(event);
+			listener.patientAlarmReceived(event);
 		}
 	}
 
-	private void raisePatientCallButtonEvent(PatientCallButtonEvent event)
+	public void raisePatientCallButtonEvent(PatientCallButtonEvent event)
 			throws RemoteException {
 		for (PatientCallButtonListener listener : this.listenerList
 				.getListeners(PatientCallButtonListener.class)) {
@@ -79,8 +81,9 @@ public class MonitorImpl implements Monitor {
 		}
 	}
 
-	private void raisePatientDataEvent(PatientDataEvent event)
+	public void raisePatientDataEvent(PatientDataEvent event)
 			throws RemoteException {
+		System.out.println("[MonitorImpl]");
 		for (PatientDataListener listener : this.listenerList
 				.getListeners(PatientDataListener.class)) {
 			listener.patientDataReceived(event);

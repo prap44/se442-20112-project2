@@ -1,13 +1,30 @@
 package hms.nursingstation;
 
+import hms.common.Monitor;
 import hms.common.Patient;
+import hms.common.PatientAlarmEvent;
+import hms.common.PatientAlarmListener;
+import hms.common.PatientCallButtonEvent;
+import hms.common.PatientCallButtonListener;
+import hms.common.PatientDataEvent;
+import hms.common.PatientDataListener;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Map;
 
-public class NursingStationImpl {
+public class NursingStationImpl extends UnicastRemoteObject
+		implements PatientAlarmListener, 
+		PatientCallButtonListener, PatientDataListener {
+	
 	private ArrayList<Patient> patients = new ArrayList<Patient>();
 	
-	public NursingStationImpl() {
+	public NursingStationImpl() 
+			throws IOException
+	{
 	}
 	
 	public boolean addPatient(Patient patient) {
@@ -29,4 +46,38 @@ public class NursingStationImpl {
 	public int getPatientCount() {
 		return this.patients.size();
 	}
+	
+	public void connectToMonitor(Monitor bedsideStation) {
+		try {
+			bedsideStation.addPatientAlarmListener(this);
+			bedsideStation.addPatientCallButtonListener(this);
+			bedsideStation.addPatientDataListener(this);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void patientDataReceived(PatientDataEvent event)
+			throws RemoteException {
+		System.out.println("Patient Data Received");
+		Patient p = event.getPatient();
+		Map<String, Integer> patientVitals = event.getVitals();
+		System.out.println("Patient: " + p.getPatientFirstName() + " " + p.getPatientLastName());
+		System.out.println("Patient Hearbeat Vital Signs: " + patientVitals.get("heartbeat"));
+	}
+
+	@Override
+	public void patientCallButtonPressed(PatientCallButtonEvent event)
+			throws RemoteException {
+		System.out.println("Patient Call Button Pressed");
+	}
+
+	@Override
+	public void patientAlarmReceived(PatientAlarmEvent event)
+			throws RemoteException {
+		System.out.println("Patient Alarm Received");
+	}
+	
 }

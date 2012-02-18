@@ -12,4 +12,7 @@ public interface Monitor extends Remote {
 	public void removePatientAlarmListener(PatientAlarmListener listener) throws RemoteException;
 	public void removePatientCallButtonListener(PatientCallButtonListener listener) throws RemoteException;
 	public void removePatientDataListener(PatientDataListener listener) throws RemoteException;
+	public void raisePatientAlarmEvent(PatientAlarmEvent event) throws RemoteException;
+	public void raisePatientCallButtonEvent(PatientCallButtonEvent event) throws RemoteException;
+	public void raisePatientDataEvent(PatientDataEvent event) throws RemoteException;
 }
