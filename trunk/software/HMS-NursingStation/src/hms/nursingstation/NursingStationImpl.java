@@ -61,23 +61,34 @@ public class NursingStationImpl extends UnicastRemoteObject
 	@Override
 	public void patientDataReceived(PatientDataEvent event)
 			throws RemoteException {
-		System.out.println("Patient Data Received");
+		System.out.println("[NursingStationImpl] Patient Data Received");
 		Patient p = event.getPatient();
 		Map<String, Integer> patientVitals = event.getVitals();
-		System.out.println("Patient: " + p.getPatientFirstName() + " " + p.getPatientLastName());
-		System.out.println("Patient Hearbeat Vital Signs: " + patientVitals.get("heartbeat"));
+		System.out.println("[NursingStationImpl] Patient: " + 
+				p.getPatientFirstName() + " " + p.getPatientLastName());
+		System.out.println("[NursingStationImpl] Patient Hearbeat Vital Signs: " + 
+				patientVitals.get("heartbeat"));
 	}
 
 	@Override
 	public void patientCallButtonPressed(PatientCallButtonEvent event)
 			throws RemoteException {
-		System.out.println("Patient Call Button Pressed");
+		System.out.println("[NursingStationImpl] Patient Call Button Pressed");
+		Patient p = event.getPatient();
+		System.out.println("[NursingStationImpl] Patient " + 
+				p.getPatientFirstName() + " " + p.getPatientLastName() + 
+				" pressed the call button");
 	}
 
 	@Override
 	public void patientAlarmReceived(PatientAlarmEvent event)
 			throws RemoteException {
-		System.out.println("Patient Alarm Received");
+		System.out.println("[NursingStationImpl] Patient Alarm Received");
+		Patient p = event.getPatient();
+		String vital = event.getVital();
+		System.out.println("[NursingStationImpl] Patient " +
+				p.getPatientFirstName() + " " + p.getPatientLastName() + 
+				"'s vital sign " + vital + " is critical");
 	}
 	
 }
