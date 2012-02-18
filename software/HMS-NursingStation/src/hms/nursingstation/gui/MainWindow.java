@@ -32,22 +32,129 @@ public class MainWindow extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         basePanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
+        basePanelSpliltPanel = new javax.swing.JSplitPane();
+        monitoringBasePanel = new javax.swing.JPanel();
+        monitorDisplayPanelList1 = new hms.nursingstation.gui.MonitorDisplayPanelList();
+        monitoringButtonPanel = new javax.swing.JPanel();
+        addMonitorButton = new javax.swing.JButton();
+        removeMonitorButton = new javax.swing.JButton();
+        monitoringButtonPanelSpacer = new javax.swing.JPanel();
+        loggingBasePanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
+        loggingButtonPanel = new javax.swing.JPanel();
+        loggingButtonPanelSpacer = new javax.swing.JPanel();
+        viewSystemLogEventButton = new javax.swing.JButton();
+        menuBar = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.GridLayout(1, 0));
+        setTitle("Nursing Station");
+        setMinimumSize(new java.awt.Dimension(300, 200));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        basePanel.setPreferredSize(new java.awt.Dimension(400, 300));
+        basePanel.setMinimumSize(new java.awt.Dimension(400, 400));
+        basePanel.setPreferredSize(new java.awt.Dimension(600, 400));
         basePanel.setLayout(new java.awt.GridBagLayout());
+
+        basePanelSpliltPanel.setDividerLocation(300);
+        basePanelSpliltPanel.setResizeWeight(0.5);
+
+        monitoringBasePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Monitor"));
+        monitoringBasePanel.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        basePanel.add(jPanel1, gridBagConstraints);
+        monitoringBasePanel.add(monitorDisplayPanelList1, gridBagConstraints);
 
-        getContentPane().add(basePanel);
+        monitoringButtonPanel.setLayout(new java.awt.GridBagLayout());
 
-        pack();
+        addMonitorButton.setText("Add");
+        monitoringButtonPanel.add(addMonitorButton, new java.awt.GridBagConstraints());
+
+        removeMonitorButton.setText("Remove");
+        monitoringButtonPanel.add(removeMonitorButton, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        monitoringButtonPanel.add(monitoringButtonPanelSpacer, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        monitoringBasePanel.add(monitoringButtonPanel, gridBagConstraints);
+
+        basePanelSpliltPanel.setLeftComponent(monitoringBasePanel);
+
+        loggingBasePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "System Log"));
+        loggingBasePanel.setPreferredSize(new java.awt.Dimension(150, 152));
+        loggingBasePanel.setLayout(new java.awt.GridBagLayout());
+
+        jList1.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(jList1);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        loggingBasePanel.add(jScrollPane1, gridBagConstraints);
+
+        loggingButtonPanel.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        loggingButtonPanel.add(loggingButtonPanelSpacer, gridBagConstraints);
+
+        viewSystemLogEventButton.setText("View");
+        loggingButtonPanel.add(viewSystemLogEventButton, new java.awt.GridBagConstraints());
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        loggingBasePanel.add(loggingButtonPanel, gridBagConstraints);
+
+        basePanelSpliltPanel.setRightComponent(loggingBasePanel);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basePanel.add(basePanelSpliltPanel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(basePanel, gridBagConstraints);
+
+        jMenu1.setText("File");
+        menuBar.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        menuBar.add(jMenu2);
+
+        setJMenuBar(menuBar);
+
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds((screenSize.width-600)/2, (screenSize.height-400)/2, 600, 400);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -92,7 +199,22 @@ public class MainWindow extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addMonitorButton;
     private javax.swing.JPanel basePanel;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JSplitPane basePanelSpliltPanel;
+    private javax.swing.JList jList1;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel loggingBasePanel;
+    private javax.swing.JPanel loggingButtonPanel;
+    private javax.swing.JPanel loggingButtonPanelSpacer;
+    private javax.swing.JMenuBar menuBar;
+    private hms.nursingstation.gui.MonitorDisplayPanelList monitorDisplayPanelList1;
+    private javax.swing.JPanel monitoringBasePanel;
+    private javax.swing.JPanel monitoringButtonPanel;
+    private javax.swing.JPanel monitoringButtonPanelSpacer;
+    private javax.swing.JButton removeMonitorButton;
+    private javax.swing.JButton viewSystemLogEventButton;
     // End of variables declaration//GEN-END:variables
 }
