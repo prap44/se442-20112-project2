@@ -1,11 +1,14 @@
 package hms.bedsidemonitor;
 
 import hms.common.Monitor;
+import hms.common.PatientDataEvent;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
 	
@@ -15,7 +18,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Monitor server = null;
+		MonitorImpl server = null;
 		
 		try {
 			// Create the server hosting the bedside monitor
@@ -37,6 +40,20 @@ public class Main {
 		}
 		
 		System.out.println("Server started.");
+		Map<String, Integer> patientVitals = new HashMap<String, Integer>();
+		patientVitals.put("heartbeat", 100);
+		
+		try {
+			PatientImpl patient = new PatientImpl();
+			patient.setPatientFirstName("Philip");
+			patient.setPatientMiddleName("Thomas");
+			patient.setPatientLastName("Rodriguez");
+			server.raisePatientDataEvent(new PatientDataEvent(patient, patientVitals));
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

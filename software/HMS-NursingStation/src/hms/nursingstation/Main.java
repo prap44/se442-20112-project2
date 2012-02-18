@@ -2,6 +2,7 @@ package hms.nursingstation;
 
 import hms.common.Monitor;
 
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
@@ -17,22 +18,22 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		System.setSecurityManager(new RMISecurityManager());
-		Monitor server;
+		Monitor remoteMonitor;
+		NursingStationImpl client;
 		
 		try {
 			Registry registry = LocateRegistry.getRegistry();
-			server = (Monitor)registry.lookup(BEDSIDE_SERVER_NAME);
-			System.out.println("Nursing Station found a Bedside Monitor Server.");
+			remoteMonitor = (Monitor)registry.lookup(BEDSIDE_SERVER_NAME);
+			System.out.println("Nursing Station found a Bedside Monitor remote object.");
 			
-			// subscribe to B.S.M. server object.
-			// server will handle request that client wants updates from it.
-			// server will maintain a list of clients to send updates to.
-			// once the server gets its patient data, it sends that data in events
-			// to its list of clients that are subscribed to it.
+			client = new NursingStationImpl();
+			client.connectToMonitor(remoteMonitor);
 		} catch (RemoteException re) {
 			re.printStackTrace();
 		} catch (NotBoundException nbe) {
 			nbe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 
