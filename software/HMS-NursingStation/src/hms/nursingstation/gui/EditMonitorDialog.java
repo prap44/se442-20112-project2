@@ -83,7 +83,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         vitalStatisticsPanel = new javax.swing.JPanel();
         vitalDisplayScrollPanel = new javax.swing.JScrollPane();
         vitalDisplayViewpanel = new javax.swing.JPanel();
-        vitalDisplayGrid = new hms.nursingstation.gui.VitalDisplayGrid();
+        vitalDisplayGrid = new hms.common.gui.VitalDisplayGrid();
         vitalDisplayViewpanelSpanner = new javax.swing.JPanel();
         buttonPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -427,7 +427,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     private javax.swing.JLabel patientLastNameLabel;
     private javax.swing.JTextField patientMiddleNameField;
     private javax.swing.JLabel patientMiddleNameLabel;
-    private hms.nursingstation.gui.VitalDisplayGrid vitalDisplayGrid;
+    private hms.common.gui.VitalDisplayGrid vitalDisplayGrid;
     private javax.swing.JScrollPane vitalDisplayScrollPanel;
     private javax.swing.JPanel vitalDisplayViewpanel;
     private javax.swing.JPanel vitalDisplayViewpanelSpanner;
