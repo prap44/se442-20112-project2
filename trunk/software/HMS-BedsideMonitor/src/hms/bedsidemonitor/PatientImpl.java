@@ -2,9 +2,10 @@ package hms.bedsidemonitor;
 
 import hms.common.Patient;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
-public class PatientImpl implements Patient {
+public class PatientImpl implements Patient, Serializable {
 	private String firstName = "";
 	private String middleName = "";
 	private String lastName = "";

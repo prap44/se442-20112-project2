@@ -1,8 +1,8 @@
 package hms.common;
+import java.io.Serializable;
 import java.util.Map;
 
-
-public class PatientDataEvent {
+public class PatientDataEvent implements Serializable {
 	private Patient patient;
 	private Map<String, Integer> vitals;
 	
