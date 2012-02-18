@@ -67,18 +67,26 @@ public class MonitorImpl implements Monitor {
 
 	public void raisePatientAlarmEvent(PatientAlarmEvent event)
 			throws RemoteException {
+		System.out.println("[MonitorImpl] entering raisePatientAlarmEvent");
+		System.out.println("[MonitorImpl] listenerList.length == " + 
+				listenerList.getListeners(PatientDataListener.class).length);
 		for (PatientAlarmListener listener : this.listenerList
 				.getListeners(PatientAlarmListener.class)) {
 			listener.patientAlarmReceived(event);
 		}
+		System.out.println("[MonitorImpl] exiting raisePatientAlarmEvent");
 	}
 
 	public void raisePatientCallButtonEvent(PatientCallButtonEvent event)
 			throws RemoteException {
+		System.out.println("[MonitorImpl] entering raisePatientCallButtonEvent");
+		System.out.println("[MonitorImpl] listenerList.length == " + 
+				listenerList.getListeners(PatientDataListener.class).length);
 		for (PatientCallButtonListener listener : this.listenerList
 				.getListeners(PatientCallButtonListener.class)) {
 			listener.patientCallButtonPressed(event);
 		}
+		System.out.println("[MonitorImpl] exiting raisePatientCallButtonEvent");
 	}
 
 	public void raisePatientDataEvent(PatientDataEvent event)

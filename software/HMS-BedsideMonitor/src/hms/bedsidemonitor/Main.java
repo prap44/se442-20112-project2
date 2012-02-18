@@ -1,6 +1,8 @@
 package hms.bedsidemonitor;
 
 import hms.common.Monitor;
+import hms.common.PatientAlarmEvent;
+import hms.common.PatientCallButtonEvent;
 import hms.common.PatientDataEvent;
 
 import java.net.MalformedURLException;
@@ -41,22 +43,34 @@ public class Main {
 		}
 		
 		System.out.println("Server started.");
-		Map<String, Integer> patientVitals = new HashMap<String, Integer>();
-		patientVitals.put("heartbeat", 100);
 		
 		try {
 			PatientImpl patient = new PatientImpl();
 			patient.setPatientFirstName("Philip");
 			patient.setPatientMiddleName("Thomas");
 			patient.setPatientLastName("Rodriguez");
+			Map<String, Integer> patientVitals = new HashMap<String, Integer>();
+			patientVitals.put("heartbeat", 100);
 			
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
 			
+			System.out.println("Monitor raising patient data event");
 			server.raisePatientDataEvent(new PatientDataEvent(patient, patientVitals));
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			Thread.sleep(5000);
+			
+			System.out.println("Monitor raising patient alarm event");
+			server.raisePatientAlarmEvent(new PatientAlarmEvent(patient, "heartbeat"));
+			
+			Thread.sleep(5000);
+			
+			System.out.println("Monitor raising patient call button event");
+			server.raisePatientCallButtonEvent(new PatientCallButtonEvent(patient));
+		} catch (RemoteException re) {
+			re.printStackTrace();
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
 		}
 		
 	}
