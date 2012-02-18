@@ -27,20 +27,27 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         
-        Map<String, Integer> data = new TreeMap<String, Integer>();
-        data.put("Vital Stat 1", 50);
-        data.put("Vital Stat 2", 9000);
-        data.put("Vital Stat 3", 2);
-        data.put("Vital Stat 4", 50);
-        data.put("Vital Stat 5", 9000);
-        data.put("Vital Stat 6", 2);
-        data.put("Vital Stat 7", 50);
-        data.put("Vital Stat 8", 9000);
-        data.put("Vital Stat 9", 2);
-        data.put("Vital Stat 10", 50);
-        data.put("Vital Stat 11", 9000);
-        data.put("Vital Stat 12", 2);
-        this.vitalDisplayGrid.setData(data);
+        try {
+            Map<String, Integer> data = new TreeMap<String, Integer>();
+            data.put("Vital Stat 1", 50);
+            data.put("Vital Stat 2", 9000);
+            data.put("Vital Stat 3", 2);
+            data.put("Vital Stat 4", 50);
+            data.put("Vital Stat 5", 9000);
+            data.put("Vital Stat 6", 2);
+            data.put("Vital Stat 7", 50);
+            data.put("Vital Stat 8", 9000);
+            data.put("Vital Stat 9", 2);
+            data.put("Vital Stat 10", 50);
+            data.put("Vital Stat 11", 9000);
+            data.put("Vital Stat 12", 2);
+            this.vitalDisplayGrid.setData(data);
+
+            synchronized(this.getTreeLock()) {
+                this.validateTree();
+            }
+        } catch(Throwable t) {
+        }
     }
     
     void showDialogModal(Monitor monitor) {
@@ -209,6 +216,8 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         vitalStatisticsPanel.setName(""); // NOI18N
         vitalStatisticsPanel.setLayout(new java.awt.GridBagLayout());
 
+        vitalDisplayScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        vitalDisplayScrollPanel.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         vitalDisplayScrollPanel.setMinimumSize(new java.awt.Dimension(112, 122));
         vitalDisplayScrollPanel.setPreferredSize(new java.awt.Dimension(112, 122));
         vitalDisplayScrollPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -227,6 +236,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         gridBagConstraints.weightx = 1.0;
         vitalDisplayViewpanel.add(vitalDisplayGrid, gridBagConstraints);
 
+        vitalDisplayViewpanelSpanner.setBackground(new java.awt.Color(105, 105, 105));
         vitalDisplayViewpanelSpanner.setMinimumSize(new java.awt.Dimension(0, 0));
         vitalDisplayViewpanelSpanner.setPreferredSize(new java.awt.Dimension(0, 0));
 
@@ -234,7 +244,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         vitalDisplayViewpanelSpanner.setLayout(vitalDisplayViewpanelSpannerLayout);
         vitalDisplayViewpanelSpannerLayout.setHorizontalGroup(
             vitalDisplayViewpanelSpannerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 447, Short.MAX_VALUE)
+            .addGap(0, 430, Short.MAX_VALUE)
         );
         vitalDisplayViewpanelSpannerLayout.setVerticalGroup(
             vitalDisplayViewpanelSpannerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -350,13 +360,9 @@ public class EditMonitorDialog extends javax.swing.JDialog {
 
     private void vitalDisplayScrollPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_vitalDisplayScrollPanelComponentResized
         Dimension size = this.vitalDisplayScrollPanel.getViewport().getSize();
-        Dimension maxSize = new Dimension(size.width, Integer.MAX_VALUE);
-        this.vitalDisplayViewpanel.setMinimumSize(size);
-        this.vitalDisplayViewpanel.setMaximumSize(maxSize);
+        this.vitalDisplayScrollPanel.getViewport().setSize(size.width, Integer.MAX_VALUE);
         
-        synchronized(this.getTreeLock()) {
-            this.validateTree();
-        }
+        this.vitalDisplayScrollPanel.getViewport().validate();
     }//GEN-LAST:event_vitalDisplayScrollPanelComponentResized
 
     /**

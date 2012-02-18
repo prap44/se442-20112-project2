@@ -114,9 +114,10 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             }
         }
         
-        synchronized(VitalDisplayGrid.this.getTreeLock()) {
-            VitalDisplayGrid.this.validateTree();
-        }
+//        synchronized(VitalDisplayGrid.this.getTreeLock()) {
+//            VitalDisplayGrid.this.validateTree();
+//        }
+        this.validate();
     }
 
     /** This method is called from within the constructor to

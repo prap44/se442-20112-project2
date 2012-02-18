@@ -215,6 +215,8 @@
           <SubComponents>
             <Container class="javax.swing.JScrollPane" name="vitalDisplayScrollPanel">
               <Properties>
+                <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
+                <Property name="verticalScrollBarPolicy" type="int" value="22"/>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[112, 122]"/>
                 </Property>
@@ -254,6 +256,9 @@
                     </Component>
                     <Container class="javax.swing.JPanel" name="vitalDisplayViewpanelSpanner">
                       <Properties>
+                        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                          <Color blue="69" green="69" red="69" type="rgb"/>
+                        </Property>
                         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[0, 0]"/>
                         </Property>
@@ -270,7 +275,7 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="447" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="430" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
