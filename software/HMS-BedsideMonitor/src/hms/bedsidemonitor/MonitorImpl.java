@@ -24,26 +24,31 @@ public class MonitorImpl implements Monitor {
 	private List<Sensor> sensors = new ArrayList<Sensor>();
 	private Thread sensorPollingThread = new Thread() {
 		public void run() {
-			while(true) {
-				Map<String, Integer> data = new HashMap<String, Integer>();
-				for (Sensor s : MonitorImpl.this.sensors) {
-					s.vitalChange();
-					data.put(s.getName(), s.convert(s.getCurrentValue()));
-				}
-	
-				try {
-					MonitorImpl.this.raisePatientDataEvent(new PatientDataEvent(
-							patient, data));
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	
-				try {
-					Thread.sleep(250);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			while (true) {
+				if (MonitorImpl.this.patient != null
+						&& MonitorImpl.this.sensors != null
+						&& !MonitorImpl.this.sensors.isEmpty()) {
+					Map<String, Integer> data = new HashMap<String, Integer>();
+					for (Sensor s : MonitorImpl.this.sensors) {
+						s.vitalChange();
+						data.put(s.getName(), s.convert(s.getCurrentValue()));
+					}
+
+					try {
+						MonitorImpl.this
+								.raisePatientDataEvent(new PatientDataEvent(
+										patient, data));
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -53,7 +58,7 @@ public class MonitorImpl implements Monitor {
 		this.sensorPollingThread.setDaemon(true);
 		this.sensorPollingThread.start();
 	}
-	
+
 	public List<Sensor> getSensorList() {
 		return this.sensors;
 	}
