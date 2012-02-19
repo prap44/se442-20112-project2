@@ -6,6 +6,7 @@
 package hms.bedsidemonitor.gui;
 
 import hms.bedsidemonitor.MonitorImpl;
+import hms.bedsidemonitor.PatientImpl;
 import hms.common.PatientDataEvent;
 import hms.common.PatientDataListener;
 import hms.common.Sensor;
@@ -29,6 +30,7 @@ public class MainWindow extends javax.swing.JFrame {
     private List<Sensor> sensorList = new ArrayList<Sensor>();
     private DefaultTableModel sensorTableModel;
     private MonitorImpl monitor = null;
+    private PatientImpl patient = new PatientImpl();
     
     private boolean suppressSensorTableModelSelectionEvents = false;
 
@@ -411,6 +413,20 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void patientAssignedCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientAssignedCheckboxActionPerformed
         updatePatientFieldStatus();
+        
+        if(this.patientAssignedCheckbox.isSelected()) {
+            try {
+                this.monitor.setPatient(this.patient);
+            } catch (RemoteException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                this.monitor.setPatient(null);
+            } catch (RemoteException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
 
     private void addSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSensorButtonActionPerformed
