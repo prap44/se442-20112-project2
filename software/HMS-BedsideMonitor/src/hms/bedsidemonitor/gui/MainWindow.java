@@ -5,9 +5,16 @@
  */
 package hms.bedsidemonitor.gui;
 
+import hms.bedsidemonitor.MonitorImpl;
+import hms.common.PatientDataEvent;
+import hms.common.PatientDataListener;
 import hms.common.Sensor;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -21,31 +28,91 @@ public class MainWindow extends javax.swing.JFrame {
     private EditSensorDialog editSensorDialog;
     private List<Sensor> sensorList = new ArrayList<Sensor>();
     private DefaultTableModel sensorTableModel;
+    private MonitorImpl monitor = null;
+    
+    private boolean suppressSensorTableModelSelectionEvents = false;
 
-    /** Creates new form MainWindow */
-    public MainWindow() {
+    public MainWindow(MonitorImpl monitor) throws RemoteException {
         initComponents();
         
-        try {
-            this.editSensorDialog = new EditSensorDialog(this, true);
-            
-            this.sensorTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        if(monitor != null) {
+            this.monitor = monitor;
+            this.sensorList = this.monitor.getSensorList();
+            this.monitor.addPatientDataListener(new PatientDataListener() {
+                private Runnable updateTableRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        MainWindow.this.updateTableValues();
+                    }
+                };
+
                 @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    MainWindow.this.updateButtonStatus();
+                public void patientDataReceived(PatientDataEvent event) throws RemoteException {
+                    SwingUtilities.invokeLater(this.updateTableRunnable);
                 }
             });
-            
-            this.sensorTableModel = (DefaultTableModel)this.sensorTable.getModel();
-            
-            this.updateTable();
-            this.updateButtonStatus();
-            this.updatePatientFieldStatus();
+        }
+        
+        try {
+            this.postInit();
         } catch(Throwable t) {
         }
     }
     
+    /** Creates new form MainWindow */
+    public MainWindow() {
+        initComponents();
+        
+        this.monitor = new MonitorImpl();
+        this.sensorList = this.monitor.getSensorList();
+        try {
+            this.monitor.addPatientDataListener(new PatientDataListener() {
+                private Runnable updateTableRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        MainWindow.this.updateTable();
+                    }
+                };
+
+                @Override
+                public void patientDataReceived(PatientDataEvent event) throws RemoteException {
+                    SwingUtilities.invokeLater(this.updateTableRunnable);
+                }
+            });
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        try {
+            this.postInit();
+        } catch(Throwable t) {
+        }
+    }
+    
+    private void postInit() {
+        /* Create the edit sensor dialog */
+        this.editSensorDialog = new EditSensorDialog(this, true);
+
+        this.sensorTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(!MainWindow.this.suppressSensorTableModelSelectionEvents) {
+                    MainWindow.this.updateButtonStatus();
+                }
+            }
+        });
+
+        /* Get the sensor's table model for easy access */
+        this.sensorTableModel = (DefaultTableModel)this.sensorTable.getModel();
+
+        /* Make sure everything is up to date */
+        this.updateTable();
+        this.updateButtonStatus();
+        this.updatePatientFieldStatus();
+    }
+    
     private void updateTable() {
+        int selectedRow = this.sensorTable.getSelectedRow();
         this.sensorTableModel.setRowCount(0);
         
         for(Sensor s : this.sensorList) {
@@ -58,7 +125,24 @@ public class MainWindow extends javax.swing.JFrame {
             this.sensorTableModel.addRow(row);
         }
         
+        this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
         this.sensorTable.validate();
+    }
+    
+    private void updateTableValues() {
+        this.suppressSensorTableModelSelectionEvents = true;
+        
+        for(int i = 0; i < this.sensorList.size(); ++i) {
+            Sensor s = this.sensorList.get(i);
+            this.sensorTableModel.setValueAt(s.getName(), i, 0);
+            this.sensorTableModel.setValueAt(s.convert(s.getCurrentValue()), i, 1);
+            this.sensorTableModel.setValueAt(s.getCurrentValue(), i, 2);
+            this.sensorTableModel.setValueAt(s.getOffset(), i, 3);
+            this.sensorTableModel.setValueAt(s.getScalar(), i, 4);
+        }
+        
+        this.sensorTable.repaint();
+        this.suppressSensorTableModelSelectionEvents = false;
     }
     
     private void updateButtonStatus() {
@@ -110,6 +194,7 @@ public class MainWindow extends javax.swing.JFrame {
         setTitle("Bedside Monitor");
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
+        basePanel.setPreferredSize(new java.awt.Dimension(464, 500));
         basePanel.setLayout(new java.awt.GridBagLayout());
 
         monitorInfoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Monitor Information"));

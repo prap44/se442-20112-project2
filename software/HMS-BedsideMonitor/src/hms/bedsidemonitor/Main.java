@@ -1,5 +1,6 @@
 package hms.bedsidemonitor;
 
+import hms.bedsidemonitor.gui.MainWindow;
 import hms.common.Monitor;
 import hms.common.PatientAlarmEvent;
 import hms.common.PatientCallButtonEvent;
@@ -12,6 +13,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import javax.swing.JFrame;
 
 public class Main {
 	
@@ -43,6 +46,15 @@ public class Main {
 		}
 		
 		System.out.println("Server started.");
+		
+		try {
+			MainWindow window = new MainWindow(server);
+			window.setState(JFrame.MAXIMIZED_BOTH);
+			window.setVisible(true);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		try {
 			PatientImpl patient = new PatientImpl();

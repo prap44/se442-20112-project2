@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* $Id$ */
 package hms.common.gui.filters;
 
@@ -32,6 +27,7 @@ public class NumericDocumentFilter extends DocumentFilter {
     public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
         boolean valid = true;
         int position = offset;
+        String remainingText = getRemainingDocumentText(offset, length);
 
         for(char c : text.toCharArray()) {
             /* Valid input:
@@ -41,12 +37,21 @@ public class NumericDocumentFilter extends DocumentFilter {
              */
             valid = valid && (c <= '9' && c >= '0' ||
                     (this.allowNegatives && c == '-' && position == 0) ||
-                    (this.allowDecimalPoint && c == '.' && !this.document.getText(0, this.document.getLength()).contains(".")));
+                    (this.allowDecimalPoint && c == '.' && !remainingText.contains(".")));
             position++;
         }
 
         if(valid) {
             super.replace(fb, offset, length, text, attrs);
         }
+    }
+    
+    private String getRemainingDocumentText(int offset, int length) throws BadLocationException {
+        String text = this.document.getText(0, this.document.getLength());
+        String preOffset = text.substring(0, offset);
+        String postOffset = text.substring(offset + length);
+        text = preOffset + postOffset;
+        
+        return text;
     }
 }
