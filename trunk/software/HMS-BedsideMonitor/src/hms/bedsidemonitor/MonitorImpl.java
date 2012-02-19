@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.event.EventListenerList;
 
@@ -19,44 +21,40 @@ import hms.common.PatientDataListener;
 import hms.common.Sensor;
 
 public class MonitorImpl implements Monitor {
+	private final int SENSOR_POLL_INTERVAL_MS = 250;
+
 	private EventListenerList listenerList = new EventListenerList();
 	private Patient patient = null;
 	private List<Sensor> sensors = new ArrayList<Sensor>();
-	private Thread sensorPollingThread = new Thread() {
+
+	private Timer sensorPollingTimer = new Timer(true);
+	private TimerTask sensorPollingTimerTask = new TimerTask() {
+		@Override
 		public void run() {
-			while (true) {
-				if (MonitorImpl.this.patient != null
-						&& MonitorImpl.this.sensors != null
-						&& !MonitorImpl.this.sensors.isEmpty()) {
-					Map<String, Integer> data = new HashMap<String, Integer>();
-					for (Sensor s : MonitorImpl.this.sensors) {
-						s.vitalChange();
-						data.put(s.getName(), s.convert(s.getCurrentValue()));
-					}
+			if (MonitorImpl.this.patient != null
+					&& MonitorImpl.this.sensors != null
+					&& !MonitorImpl.this.sensors.isEmpty()) {
+				Map<String, Integer> data = new HashMap<String, Integer>();
+				for (Sensor s : MonitorImpl.this.sensors) {
+					s.vitalChange();
+					data.put(s.getName(), s.convert(s.getCurrentValue()));
+				}
 
-					try {
-						MonitorImpl.this
-								.raisePatientDataEvent(new PatientDataEvent(
-										patient, data));
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					try {
-						Thread.sleep(250);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				try {
+					MonitorImpl.this
+							.raisePatientDataEvent(new PatientDataEvent(
+									patient, data));
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
 	};
 
 	public MonitorImpl() {
-		this.sensorPollingThread.setDaemon(true);
-		this.sensorPollingThread.start();
+		this.sensorPollingTimer.scheduleAtFixedRate(
+				this.sensorPollingTimerTask, 0, SENSOR_POLL_INTERVAL_MS);
 	}
 
 	public List<Sensor> getSensorList() {
