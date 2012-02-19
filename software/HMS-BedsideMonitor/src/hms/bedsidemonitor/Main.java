@@ -8,6 +8,7 @@ import hms.common.PatientDataEvent;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		System.setSecurityManager(new RMISecurityManager());
 		MonitorImpl server = null;
 		
 		try {
