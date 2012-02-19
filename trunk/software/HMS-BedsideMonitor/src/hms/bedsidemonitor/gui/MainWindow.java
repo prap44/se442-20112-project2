@@ -1,24 +1,77 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * MainWindow.java
  *
  * Created on Feb 18, 2012, 4:14:05 PM
  */
 package hms.bedsidemonitor.gui;
 
+import hms.common.Sensor;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author jaxon
  */
 public class MainWindow extends javax.swing.JFrame {
+    
+    private EditSensorDialog editSensorDialog;
+    private List<Sensor> sensorList = new ArrayList<Sensor>();
+    private DefaultTableModel sensorTableModel;
 
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
+        
+        try {
+            this.editSensorDialog = new EditSensorDialog(this, true);
+            
+            this.sensorTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    MainWindow.this.updateButtonStatus();
+                }
+            });
+            
+            this.sensorTableModel = (DefaultTableModel)this.sensorTable.getModel();
+            
+            this.updateTable();
+            this.updateButtonStatus();
+            this.updatePatientFieldStatus();
+        } catch(Throwable t) {
+        }
+    }
+    
+    private void updateTable() {
+        this.sensorTableModel.setRowCount(0);
+        
+        for(Sensor s : this.sensorList) {
+            Object[] row = new Object[5];
+            row[0] = s.getName();
+            row[1] = s.convert(s.getCurrentValue());
+            row[2] = s.getCurrentValue();
+            row[3] = s.getOffset();
+            row[4] = s.getScalar();
+            this.sensorTableModel.addRow(row);
+        }
+        
+        this.sensorTable.validate();
+    }
+    
+    private void updateButtonStatus() {
+        boolean sensorButtonsEnabled = this.sensorTable.getSelectedRow() >= 0;
+        this.editSensorButton.setEnabled(sensorButtonsEnabled);
+        this.removeSensorButton.setEnabled(sensorButtonsEnabled);
+    }
+    
+    private void updatePatientFieldStatus() {
+        boolean patientFieldsEnabled = this.patientAssignedCheckbox.isSelected();
+        this.patientFirstNameField.setEnabled(patientFieldsEnabled);
+        this.patientMiddleNameField.setEnabled(patientFieldsEnabled);
+        this.patientLastNameField.setEnabled(patientFieldsEnabled);
     }
 
     /** This method is called from within the constructor to
@@ -48,8 +101,13 @@ public class MainWindow extends javax.swing.JFrame {
         sensorPanel = new javax.swing.JPanel();
         sensorScrollPanel = new javax.swing.JScrollPane();
         sensorTable = new javax.swing.JTable();
+        sensorButtonPanel = new javax.swing.JPanel();
+        addSensorButton = new javax.swing.JButton();
+        removeSensorButton = new javax.swing.JButton();
+        editSensorButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Bedside Monitor");
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         basePanel.setLayout(new java.awt.GridBagLayout());
@@ -104,7 +162,6 @@ public class MainWindow extends javax.swing.JFrame {
         patientInfoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Patient Information"));
         patientInfoPanel.setLayout(new java.awt.GridBagLayout());
 
-        patientAssignedCheckbox.setSelected(true);
         patientAssignedCheckbox.setText("Assigned");
         patientAssignedCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -175,15 +232,25 @@ public class MainWindow extends javax.swing.JFrame {
 
         sensorTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Vital", "Value", "Raw Value", "Offset", "Scale"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        sensorTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        sensorTable.getTableHeader().setReorderingAllowed(false);
         sensorScrollPanel.setViewportView(sensorTable);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -193,6 +260,50 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         sensorPanel.add(sensorScrollPanel, gridBagConstraints);
+
+        sensorButtonPanel.setLayout(new java.awt.GridBagLayout());
+
+        addSensorButton.setText("Add");
+        addSensorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addSensorButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        sensorButtonPanel.add(addSensorButton, gridBagConstraints);
+
+        removeSensorButton.setText("Remove");
+        removeSensorButton.setEnabled(false);
+        removeSensorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeSensorButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        sensorButtonPanel.add(removeSensorButton, gridBagConstraints);
+
+        editSensorButton.setText("Edit");
+        editSensorButton.setEnabled(false);
+        editSensorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editSensorButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        sensorButtonPanel.add(editSensorButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        sensorPanel.add(sensorButtonPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -214,8 +325,36 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void patientAssignedCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientAssignedCheckboxActionPerformed
+        updatePatientFieldStatus();
+    }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
 
-        boolean arePatientFieldsEnabled = this.patientAssignedCheckbox.isSelected();         this.patientFirstNameField.setEnabled(arePatientFieldsEnabled);         this.patientMiddleNameField.setEnabled(arePatientFieldsEnabled);         this.patientLastNameField.setEnabled(arePatientFieldsEnabled);     }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
+    private void addSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSensorButtonActionPerformed
+        Sensor sensor = this.editSensorDialog.showAddDialog();
+        
+        if(sensor != null) {
+            sensorList.add(sensor);
+            this.updateTable();
+        }
+    }//GEN-LAST:event_addSensorButtonActionPerformed
+
+    private void removeSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSensorButtonActionPerformed
+        int selectedIndex = this.sensorTable.getSelectedRow();
+        if(selectedIndex >= 0) {
+            this.sensorList.remove(selectedIndex);
+            this.updateTable();
+        }
+    }//GEN-LAST:event_removeSensorButtonActionPerformed
+
+    private void editSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSensorButtonActionPerformed
+        int selectedIndex = this.sensorTable.getSelectedRow();
+        if(selectedIndex >= 0) {
+            Sensor sensor = this.sensorList.get(selectedIndex);
+            
+            if(this.editSensorDialog.showEditDialog(sensor)) {
+                this.updateTable();
+            }
+        }
+    }//GEN-LAST:event_editSensorButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -253,7 +392,9 @@ public class MainWindow extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addSensorButton;
     private javax.swing.JPanel basePanel;
+    private javax.swing.JButton editSensorButton;
     private javax.swing.JTextField monitorAddressField;
     private javax.swing.JLabel monitorAddressLabel;
     private javax.swing.JTextField monitorIDField;
@@ -267,6 +408,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel patientLastNameLabel;
     private javax.swing.JTextField patientMiddleNameField;
     private javax.swing.JLabel patientMiddleNameLabel;
+    private javax.swing.JButton removeSensorButton;
+    private javax.swing.JPanel sensorButtonPanel;
     private javax.swing.JPanel sensorPanel;
     private javax.swing.JScrollPane sensorScrollPanel;
     private javax.swing.JTable sensorTable;
