@@ -66,7 +66,7 @@ public class Sensor {
 		return (int)Math.round(value * this.scalar + this.offset);
 	}
 	
-	private double vitalChange(){
+	public double vitalChange(){
 		double rawData;
 		double convert = 100;
 		spikeCheck();
