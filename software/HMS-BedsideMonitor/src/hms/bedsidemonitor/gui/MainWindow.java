@@ -7,6 +7,7 @@ package hms.bedsidemonitor.gui;
 
 import hms.bedsidemonitor.MonitorImpl;
 import hms.bedsidemonitor.PatientImpl;
+import hms.common.Patient;
 import hms.common.PatientDataEvent;
 import hms.common.PatientDataListener;
 import hms.common.Sensor;
@@ -29,6 +30,7 @@ public class MainWindow extends javax.swing.JFrame {
     private EditSensorDialog editSensorDialog;
     private List<Sensor> sensorList = new ArrayList<Sensor>();
     private DefaultTableModel sensorTableModel;
+    
     private MonitorImpl monitor = null;
     private PatientImpl patient = new PatientImpl();
     
@@ -176,6 +178,10 @@ public class MainWindow extends javax.swing.JFrame {
         monitorIDField = new javax.swing.JTextField();
         monitorAddressLabel = new javax.swing.JLabel();
         monitorAddressField = new javax.swing.JTextField();
+        monitorInfoButtonPanel = new javax.swing.JPanel();
+        monitorInfoButtonSpacerPanel = new javax.swing.JPanel();
+        monitorInfoApplyButton = new javax.swing.JButton();
+        monitorInfoResetButton = new javax.swing.JButton();
         patientInfoPanel = new javax.swing.JPanel();
         patientAssignedCheckbox = new javax.swing.JCheckBox();
         patientFirstNameLabel = new javax.swing.JLabel();
@@ -184,6 +190,10 @@ public class MainWindow extends javax.swing.JFrame {
         patientMiddleNameField = new javax.swing.JTextField();
         patientLastNameLabel = new javax.swing.JLabel();
         patientLastNameField = new javax.swing.JTextField();
+        patientInfoButtonPanel = new javax.swing.JPanel();
+        patientInfoButtonSpacerPanel = new javax.swing.JPanel();
+        patientInfoApplyButton = new javax.swing.JButton();
+        patientInfoResetButton = new javax.swing.JButton();
         sensorPanel = new javax.swing.JPanel();
         sensorScrollPanel = new javax.swing.JScrollPane();
         sensorTable = new javax.swing.JTable();
@@ -238,6 +248,46 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 4);
         monitorInfoPanel.add(monitorAddressField, gridBagConstraints);
+
+        monitorInfoButtonPanel.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        monitorInfoButtonPanel.add(monitorInfoButtonSpacerPanel, gridBagConstraints);
+
+        monitorInfoApplyButton.setText("Apply");
+        monitorInfoApplyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                monitorInfoApplyButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        monitorInfoButtonPanel.add(monitorInfoApplyButton, gridBagConstraints);
+
+        monitorInfoResetButton.setText("Reset");
+        monitorInfoResetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                monitorInfoResetButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        monitorInfoButtonPanel.add(monitorInfoResetButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 4);
+        monitorInfoPanel.add(monitorInfoButtonPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -306,6 +356,46 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 4);
         patientInfoPanel.add(patientLastNameField, gridBagConstraints);
+
+        patientInfoButtonPanel.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        patientInfoButtonPanel.add(patientInfoButtonSpacerPanel, gridBagConstraints);
+
+        patientInfoApplyButton.setText("Apply");
+        patientInfoApplyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                patientInfoApplyButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        patientInfoButtonPanel.add(patientInfoApplyButton, gridBagConstraints);
+
+        patientInfoResetButton.setText("Reset");
+        patientInfoResetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                patientInfoResetButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        patientInfoButtonPanel.add(patientInfoResetButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 4);
+        patientInfoPanel.add(patientInfoButtonPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -413,20 +503,6 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void patientAssignedCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientAssignedCheckboxActionPerformed
         updatePatientFieldStatus();
-        
-        if(this.patientAssignedCheckbox.isSelected()) {
-            try {
-                this.monitor.setPatient(this.patient);
-            } catch (RemoteException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            try {
-                this.monitor.setPatient(null);
-            } catch (RemoteException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
     }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
 
     private void addSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSensorButtonActionPerformed
@@ -456,6 +532,56 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_editSensorButtonActionPerformed
+
+    private void patientInfoApplyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientInfoApplyButtonActionPerformed
+        try {
+            if (this.patientAssignedCheckbox.isSelected()) {
+                this.patient.setPatientFirstName(this.patientFirstNameField.getText());
+                this.patient.setPatientMiddleName(this.patientMiddleNameField.getText());
+                this.patient.setPatientLastName(this.patientLastNameField.getText());
+                this.monitor.setPatient(this.patient);
+            } else {
+                this.monitor.setPatient(null);
+                this.patient.setPatientFirstName(this.patientFirstNameField.getText());
+                this.patient.setPatientMiddleName(this.patientMiddleNameField.getText());
+                this.patient.setPatientLastName(this.patientLastNameField.getText());
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_patientInfoApplyButtonActionPerformed
+
+    private void patientInfoResetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientInfoResetButtonActionPerformed
+        try {
+            Patient localPatient = this.monitor.getPatient();
+            if(localPatient == null) {
+                this.patientAssignedCheckbox.setSelected(false);
+                this.updatePatientFieldStatus();
+                this.patientFirstNameField.setText(this.patient.getPatientFirstName());
+                this.patientMiddleNameField.setText(this.patient.getPatientMiddleName());
+                this.patientLastNameField.setText(this.patient.getPatientLastName());
+            } else {
+                if(localPatient instanceof PatientImpl) {
+                    this.patient = (PatientImpl)localPatient;
+                }
+                this.patientAssignedCheckbox.setSelected(true);
+                this.updatePatientFieldStatus();
+                this.patientFirstNameField.setText(this.patient.getPatientFirstName());
+                this.patientMiddleNameField.setText(this.patient.getPatientMiddleName());
+                this.patientLastNameField.setText(this.patient.getPatientLastName());
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_patientInfoResetButtonActionPerformed
+
+    private void monitorInfoApplyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorInfoApplyButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_monitorInfoApplyButtonActionPerformed
+
+    private void monitorInfoResetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorInfoResetButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_monitorInfoResetButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -500,11 +626,19 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel monitorAddressLabel;
     private javax.swing.JTextField monitorIDField;
     private javax.swing.JLabel monitorIDLabel;
+    private javax.swing.JButton monitorInfoApplyButton;
+    private javax.swing.JPanel monitorInfoButtonPanel;
+    private javax.swing.JPanel monitorInfoButtonSpacerPanel;
     private javax.swing.JPanel monitorInfoPanel;
+    private javax.swing.JButton monitorInfoResetButton;
     private javax.swing.JCheckBox patientAssignedCheckbox;
     private javax.swing.JTextField patientFirstNameField;
     private javax.swing.JLabel patientFirstNameLabel;
+    private javax.swing.JButton patientInfoApplyButton;
+    private javax.swing.JPanel patientInfoButtonPanel;
+    private javax.swing.JPanel patientInfoButtonSpacerPanel;
     private javax.swing.JPanel patientInfoPanel;
+    private javax.swing.JButton patientInfoResetButton;
     private javax.swing.JTextField patientLastNameField;
     private javax.swing.JLabel patientLastNameLabel;
     private javax.swing.JTextField patientMiddleNameField;
