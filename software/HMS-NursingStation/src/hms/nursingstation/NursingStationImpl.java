@@ -16,16 +16,10 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class NursingStationImpl extends UnicastRemoteObject
-		implements PatientAlarmListener, 
-		PatientCallButtonListener, PatientDataListener {
+public class NursingStationImpl {
 	
 	private ArrayList<Patient> patients = new ArrayList<Patient>();
-	
-	public NursingStationImpl() 
-			throws IOException
-	{
-	}
+	private ArrayList<MonitorProxy> bedsideStations = new ArrayList<MonitorProxy>();
 	
 	public boolean addPatient(Patient patient) {
 		return this.patients.add(patient);
@@ -47,48 +41,24 @@ public class NursingStationImpl extends UnicastRemoteObject
 		return this.patients.size();
 	}
 	
-	public void connectToMonitor(Monitor bedsideStation) {
-		try {
-			bedsideStation.addPatientAlarmListener(this);
-			bedsideStation.addPatientCallButtonListener(this);
-			bedsideStation.addPatientDataListener(this);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		
+	public boolean addMonitor(MonitorProxy monitor) {
+		return this.bedsideStations.add(monitor);
 	}
-
-	@Override
-	public void patientDataReceived(PatientDataEvent event)
-			throws RemoteException {
-		System.out.println("[NursingStationImpl] Patient Data Received");
-		Patient p = event.getPatient();
-		Map<String, Integer> patientVitals = event.getVitals();
-		System.out.println("[NursingStationImpl] Patient: " + 
-				p.getPatientFirstName() + " " + p.getPatientLastName());
-		System.out.println("[NursingStationImpl] Patient Hearbeat Vital Signs: " + 
-				patientVitals.get("heartbeat"));
+	
+	public MonitorProxy getMonitor(int index) {
+		return this.bedsideStations.get(index);
 	}
-
-	@Override
-	public void patientCallButtonPressed(PatientCallButtonEvent event)
-			throws RemoteException {
-		System.out.println("[NursingStationImpl] Patient Call Button Pressed");
-		Patient p = event.getPatient();
-		System.out.println("[NursingStationImpl] Patient " + 
-				p.getPatientFirstName() + " " + p.getPatientLastName() + 
-				" pressed the call button");
+	
+	public MonitorProxy removeMonitor(int index) {
+		return this.bedsideStations.remove(index);
 	}
-
-	@Override
-	public void patientAlarmReceived(PatientAlarmEvent event)
-			throws RemoteException {
-		System.out.println("[NursingStationImpl] Patient Alarm Received");
-		Patient p = event.getPatient();
-		String vital = event.getVital();
-		System.out.println("[NursingStationImpl] Patient " +
-				p.getPatientFirstName() + " " + p.getPatientLastName() + 
-				"'s vital sign " + vital + " is critical");
+	
+	public boolean remoteMonitor(MonitorProxy monitor) {
+		return this.bedsideStations.remove(monitor);
+	}
+	
+	public int getMonitorCount() {
+		return this.bedsideStations.size();
 	}
 	
 }

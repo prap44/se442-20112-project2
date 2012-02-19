@@ -1,37 +1,29 @@
 package hms.nursingstation;
 
-import hms.common.Monitor;
-
 import java.io.IOException;
-import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 public class Main {
 	
-	static final String BEDSIDE_SERVER_NAME = "hms.bedsidemonitor";
-
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		System.setSecurityManager(new RMISecurityManager());
-		Monitor remoteMonitor;
-		NursingStationImpl client;
+		NursingStationImpl client = new NursingStationImpl();
 		
 		try {
-			Registry registry = LocateRegistry.getRegistry();
-			remoteMonitor = (Monitor)registry.lookup(BEDSIDE_SERVER_NAME);
-			System.out.println("Nursing Station found a Bedside Monitor remote object.");
-			
-			client = new NursingStationImpl();
-			client.connectToMonitor(remoteMonitor);
+			MonitorProxy mp = new MonitorProxy();
+			System.out.println("Client created MonitorProxy");
+			mp.connectToMonitor();
+			System.out.println("MonitorProxy connected to real Monitor");
+			mp.registerProxy();
+			System.out.println("MonitorProxy registered with real Monitor");
+			client.addMonitor(mp);
+			System.out.println("MonitorProxy added to NursingStationImpl");
 		} catch (RemoteException re) {
 			re.printStackTrace();
-		} catch (NotBoundException nbe) {
-			nbe.printStackTrace();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
