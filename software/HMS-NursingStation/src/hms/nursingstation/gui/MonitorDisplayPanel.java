@@ -167,6 +167,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         }
         
         this.monitor = monitor;
+        this.vitalDisplayGrid.setMonitor(monitor);
         
         this.monitor.addInformationChangeReceivedListener(this.infoChangedListener);
     }

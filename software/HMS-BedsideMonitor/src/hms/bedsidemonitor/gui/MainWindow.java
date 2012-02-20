@@ -14,7 +14,11 @@ import hms.common.events.PatientInformationChangedEvent;
 import hms.common.Sensor;
 import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,7 +30,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author jaxon
+ * @author Jackson Lamp
  */
 public class MainWindow extends javax.swing.JFrame {
     
@@ -671,6 +675,19 @@ public class MainWindow extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        /* Initialize RMI interface */
+        System.setSecurityManager(new RMISecurityManager());
+        final MonitorImpl monitor = new MonitorImpl();
+        
+        try {
+            UnicastRemoteObject.exportObject(monitor);
+            Naming.rebind("hms.bedsidemonitor", monitor);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -698,7 +715,12 @@ public class MainWindow extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                new MainWindow().setVisible(true);
+                try {
+                    MainWindow window = new MainWindow(monitor);
+                    window.setVisible(true);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* $Id$
  * 
  * MonitorNotificationDialog.java
@@ -15,6 +10,8 @@ import hms.nursingstation.MonitorProxy;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -63,27 +60,45 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.notificationList.setModel(notificationListModel);
+        this.notificationList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                updateButtonStatus();
+            }
+        });
+        updateButtonStatus();
     }
     
     public void addNotification(MonitorProxy monitor, NotificationType type, String vital, String description) {
         Notification notification = new Notification(monitor, type, vital, description);
         this.notifications.add(notification);
         this.notificationListModel.addElement(notification.generateEntry());
-        this.setVisible(true);
+        if(!this.isVisible()) {
+            this.setVisible(true);
+            this.setLocationRelativeTo(this.getParent());
+        }
+        updateButtonStatus();
     }
     
     public void removeNotification(MonitorProxy monitor, NotificationType type, String vital) {
         for(int i = 0; i < this.notifications.size(); i++) {
             Notification n = this.notifications.get(i);
-            if(n.monitor.equals(monitor) && n.type.equals(type) && n.vital.equals(vital)) {
+            if(n.monitor.equals(monitor) && n.type.equals(type) &&
+                    (n.vital == null) == (vital == null) && (vital == null || n.vital.equals(vital))) {
                 this.notifications.remove(i);
                 this.notificationList.remove(i);
             }
         }
+        updateButtonStatus();
         
         if(this.notifications.isEmpty()) {
             this.setVisible(false);
         }
+    }
+    
+    private void updateButtonStatus() {
+        boolean messageSelected = this.notificationList.getSelectedIndex() >= 0;
+        this.acknowledgeButton.setEnabled(messageSelected);
     }
 
     /** This method is called from within the constructor to
@@ -135,6 +150,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         buttonPanel.setLayout(new java.awt.GridBagLayout());
 
         acknowledgeButton.setText("Acknowledge");
+        acknowledgeButton.setEnabled(false);
         acknowledgeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 acknowledgeButtonActionPerformed(evt);
@@ -167,6 +183,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         this.notifications.clear();
         this.notificationListModel.clear();
         this.setVisible(false);
+        this.updateButtonStatus();
     }//GEN-LAST:event_acknowledgeAllButtonActionPerformed
 
     private void acknowledgeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acknowledgeButtonActionPerformed
@@ -179,6 +196,8 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         if(this.notifications.isEmpty()) {
             this.setVisible(false);
         }
+        
+        this.updateButtonStatus();
     }//GEN-LAST:event_acknowledgeButtonActionPerformed
 
     /**

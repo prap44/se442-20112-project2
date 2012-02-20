@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
 public class MonitorProxy extends UnicastRemoteObject implements
@@ -74,9 +75,19 @@ public class MonitorProxy extends UnicastRemoteObject implements
 							+ p.getPatientFirstName() + " "
 							+ p.getPatientLastName()
 							+ "'s call button was reset");
-					CallButtonResetEvent localEvent = new CallButtonResetEvent(
+					final CallButtonResetEvent localEvent = new CallButtonResetEvent(
 							this);
-					this.raiseCallButtonResetEvent(localEvent);
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								MonitorProxy.this.raiseCallButtonResetEvent(localEvent);
+							} catch (RemoteException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
 				}
 			}
 		} catch (MonitorDisconnectedException e) {

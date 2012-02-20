@@ -158,6 +158,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                 
                 if(monitor.isConnected()) {
                     try {
+                    	monitor.registerProxy();
                         monitor.assignPatient(this.patientFirstNameField.getText(),
                                 this.patientMiddleNameField.getText(),
                                 this.patientLastNameField.getText());

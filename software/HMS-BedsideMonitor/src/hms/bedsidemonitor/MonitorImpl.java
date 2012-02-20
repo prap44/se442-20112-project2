@@ -3,12 +3,12 @@ package hms.bedsidemonitor;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
 import hms.common.Monitor;
@@ -24,6 +24,7 @@ import hms.common.listeners.PatientDataListener;
 import hms.common.listeners.PatientInformationChangedListener;
 
 public class MonitorImpl implements Monitor {
+	
 	private final int SENSOR_POLL_INTERVAL_MS = 250;
 
 	private EventListenerList listenerList = new EventListenerList();
@@ -41,12 +42,13 @@ public class MonitorImpl implements Monitor {
 				for (Sensor s : MonitorImpl.this.sensors) {
 					s.vitalChange();
 					data.put(s.getName(), s.convert(s.getCurrentValue()));
-					
-					if(s.exceedHighLimit() || s.exceedsLowLimit()) {
-						if(!s.getAlarmState()) {
+
+					if (s.exceedHighLimit() || s.exceedsLowLimit()) {
+						if (!s.getAlarmState()) {
 							s.setAlarmState(true);
 							try {
-								raisePatientAlarmEvent(new PatientAlarmEvent(s.getName(), true));
+								raisePatientAlarmEvent(new PatientAlarmEvent(
+										s.getName(), true));
 							} catch (RemoteException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -57,8 +59,7 @@ public class MonitorImpl implements Monitor {
 
 				try {
 					MonitorImpl.this
-							.raisePatientDataEvent(new 
-									PatientDataEvent(data));
+							.raisePatientDataEvent(new PatientDataEvent(data));
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -84,18 +85,18 @@ public class MonitorImpl implements Monitor {
 	public void setPatient(Patient patient) throws RemoteException {
 		this.patient = patient;
 	}
-	
+
 	@Override
 	public void assignPatient(String firstName, String middleName,
 			String lastName) throws RemoteException {
-		if(this.patient == null) {
+		if (this.patient == null) {
 			this.patient = new PatientImpl();
 		}
 		this.patient.setPatientFirstName(firstName);
 		this.patient.setPatientMiddleName(middleName);
 		this.patient.setPatientLastName(lastName);
 	}
-	
+
 	@Override
 	public void unsassignPatient() throws RemoteException {
 		this.patient = null;
@@ -120,11 +121,12 @@ public class MonitorImpl implements Monitor {
 			throws RemoteException {
 		this.listenerList.add(PatientDataListener.class, listener);
 	}
-	
+
 	@Override
 	public void addPatientInformationChangedListener(
 			PatientInformationChangedListener listener) throws RemoteException {
-		this.listenerList.add(PatientInformationChangedListener.class, listener);
+		this.listenerList
+				.add(PatientInformationChangedListener.class, listener);
 	}
 
 	@Override
@@ -144,11 +146,12 @@ public class MonitorImpl implements Monitor {
 			throws RemoteException {
 		this.listenerList.remove(PatientDataListener.class, listener);
 	}
-	
+
 	@Override
 	public void removePatientInformationChangedListener(
 			PatientInformationChangedListener listener) throws RemoteException {
-		this.listenerList.remove(PatientInformationChangedListener.class, listener);
+		this.listenerList.remove(PatientInformationChangedListener.class,
+				listener);
 	}
 
 	public void raisePatientAlarmEvent(PatientAlarmEvent event)
@@ -163,19 +166,20 @@ public class MonitorImpl implements Monitor {
 		System.out.println("[MonitorImpl] exiting raisePatientAlarmEvent");
 	}
 
-	public void raisePatientCallButtonEvent(PatientCallButtonEvent event)
+	public void raisePatientCallButtonEvent(final PatientCallButtonEvent event)
 			throws RemoteException {
 		System.out
 				.println("[MonitorImpl] entering raisePatientCallButtonEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ listenerList.getListeners(PatientDataListener.class).length);
-		for (PatientCallButtonListener listener : this.listenerList
+		for (final PatientCallButtonListener listener : this.listenerList
 				.getListeners(PatientCallButtonListener.class)) {
 			listener.patientCallButtonPressed(event);
 		}
 		System.out.println("[MonitorImpl] exiting raisePatientCallButtonEvent");
 	}
 
+	@Override
 	public void raisePatientDataEvent(PatientDataEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorImpl] entering raisePatientDataEvent");
@@ -187,17 +191,19 @@ public class MonitorImpl implements Monitor {
 		}
 		System.out.println("[MonitorImpl] exiting raisePatientDataEvent");
 	}
-	
+
 	@Override
 	public void raisePatientInformationChangedEvent(
 			PatientInformationChangedEvent event) throws RemoteException {
-		System.out.println("[MonitorImpl] entering raisePatientInformationChangedEvent");
+		System.out
+				.println("[MonitorImpl] entering raisePatientInformationChangedEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ listenerList.getListeners(PatientDataListener.class).length);
 		for (PatientInformationChangedListener listener : this.listenerList
 				.getListeners(PatientInformationChangedListener.class)) {
 			listener.patientInformationChanged(event);
 		}
-		System.out.println("[MonitorImpl] exiting raisePatientInformationChangedEvent");
+		System.out
+				.println("[MonitorImpl] exiting raisePatientInformationChangedEvent");
 	}
 }
