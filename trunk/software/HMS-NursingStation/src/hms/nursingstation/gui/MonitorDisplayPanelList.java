@@ -155,15 +155,13 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         int viewportWidth = this.scrollPanel.getViewport().getWidth();
         
         for(MonitorDisplayPanel panel : this.panels) {
-            panel.setPreferredSize(new Dimension(viewportWidth, panel.getPreferredSize().height));
+            panel.setMinimumSize(new Dimension(viewportWidth, panel.getPreferredSize().height));
         }
         
         this.basePanel.setPreferredSize(new Dimension(viewportWidth, this.basePanel.getPreferredSize().height));
-        this.basePanel.setMaximumSize(new Dimension(viewportWidth, this.basePanel.getPreferredSize().height));
+        this.basePanel.setMaximumSize(new Dimension(viewportWidth, Integer.MAX_VALUE));
         
-        synchronized(this.getTreeLock()) {
-            this.validateTree();
-        }
+        this.validate();
     }//GEN-LAST:event_scrollPanelComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
