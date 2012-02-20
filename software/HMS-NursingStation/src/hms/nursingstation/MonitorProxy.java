@@ -36,33 +36,40 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	public void patientCallButtonPressed(PatientCallButtonEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorProxy] Patient Call Button Pressed");
-		Patient p = event.getPatient();
-		System.out.println("[MonitorProxy] Patient " + 
-				p.getPatientFirstName() + " " + p.getPatientLastName() + 
-				" pressed the call button");
+		Patient p = this.realMonitor.getPatient();
+		if (p != null) {
+			System.out.println("[MonitorProxy] Patient " + 
+					p.getPatientFirstName() + " " + p.getPatientLastName() + 
+					" pressed the call button");
+		}
 	}
 
 	@Override
 	public void patientAlarmReceived(PatientAlarmEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorProxy] Patient Alarm Received");
-		Patient p = event.getPatient();
+		Patient p = this.realMonitor.getPatient();
 		String vital = event.getVital();
-		System.out.println("[MonitorProxy] Patient " +
-				p.getPatientFirstName() + " " + p.getPatientLastName() + 
-				"'s vital sign " + vital + " is critical");
+		if (p != null) {
+			System.out.println("[MonitorProxy] Patient " +
+					p.getPatientFirstName() + " " + p.getPatientLastName() + 
+					"'s vital sign " + vital + " is critical");
+		}
 	}
 
 	@Override
 	public void patientDataReceived(PatientDataEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorProxy] Patient Data Received");
-		Patient p = event.getPatient();
+		Patient p = this.realMonitor.getPatient();
 		Map<String, Integer> patientVitals = event.getVitals();
-		System.out.println("[MonitorProxy] Patient: " + 
-				p.getPatientFirstName() + " " + p.getPatientLastName());
-		System.out.println("[MonitorProxy] Patient Hearbeat Vital Signs: " + 
-				patientVitals.get("heartbeat"));
+		if (p != null) {
+			System.out.println("[MonitorProxy] Patient: " + 
+					p.getPatientFirstName() + " " + p.getPatientLastName());
+			String vital = patientVitals.keySet().iterator().next();
+			System.out.println("[MonitorProxy] Patient Vital Signs: " + 
+					vital + ", " + patientVitals.get(vital));
+		}
 	}
 
 	@Override
