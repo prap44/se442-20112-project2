@@ -18,6 +18,8 @@ import hms.common.PatientCallButtonEvent;
 import hms.common.PatientCallButtonListener;
 import hms.common.PatientDataEvent;
 import hms.common.PatientDataListener;
+import hms.common.PatientInformationChangedEvent;
+import hms.common.PatientInformationChangedListener;
 import hms.common.Sensor;
 
 public class MonitorImpl implements Monitor {
@@ -90,6 +92,12 @@ public class MonitorImpl implements Monitor {
 			throws RemoteException {
 		this.listenerList.add(PatientDataListener.class, listener);
 	}
+	
+	@Override
+	public void addPatientInformationChangedListener(
+			PatientInformationChangedListener listener) throws RemoteException {
+		this.listenerList.add(PatientInformationChangedListener.class, listener);
+	}
 
 	@Override
 	public void removePatientAlarmListener(PatientAlarmListener listener)
@@ -107,6 +115,12 @@ public class MonitorImpl implements Monitor {
 	public void removePatientDataListener(PatientDataListener listener)
 			throws RemoteException {
 		this.listenerList.remove(PatientDataListener.class, listener);
+	}
+	
+	@Override
+	public void removePatientInformationChangedListener(
+			PatientInformationChangedListener listener) throws RemoteException {
+		this.listenerList.remove(PatientInformationChangedListener.class, listener);
 	}
 
 	public void raisePatientAlarmEvent(PatientAlarmEvent event)
@@ -144,5 +158,18 @@ public class MonitorImpl implements Monitor {
 			listener.patientDataReceived(event);
 		}
 		System.out.println("[MonitorImpl] exiting raisePatientDataEvent");
+	}
+	
+	@Override
+	public void raisePatientInformationChangedEvent(
+			PatientInformationChangedEvent event) throws RemoteException {
+		System.out.println("[MonitorImpl] entering raisePatientInformationChangedEvent");
+		System.out.println("[MonitorImpl] listenerList.length == "
+				+ listenerList.getListeners(PatientDataListener.class).length);
+		for (PatientInformationChangedListener listener : this.listenerList
+				.getListeners(PatientInformationChangedListener.class)) {
+			listener.patientInformationChanged(event);
+		}
+		System.out.println("[MonitorImpl] exiting raisePatientInformationChangedEvent");
 	}
 }
