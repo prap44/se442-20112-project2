@@ -21,9 +21,7 @@ import hms.nursingstation.listeners.CallButtonResetListener;
 import hms.nursingstation.listeners.DataReceivedListener;
 import hms.nursingstation.listeners.InformationChangeReceivedListener;
 import hms.nursingstation.listeners.MonitorStatusChangedListener;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.rmi.RMISecurityManager;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 
@@ -34,11 +32,12 @@ import javax.swing.JFrame;
 public class MainWindow extends javax.swing.JFrame {
 
     private NursingStationImpl nursingStation = null;
-    private DefaultListModel<String> loggingListModel = new DefaultListModel<String>();
+    private DefaultListModel loggingListModel = new DefaultListModel();
     private MonitorNotificationDialog notificationDialog;
     
     public MainWindow(NursingStationImpl nursingStation) {
         initComponents();
+        this.loggingList.setModel(loggingListModel);
         this.notificationDialog = new MonitorNotificationDialog(this, true);
         this.setNursingStation(nursingStation);
     }
@@ -46,6 +45,7 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
+        this.loggingList.setModel(loggingListModel);
         this.notificationDialog = new MonitorNotificationDialog(this, true);
         this.setNursingStation(new NursingStationImpl());
     }
@@ -58,7 +58,6 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         this.nursingStation.addMonitorStatusChangedListener(new MonitorStatusChangedListener() {
-
             @Override
             public void monitorStatusChanged(MonitorStatusChangedEvent event) {
                 MonitorProxy monitor = event.getMonitor();
@@ -119,12 +118,12 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         
-        try {
-            nursingStation.addMonitor(new MonitorProxy());
-            nursingStation.addMonitor(new MonitorProxy());
-        } catch (IOException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            nursingStation.addMonitor(new MonitorProxy());
+//            nursingStation.addMonitor(new MonitorProxy());
+//        } catch (IOException ex) {
+//            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
         this.monitorDisplayPanelList.setNursingStation(this.nursingStation);
     }
@@ -239,6 +238,12 @@ public class MainWindow extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        /* Initialize RMI interface */
+        System.setSecurityManager(new RMISecurityManager());
+        
+        /* Initialize nursing station */
+        final NursingStationImpl nursingStation = new NursingStationImpl();
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -264,10 +269,9 @@ public class MainWindow extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-
             @Override
             public void run() {
-                MainWindow window = new MainWindow();
+                MainWindow window = new MainWindow(nursingStation);
                 window.setState(JFrame.MAXIMIZED_BOTH);
                 window.setVisible(true);
 
