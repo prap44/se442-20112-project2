@@ -14,6 +14,10 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 import javax.swing.JFrame;
 
@@ -47,46 +51,90 @@ public class Main {
 			murle.printStackTrace();
 		}
 		
-		System.out.println("Server started.");
+		System.out.println("[hms.bedsidemonitor.Main] Server started.");
 		
 		try {
 			MainWindow window = new MainWindow(server);
 			window.setState(JFrame.MAXIMIZED_BOTH);
 			window.setVisible(true);
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("[hms.bedsidemonitor.Main] press enter after client registers");
+		sc.nextLine();
+		
 		try {
-			PatientImpl patient = new PatientImpl();
-			patient.setPatientFirstName("Philip");
-			patient.setPatientMiddleName("Thomas");
-			patient.setPatientLastName("Rodriguez");
-			Map<String, Integer> patientVitals = new HashMap<String, Integer>();
-			patientVitals.put("heartbeat", 100);
-			
-			Scanner sc = new Scanner(System.in);
+			Main.testOnePatientDataEvent(server);
+			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
 			sc.nextLine();
-			
-			System.out.println("Monitor raising patient data event");
-			server.raisePatientDataEvent(new PatientDataEvent(patient, patientVitals));
-			
-			Thread.sleep(5000);
-			
-			System.out.println("Monitor raising patient alarm event");
-			server.raisePatientAlarmEvent(new PatientAlarmEvent(patient, "heartbeat"));
-			
-			Thread.sleep(5000);
-			
-			System.out.println("Monitor raising patient call button event");
-			server.raisePatientCallButtonEvent(new PatientCallButtonEvent(patient));
+			Main.testOnePatientAlarmEvent(server);
+			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
+			sc.nextLine();
+			Main.testOnePatientCallButtonEvent(server);
+			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
+			sc.nextLine();
+			Main.testTwoPatientDataEvents(server);
 		} catch (RemoteException re) {
 			re.printStackTrace();
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
 		}
 		
+	}
+	
+	private static void testOnePatientDataEvent(Monitor m) 
+			throws RemoteException {
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientDataEvent");
+		PatientImpl patient = new PatientImpl();
+		patient.setPatientFirstName("Philip");
+		patient.setPatientMiddleName("Thomas");
+		patient.setPatientLastName("Rodriguez");
+		Map<String, Integer> patientVitals = new HashMap<String, Integer>();
+		patientVitals.put("heartbeat", 100);
+		m.raisePatientDataEvent(new PatientDataEvent(patient, patientVitals));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientDataEvent");
+	}
+	
+	private static void testTwoPatientDataEvents(Monitor m) 
+			throws RemoteException {
+		System.out.println("[hms.bedsidemonitor.Main] entering testTwoPatientDataEvents");
+		PatientImpl patient1 = new PatientImpl();
+		patient1.setPatientFirstName("Philip");
+		patient1.setPatientMiddleName("Thomas");
+		patient1.setPatientLastName("Rodriguez");
+		PatientImpl patient2 = new PatientImpl();
+		patient2.setPatientFirstName("John");
+		patient2.setPatientMiddleName("A");
+		patient2.setPatientLastName("Smith");
+		Map<String, Integer> patient1Vitals = new HashMap<String, Integer>();
+		patient1Vitals.put("heartbeat", 100);
+		Map<String, Integer> patient2Vitals = new HashMap<String, Integer>();
+		patient1Vitals.put("blood-pressure", 120);
+		m.raisePatientDataEvent(new PatientDataEvent(patient1, patient1Vitals));
+		m.raisePatientDataEvent(new PatientDataEvent(patient2, patient2Vitals));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testTwoPatientDataEvents");
+	}
+	
+	private static void testOnePatientAlarmEvent(Monitor m) 
+			throws RemoteException {
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientAlarmEvent");
+		PatientImpl patient = new PatientImpl();
+		patient.setPatientFirstName("Philip");
+		patient.setPatientMiddleName("Thomas");
+		patient.setPatientLastName("Rodriguez");
+		m.raisePatientAlarmEvent(new PatientAlarmEvent(patient, "heartbeat"));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientAlarmEvent");
+	}
+	
+	private static void testOnePatientCallButtonEvent(Monitor m) 
+			throws RemoteException {
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientCallButtonEvent");
+		PatientImpl patient = new PatientImpl();
+		patient.setPatientFirstName("Philip");
+		patient.setPatientMiddleName("Thomas");
+		patient.setPatientLastName("Rodriguez");
+		m.raisePatientCallButtonEvent(new PatientCallButtonEvent(patient));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonEvent");
 	}
 
 }
