@@ -12,15 +12,15 @@ import javax.swing.event.EventListenerList;
 
 import hms.common.Monitor;
 import hms.common.Patient;
-import hms.common.PatientAlarmEvent;
-import hms.common.PatientAlarmListener;
-import hms.common.PatientCallButtonEvent;
-import hms.common.PatientCallButtonListener;
-import hms.common.PatientDataEvent;
-import hms.common.PatientDataListener;
-import hms.common.PatientInformationChangedEvent;
-import hms.common.PatientInformationChangedListener;
 import hms.common.Sensor;
+import hms.common.events.PatientAlarmEvent;
+import hms.common.events.PatientCallButtonEvent;
+import hms.common.events.PatientDataEvent;
+import hms.common.events.PatientInformationChangedEvent;
+import hms.common.listeners.PatientAlarmListener;
+import hms.common.listeners.PatientCallButtonListener;
+import hms.common.listeners.PatientDataListener;
+import hms.common.listeners.PatientInformationChangedListener;
 
 public class MonitorImpl implements Monitor {
 	private final int SENSOR_POLL_INTERVAL_MS = 250;
