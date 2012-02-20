@@ -61,7 +61,22 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         public void editPanelButtonPressed(EditPanelEvent event);
     }
     
-    private EventListenerList listenerList = new EventListenerList();
+    public class DisplayExpandedEvent {
+        private MonitorDisplayPanel panel;
+        
+        public DisplayExpandedEvent(MonitorDisplayPanel panel) {
+            this.panel = panel;
+        }
+        
+        public MonitorDisplayPanel getPanel() {
+            return this.panel;
+        }
+    }
+    
+    public interface DisplayExpandedListener extends EventListener {
+        public void displayExpaned(DisplayExpandedEvent event);
+    }
+    
     private MonitorProxy monitor = null;
 
     /** Creates new form PatientDisplayPanel */
@@ -181,6 +196,20 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private void raiseEditPanelEvent(EditPanelEvent e) {
         for(EditPanelListener l : this.listenerList.getListeners(EditPanelListener.class)) {
             l.editPanelButtonPressed(e);
+        }
+    }
+    
+    public void addDisplayExpandedListener(DisplayExpandedListener l) {
+        this.listenerList.add(DisplayExpandedListener.class, l);
+    }
+    
+    public void removeDisplayExpandedListener(DisplayExpandedListener l) {
+        this.listenerList.remove(DisplayExpandedListener.class, l);
+    }
+    
+    private void raiseDisplayExpandedEvent(DisplayExpandedEvent e) {
+        for(DisplayExpandedListener l : this.listenerList.getListeners(DisplayExpandedListener.class)) {
+            l.displayExpaned(e);
         }
     }
 
@@ -308,6 +337,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private void expandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandButtonActionPerformed
         this.vitalDisplayGrid.setVisible(this.expandButton.isSelected());
         this.validate();
+        this.raiseDisplayExpandedEvent(new DisplayExpandedEvent(this));
     }//GEN-LAST:event_expandButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed

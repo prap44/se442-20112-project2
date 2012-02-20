@@ -12,12 +12,29 @@
 package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
+import hms.nursingstation.gui.MonitorDisplayPanel.DisplayExpandedEvent;
+import java.awt.AWTEvent;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
+import java.awt.GraphicsConfiguration;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.peer.ComponentPeer;
+import java.security.AccessControlContext;
 import java.util.ArrayList;
 import java.util.List;
+import sun.awt.AWTAccessor.ComponentAccessor;
+import sun.awt.AppContext;
+import sun.awt.CausedFocusEvent.Cause;
+import sun.awt.RequestFocusController;
 
 /**
  *
@@ -79,15 +96,17 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
     }
     
     private void arrangeList() {
+        this.validate();
+        
         if(this.monitors != null) {
-            GridBagConstraints gbConstraints = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
+            int yAccum = 0;
             
             /* Cull unnecessary panels */
             for(int i = 0; i < this.panels.size(); i++) {
                 MonitorDisplayPanel panel = this.panels.get(i);
                 if(!this.monitors.contains(panel.getMonitor())) {
                     this.panels.remove(panel);
-                    this.listPanel.remove(panel);
+                    this.basePanel.remove(panel);
                     i--;
                 }
             }
@@ -96,7 +115,6 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
             for(int i = 0; i < this.monitors.size(); i++) {
                 MonitorProxy monitor = this.monitors.get(i);
                 MonitorDisplayPanel panel;
-                gbConstraints.gridy = i;
                 
                 /* Check if panel exists */
                 int panelIndex = this.findPanel(monitor);
@@ -108,22 +126,38 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                         /* Swap panel at index 'i' with panel at index 'panelIndex' */
                         this.panels.set(panelIndex, this.panels.get(i));
                         this.panels.set(i, panel);
-                        this.listPanel.add(panel, gbConstraints);
+                        this.basePanel.add(panel);
                     }
                     
-                    /* TODO: Update the panel's display */
+                    /* Position and size panel */
+                    panel.validate();
+                    panel.setBounds(0, yAccum, this.scrollPanel.getViewport().getWidth(), panel.getPreferredSize().height);
+                    yAccum += panel.getHeight() + 1;
                 } else {
                     /* Panel does not exist, add it to the list */
                     panel = new MonitorDisplayPanel(monitor);
                     panel.addDeletePanelListener(new DeletePanelEventHandler());
                     panel.addEditPanelListener(new EditPanelEventHandler());
+                    panel.addDisplayExpandedListener(new MonitorDisplayPanel.DisplayExpandedListener() {
+                        @Override
+                        public void displayExpaned(DisplayExpandedEvent event) {
+                            MonitorDisplayPanelList.this.arrangeList();
+                        }
+                    });
                     this.panels.add(i, panel);
-                    this.listPanel.add(panel, gbConstraints);
+                    this.basePanel.add(panel);
+                    
+                    /* Position and size panel */
+                    panel.validate();
+                    panel.setBounds(0, yAccum, this.scrollPanel.getViewport().getWidth(), panel.getPreferredSize().height);
+                    yAccum += panel.getHeight() + 1;
                 }
             }
+            
+            Dimension viewSize = new Dimension(this.scrollPanel.getViewport().getWidth(), yAccum);
+            this.basePanel.setSize(viewSize);
+            this.basePanel.setPreferredSize(viewSize);
         }
-        
-        this.basePanel.validate();
     }
 
     /** This method is called from within the constructor to
@@ -138,49 +172,18 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
 
         scrollPanel = new javax.swing.JScrollPane();
         basePanel = new javax.swing.JPanel();
-        listPanel = new javax.swing.JPanel();
-        spacerPanel = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridLayout(1, 0));
 
         scrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPanel.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 scrollPanelComponentResized(evt);
             }
         });
 
-        basePanel.setLayout(new java.awt.GridBagLayout());
-
-        listPanel.setLayout(new java.awt.GridBagLayout());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        basePanel.add(listPanel, gridBagConstraints);
-
-        spacerPanel.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        javax.swing.GroupLayout spacerPanelLayout = new javax.swing.GroupLayout(spacerPanel);
-        spacerPanel.setLayout(spacerPanelLayout);
-        spacerPanelLayout.setHorizontalGroup(
-            spacerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 398, Short.MAX_VALUE)
-        );
-        spacerPanelLayout.setVerticalGroup(
-            spacerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 298, Short.MAX_VALUE)
-        );
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weighty = 1.0;
-        basePanel.add(spacerPanel, gridBagConstraints);
-
+        basePanel.setLayout(null);
         scrollPanel.setViewportView(basePanel);
 
         add(scrollPanel);
@@ -196,13 +199,13 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         this.basePanel.setPreferredSize(new Dimension(viewportWidth, this.basePanel.getPreferredSize().height));
         this.basePanel.setMaximumSize(new Dimension(viewportWidth, Integer.MAX_VALUE));
         
+        this.arrangeList();
+        
         this.validate();
     }//GEN-LAST:event_scrollPanelComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel basePanel;
-    private javax.swing.JPanel listPanel;
     private javax.swing.JScrollPane scrollPanel;
-    private javax.swing.JPanel spacerPanel;
     // End of variables declaration//GEN-END:variables
 }
