@@ -4,8 +4,9 @@
  *
  * Created on Feb 17, 2012, 3:31:16 PM
  */
-package hms.common.gui;
+package hms.nursingstation.gui;
 
+import hms.nursingstation.MonitorProxy;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import javax.swing.SwingUtilities;
  */
 public class VitalDisplayGrid extends javax.swing.JPanel {
     
+    private MonitorProxy monitor;
     private Map<String, Integer> data;
     private ArrayList<VitalDisplayPanel> panels = new ArrayList<VitalDisplayPanel>();
     private int previousColumnCount = 0;
@@ -64,7 +66,6 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             boolean panelListChanged = false;
             boolean columnCountChanged = columnCount != this.previousColumnCount;
             this.previousColumnCount = columnCount;
-            
             
             /* Cull unused panels and update existing ones */
             for(VitalDisplayPanel panel : this.panels) {

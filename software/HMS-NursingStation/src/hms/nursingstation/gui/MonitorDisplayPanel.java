@@ -249,7 +249,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         editButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         expandButton = new javax.swing.JToggleButton();
-        vitalDisplayGrid = new hms.common.gui.VitalDisplayGrid();
+        vitalDisplayGrid = new hms.nursingstation.gui.VitalDisplayGrid();
 
         setLayout(new java.awt.GridLayout(1, 0));
 
@@ -375,6 +375,6 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private javax.swing.JLabel patientNameLabel;
     private javax.swing.JLabel patientNameValueLabel;
     private javax.swing.JButton removeButton;
-    private hms.common.gui.VitalDisplayGrid vitalDisplayGrid;
+    private hms.nursingstation.gui.VitalDisplayGrid vitalDisplayGrid;
     // End of variables declaration//GEN-END:variables
 }
