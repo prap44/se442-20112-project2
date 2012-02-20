@@ -29,11 +29,13 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
     private class Notification {
         public MonitorProxy monitor;
         public NotificationType type;
+        public String vital;
         public String description;
         
-        public Notification(MonitorProxy monitor, NotificationType type, String description) {
+        public Notification(MonitorProxy monitor, NotificationType type, String vital, String description) {
             this.monitor = monitor;
             this.type = type;
+            this.vital = vital;
             this.description = description;
         }
         
@@ -42,6 +44,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
             switch(this.type) {
                 case ALARM:
                     entry += "Alarm: ";
+                    entry += vital + ": ";
                     break;
                 case REQUEST:
                     entry += "Request: ";
@@ -62,10 +65,25 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         this.notificationList.setModel(notificationListModel);
     }
     
-    public void pushNotification(MonitorProxy monitor, NotificationType type, String description) {
-        Notification notification = new Notification(monitor, type, description);
+    public void addNotification(MonitorProxy monitor, NotificationType type, String vital, String description) {
+        Notification notification = new Notification(monitor, type, vital, description);
         this.notifications.add(notification);
         this.notificationListModel.addElement(notification.generateEntry());
+        this.setVisible(true);
+    }
+    
+    public void removeNotification(MonitorProxy monitor, NotificationType type, String vital) {
+        for(int i = 0; i < this.notifications.size(); i++) {
+            Notification n = this.notifications.get(i);
+            if(n.monitor.equals(monitor) && n.type.equals(type) && n.vital.equals(vital)) {
+                this.notifications.remove(i);
+                this.notificationList.remove(i);
+            }
+        }
+        
+        if(this.notifications.isEmpty()) {
+            this.setVisible(false);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -87,7 +105,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         acknowledgeAllButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.GridLayout());
+        getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         basePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -111,6 +129,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         basePanel.add(detailsPanel, gridBagConstraints);
 
         buttonPanel.setLayout(new java.awt.GridBagLayout());
@@ -136,6 +155,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
         basePanel.add(buttonPanel, gridBagConstraints);
 
         getContentPane().add(basePanel);
@@ -155,6 +175,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
             this.notificationListModel.remove(selectedIndex);
             this.notifications.remove(selectedIndex);
         }
+        
         if(this.notifications.isEmpty()) {
             this.setVisible(false);
         }
