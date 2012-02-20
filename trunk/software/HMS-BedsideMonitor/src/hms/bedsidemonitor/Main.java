@@ -51,6 +51,28 @@ public class Main {
 		System.out.println("[hms.bedsidemonitor.Main] Server started.");
 		
 		try {
+			try {
+				for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
+						.getInstalledLookAndFeels()) {
+					if ("Nimbus".equals(info.getName())) {
+						javax.swing.UIManager.setLookAndFeel(info
+								.getClassName());
+						break;
+					}
+				}
+			} catch (ClassNotFoundException ex) {
+				java.util.logging.Logger.getLogger(MainWindow.class.getName())
+						.log(java.util.logging.Level.SEVERE, null, ex);
+			} catch (InstantiationException ex) {
+				java.util.logging.Logger.getLogger(MainWindow.class.getName())
+						.log(java.util.logging.Level.SEVERE, null, ex);
+			} catch (IllegalAccessException ex) {
+				java.util.logging.Logger.getLogger(MainWindow.class.getName())
+						.log(java.util.logging.Level.SEVERE, null, ex);
+			} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+				java.util.logging.Logger.getLogger(MainWindow.class.getName())
+						.log(java.util.logging.Level.SEVERE, null, ex);
+			}
 			MainWindow window = new MainWindow(server);
 			window.setState(JFrame.MAXIMIZED_BOTH);
 			window.setVisible(true);

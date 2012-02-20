@@ -60,7 +60,8 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
     public MonitorDisplayPanelList() {
         initComponents();
         editMonitorDialog = new EditMonitorDialog((Frame)this.getTopLevelAncestor(), true);
-        this.setNursingStation(nursingStation);
+        this.nursingStation = new NursingStationImpl();
+        this.setNursingStation(this.nursingStation);
     }
     
     public final void setNursingStation(NursingStationImpl nursingStation) {
