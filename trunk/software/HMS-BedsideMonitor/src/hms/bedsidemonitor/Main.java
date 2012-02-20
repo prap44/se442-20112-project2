@@ -89,9 +89,10 @@ public class Main {
 		patient.setPatientFirstName("Philip");
 		patient.setPatientMiddleName("Thomas");
 		patient.setPatientLastName("Rodriguez");
+		m.setPatient(patient);
 		Map<String, Integer> patientVitals = new HashMap<String, Integer>();
 		patientVitals.put("heartbeat", 100);
-		m.raisePatientDataEvent(new PatientDataEvent(patient, patientVitals));
+		m.raisePatientDataEvent(new PatientDataEvent(patientVitals));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientDataEvent");
 	}
 	
@@ -102,16 +103,19 @@ public class Main {
 		patient1.setPatientFirstName("Philip");
 		patient1.setPatientMiddleName("Thomas");
 		patient1.setPatientLastName("Rodriguez");
+		m.setPatient(patient1);
+		Map<String, Integer> patient1Vitals = new HashMap<String, Integer>();
+		patient1Vitals.put("heartbeat", 100);
+		m.raisePatientDataEvent(new PatientDataEvent(patient1Vitals));
+		
 		PatientImpl patient2 = new PatientImpl();
 		patient2.setPatientFirstName("John");
 		patient2.setPatientMiddleName("A");
 		patient2.setPatientLastName("Smith");
-		Map<String, Integer> patient1Vitals = new HashMap<String, Integer>();
-		patient1Vitals.put("heartbeat", 100);
+		m.setPatient(patient2);
 		Map<String, Integer> patient2Vitals = new HashMap<String, Integer>();
-		patient1Vitals.put("blood-pressure", 120);
-		m.raisePatientDataEvent(new PatientDataEvent(patient1, patient1Vitals));
-		m.raisePatientDataEvent(new PatientDataEvent(patient2, patient2Vitals));
+		patient2Vitals.put("blood-pressure", 120);
+		m.raisePatientDataEvent(new PatientDataEvent(patient2Vitals));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testTwoPatientDataEvents");
 	}
 	
@@ -122,7 +126,8 @@ public class Main {
 		patient.setPatientFirstName("Philip");
 		patient.setPatientMiddleName("Thomas");
 		patient.setPatientLastName("Rodriguez");
-		m.raisePatientAlarmEvent(new PatientAlarmEvent(patient, "heartbeat"));
+		m.setPatient(patient);
+		m.raisePatientAlarmEvent(new PatientAlarmEvent("heartbeat"));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientAlarmEvent");
 	}
 	
@@ -133,7 +138,8 @@ public class Main {
 		patient.setPatientFirstName("Philip");
 		patient.setPatientMiddleName("Thomas");
 		patient.setPatientLastName("Rodriguez");
-		m.raisePatientCallButtonEvent(new PatientCallButtonEvent(patient));
+		m.setPatient(patient);
+		m.raisePatientCallButtonEvent(new PatientCallButtonEvent());
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonEvent");
 	}
 	

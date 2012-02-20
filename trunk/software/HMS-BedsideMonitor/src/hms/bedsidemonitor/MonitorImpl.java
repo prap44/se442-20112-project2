@@ -44,8 +44,8 @@ public class MonitorImpl implements Monitor {
 
 				try {
 					MonitorImpl.this
-							.raisePatientDataEvent(new PatientDataEvent(
-									patient, data));
+							.raisePatientDataEvent(new 
+									PatientDataEvent(data));
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
