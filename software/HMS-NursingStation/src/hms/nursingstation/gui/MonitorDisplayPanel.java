@@ -188,7 +188,6 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         basePanel.add(patientDataPanel, gridBagConstraints);
 
         editButton.setText("Edit");
@@ -232,25 +231,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
 
     private void expandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandButtonActionPerformed
         this.vitalDisplayGrid.setVisible(this.expandButton.isSelected());
-        synchronized(this.getTreeLock()) {
-            this.validateTree();
-        }
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                int height = MonitorDisplayPanel.this.vitalDisplayGrid.getExpectedHeight();
-//                int width = MonitorDisplayPanel.this.vitalDisplayGrid.getWidth();
-//                MonitorDisplayPanel.this.vitalDisplayGrid.setSize(new Dimension(width, height));
-//                
-//                synchronized(MonitorDisplayPanel.this.getTreeLock()) {
-//                    MonitorDisplayPanel.this.validateTree();
-//                }
-//            }
-//        });
-        int height = MonitorDisplayPanel.this.vitalDisplayGrid.getExpectedHeight();
-        int width = MonitorDisplayPanel.this.vitalDisplayGrid.getWidth();
-        MonitorDisplayPanel.this.vitalDisplayGrid.setSize(new Dimension(width, height));
-
+        
         synchronized(MonitorDisplayPanel.this.getTreeLock()) {
             MonitorDisplayPanel.this.validateTree();
         }
