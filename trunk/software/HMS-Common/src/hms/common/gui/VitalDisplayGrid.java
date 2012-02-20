@@ -24,7 +24,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     private ArrayList<VitalDisplayPanel> panels = new ArrayList<VitalDisplayPanel>();
     private int previousColumnCount = 0;
     private int defaultVDPanelMinWidth = (new VitalDisplayPanel().getMinimumSize().width);
-    private int defaultVDPanelMinHeight = (new VitalDisplayPanel().getMinimumSize().height);
+    private int defaultVDPanelMinHeight = (new VitalDisplayPanel().getPreferredSize().height);
     
     /* Used to reduce number of redundant "invokeWait()" calls to
      * arrangeGrid() when resizing/etc */
@@ -37,7 +37,6 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     
     public void setData(Map<String, Integer> data) {
         this.data = data;
-        
         this.arrangeGrid();
     }
     
@@ -46,7 +45,8 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     }
     
     public int getExpectedHeight() {
-        int rowCount = this.data.size() / this.previousColumnCount;
+        int columnCount = Math.max(this.basePanel.getWidth() / defaultVDPanelMinWidth, 1);
+        int rowCount = this.data.size() / columnCount + 1;
         return rowCount * defaultVDPanelMinHeight;
     }
     
@@ -154,7 +154,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    arrangeGrid();
+                    VitalDisplayGrid.this.arrangeGrid();
                 }
             });
         }
