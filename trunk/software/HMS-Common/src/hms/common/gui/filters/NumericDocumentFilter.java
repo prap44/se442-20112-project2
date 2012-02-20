@@ -27,7 +27,6 @@ public class NumericDocumentFilter extends DocumentFilter {
     public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
         boolean valid = true;
         int position = offset;
-        String remainingText = getRemainingDocumentText(offset, length);
 
         for(char c : text.toCharArray()) {
             /* Valid input:
@@ -37,7 +36,7 @@ public class NumericDocumentFilter extends DocumentFilter {
              */
             valid = valid && (c <= '9' && c >= '0' ||
                     (this.allowNegatives && c == '-' && position == 0) ||
-                    (this.allowDecimalPoint && c == '.' && !remainingText.contains(".")));
+                    (this.allowDecimalPoint && c == '.' && !getRemainingDocumentText(offset, length).contains(".")));
             position++;
         }
 

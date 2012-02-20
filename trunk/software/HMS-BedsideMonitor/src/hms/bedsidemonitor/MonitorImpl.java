@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
 import hms.common.Monitor;
@@ -40,6 +41,18 @@ public class MonitorImpl implements Monitor {
 				for (Sensor s : MonitorImpl.this.sensors) {
 					s.vitalChange();
 					data.put(s.getName(), s.convert(s.getCurrentValue()));
+					
+					if(s.exceedHighLimit() || s.exceedsLowLimit()) {
+						if(!s.getAlarmState()) {
+							s.setAlarmState(true);
+							try {
+								raisePatientAlarmEvent(new PatientAlarmEvent(s.getName(), true));
+							} catch (RemoteException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
 				}
 
 				try {
