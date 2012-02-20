@@ -66,10 +66,16 @@ public class Main {
 			Main.testOnePatientDataEvent(server);
 			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
 			sc.nextLine();
-			Main.testOnePatientAlarmEvent(server);
+			Main.testOnePatientAlarmTriggeredEvent(server);
 			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
 			sc.nextLine();
-			Main.testOnePatientCallButtonEvent(server);
+			Main.testOnePatientAlarmResetEvent(server);
+			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
+			sc.nextLine();
+			Main.testOnePatientCallButtonPressedEvent(server);
+			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
+			sc.nextLine();
+			Main.testOnePatientCallButtonResetEvent(server);
 			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
 			sc.nextLine();
 			Main.testTwoPatientDataEvents(server);
@@ -119,28 +125,52 @@ public class Main {
 		System.out.println("[hms.bedsidemonitor.Main] exiting testTwoPatientDataEvents");
 	}
 	
-	private static void testOnePatientAlarmEvent(Monitor m) 
+	private static void testOnePatientAlarmTriggeredEvent(Monitor m) 
 			throws RemoteException {
-		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientAlarmEvent");
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientAlarmTriggeredEvent");
 		PatientImpl patient = new PatientImpl();
 		patient.setPatientFirstName("Philip");
 		patient.setPatientMiddleName("Thomas");
 		patient.setPatientLastName("Rodriguez");
 		m.setPatient(patient);
-		m.raisePatientAlarmEvent(new PatientAlarmEvent("heartbeat"));
-		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientAlarmEvent");
+		m.raisePatientAlarmEvent(new PatientAlarmEvent("heartbeat", true));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientAlarmTriggeredEvent");
 	}
 	
-	private static void testOnePatientCallButtonEvent(Monitor m) 
+	private static void testOnePatientAlarmResetEvent(Monitor m) 
 			throws RemoteException {
-		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientCallButtonEvent");
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientAlarmResetEvent");
 		PatientImpl patient = new PatientImpl();
 		patient.setPatientFirstName("Philip");
 		patient.setPatientMiddleName("Thomas");
 		patient.setPatientLastName("Rodriguez");
 		m.setPatient(patient);
-		m.raisePatientCallButtonEvent(new PatientCallButtonEvent());
-		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonEvent");
+		m.raisePatientAlarmEvent(new PatientAlarmEvent("heartbeat", false));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientAlarmResetEvent");
+	}
+	
+	private static void testOnePatientCallButtonPressedEvent(Monitor m) 
+			throws RemoteException {
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientCallButtonPressedEvent");
+		PatientImpl patient = new PatientImpl();
+		patient.setPatientFirstName("Philip");
+		patient.setPatientMiddleName("Thomas");
+		patient.setPatientLastName("Rodriguez");
+		m.setPatient(patient);
+		m.raisePatientCallButtonEvent(new PatientCallButtonEvent(true));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonPressedEvent");
+	}
+	
+	private static void testOnePatientCallButtonResetEvent(Monitor m) 
+			throws RemoteException {
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientCallButtonResetEvent");
+		PatientImpl patient = new PatientImpl();
+		patient.setPatientFirstName("Philip");
+		patient.setPatientMiddleName("Thomas");
+		patient.setPatientLastName("Rodriguez");
+		m.setPatient(patient);
+		m.raisePatientCallButtonEvent(new PatientCallButtonEvent(false));
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonResetEvent");
 	}
 	
 	private static void testOnePatientInformationChangedEvent(Monitor m) 
