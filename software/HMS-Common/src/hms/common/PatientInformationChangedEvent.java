@@ -1,4 +1,6 @@
 package hms.common;
 
-public class PatientInformationChangedEvent {
+import java.io.Serializable;
+
+public class PatientInformationChangedEvent implements Serializable {
 }

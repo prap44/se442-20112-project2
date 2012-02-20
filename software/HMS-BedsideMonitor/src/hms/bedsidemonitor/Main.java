@@ -5,6 +5,7 @@ import hms.common.Monitor;
 import hms.common.PatientAlarmEvent;
 import hms.common.PatientCallButtonEvent;
 import hms.common.PatientDataEvent;
+import hms.common.PatientInformationChangedEvent;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -14,10 +15,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
 import javax.swing.JFrame;
 
@@ -76,6 +73,9 @@ public class Main {
 			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
 			sc.nextLine();
 			Main.testTwoPatientDataEvents(server);
+			System.out.println("[hms.bedsidemonitor.Main] press enter to continue tests");
+			sc.nextLine();
+			Main.testOnePatientInformationChangedEvent(server);
 		} catch (RemoteException re) {
 			re.printStackTrace();
 		}
@@ -135,6 +135,13 @@ public class Main {
 		patient.setPatientLastName("Rodriguez");
 		m.raisePatientCallButtonEvent(new PatientCallButtonEvent(patient));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonEvent");
+	}
+	
+	private static void testOnePatientInformationChangedEvent(Monitor m) 
+			throws RemoteException {
+		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientInformationChangedEvent");
+		m.raisePatientInformationChangedEvent(new PatientInformationChangedEvent());
+		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientInformationChangedEvent");
 	}
 
 }
