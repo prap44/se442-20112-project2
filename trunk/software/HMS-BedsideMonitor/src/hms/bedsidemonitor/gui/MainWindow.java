@@ -38,6 +38,7 @@ public class MainWindow extends javax.swing.JFrame {
     private PatientImpl patient = new PatientImpl();
     
     private boolean suppressSensorTableModelSelectionEvents = false;
+    private boolean callNurseActive = false;
 
     public MainWindow(MonitorImpl monitor) throws RemoteException {
         initComponents();
@@ -161,6 +162,8 @@ public class MainWindow extends javax.swing.JFrame {
         this.editSensorButton.setEnabled(sensorButtonsEnabled);
         this.removeSensorButton.setEnabled(sensorButtonsEnabled);
         this.resetAlarmButton.setEnabled(alarmResetButtonEnabled);
+        this.callNurseButton.setEnabled(!callNurseActive);
+        this.resetCallNurseButton.setEnabled(callNurseActive);
     }
     
     private void updatePatientFieldStatus() {
@@ -633,6 +636,8 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void callNurseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_callNurseButtonActionPerformed
         try {
+            this.callNurseActive = true;
+            this.updateButtonStatus();
             this.monitor.raisePatientCallButtonEvent(new PatientCallButtonEvent(true));
         } catch (RemoteException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -641,6 +646,8 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void resetCallNurseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetCallNurseButtonActionPerformed
         try {
+            this.callNurseActive = false;
+            this.updateButtonStatus();
             this.monitor.raisePatientCallButtonEvent(new PatientCallButtonEvent(false));
         } catch (RemoteException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
