@@ -1,4 +1,6 @@
-package hms.common;
+package hms.common.listeners;
+import hms.common.events.PatientCallButtonEvent;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.EventListener;

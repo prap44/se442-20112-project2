@@ -2,10 +2,10 @@ package hms.bedsidemonitor;
 
 import hms.bedsidemonitor.gui.MainWindow;
 import hms.common.Monitor;
-import hms.common.PatientAlarmEvent;
-import hms.common.PatientCallButtonEvent;
-import hms.common.PatientDataEvent;
-import hms.common.PatientInformationChangedEvent;
+import hms.common.events.PatientAlarmEvent;
+import hms.common.events.PatientCallButtonEvent;
+import hms.common.events.PatientDataEvent;
+import hms.common.events.PatientInformationChangedEvent;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;

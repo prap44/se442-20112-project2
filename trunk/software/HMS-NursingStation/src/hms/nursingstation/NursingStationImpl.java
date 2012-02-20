@@ -1,21 +1,15 @@
 package hms.nursingstation;
 
-import hms.common.Monitor;
 import hms.common.Patient;
-import hms.common.PatientAlarmEvent;
-import hms.common.PatientAlarmListener;
-import hms.common.PatientCallButtonEvent;
-import hms.common.PatientCallButtonListener;
-import hms.common.PatientDataEvent;
-import hms.common.PatientDataListener;
+import hms.common.events.PatientAlarmEvent;
+import hms.common.events.PatientCallButtonEvent;
+import hms.common.events.PatientDataEvent;
+import hms.common.listeners.PatientAlarmListener;
+import hms.common.listeners.PatientCallButtonListener;
+import hms.common.listeners.PatientDataListener;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class NursingStationImpl {
 	
