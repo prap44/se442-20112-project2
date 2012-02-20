@@ -38,7 +38,7 @@ import javax.swing.event.EventListenerList;
 public class MonitorProxy extends UnicastRemoteObject implements
 		PatientDataListener, PatientAlarmListener, PatientCallButtonListener,
 		PatientInformationChangedListener {
-	
+
 	private static final long serialVersionUID = -3195762579705707707L;
 
 	public class MonitorDisconnectedException extends Exception {
@@ -63,20 +63,25 @@ public class MonitorProxy extends UnicastRemoteObject implements
 			if (p != null) {
 				if (event.isActive()) {
 					System.out.println("[MonitorProxy] Patient "
-							+ p.getPatientFirstName() + " " + p.getPatientLastName()
+							+ p.getPatientFirstName() + " "
+							+ p.getPatientLastName()
 							+ " pressed the call button");
-					CallButtonReceivedEvent localEvent = new CallButtonReceivedEvent();
+					CallButtonReceivedEvent localEvent = new CallButtonReceivedEvent(
+							this);
 					this.raiseCallButtonReceivedEvent(localEvent);
 				} else {
 					System.out.println("[MonitorProxy] Patient "
-							+ p.getPatientFirstName() + " " + p.getPatientLastName()
+							+ p.getPatientFirstName() + " "
+							+ p.getPatientLastName()
 							+ "'s call button was reset");
-					CallButtonResetEvent localEvent = new CallButtonResetEvent();
+					CallButtonResetEvent localEvent = new CallButtonResetEvent(
+							this);
 					this.raiseCallButtonResetEvent(localEvent);
 				}
 			}
 		} catch (MonitorDisconnectedException e) {
-			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE, null, e);
+			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE,
+					null, e);
 		}
 	}
 
@@ -91,20 +96,27 @@ public class MonitorProxy extends UnicastRemoteObject implements
 			if (p != null) {
 				if (event.isAlarmOn()) {
 					System.out.println("[MonitorProxy] Patient "
-							+ p.getPatientFirstName() + " " + p.getPatientLastName()
-							+ "'s vital sign " + vital + " is critical");
-					AlarmReceivedEvent localEvent = new AlarmReceivedEvent(vital);
+							+ p.getPatientFirstName() + " "
+							+ p.getPatientLastName() + "'s vital sign " + vital
+							+ " is critical");
+					AlarmReceivedEvent localEvent = new AlarmReceivedEvent(
+							this, vital);
 					this.raiseAlarmReceivedEvent(localEvent);
 				} else {
-					System.out.println("[MonitorProxy] Patient "
-							+ p.getPatientFirstName() + " " + p.getPatientLastName()
-							+ "'s alarm for vital sign " + vital + " was reset");
-					AlarmResetEvent localEvent = new AlarmResetEvent(vital);
+					System.out
+							.println("[MonitorProxy] Patient "
+									+ p.getPatientFirstName() + " "
+									+ p.getPatientLastName()
+									+ "'s alarm for vital sign " + vital
+									+ " was reset");
+					AlarmResetEvent localEvent = new AlarmResetEvent(this,
+							vital);
 					this.raiseAlarmResetEvent(localEvent);
 				}
 			}
 		} catch (MonitorDisconnectedException e) {
-			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE, null, e);
+			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE,
+					null, e);
 		}
 	}
 
@@ -118,15 +130,18 @@ public class MonitorProxy extends UnicastRemoteObject implements
 			Map<String, Integer> patientVitals = event.getVitals();
 			if (p != null) {
 				System.out.println("[MonitorProxy] Patient: "
-						+ p.getPatientFirstName() + " " + p.getPatientLastName());
+						+ p.getPatientFirstName() + " "
+						+ p.getPatientLastName());
 				String vital = patientVitals.keySet().iterator().next();
-				System.out.println("[MonitorProxy] Patient Vital Signs: " + vital
-						+ ", " + patientVitals.get(vital));
-				DataReceivedEvent localEvent = new DataReceivedEvent(patientVitals);
+				System.out.println("[MonitorProxy] Patient Vital Signs: "
+						+ vital + ", " + patientVitals.get(vital));
+				DataReceivedEvent localEvent = new DataReceivedEvent(
+						patientVitals);
 				this.raiseDataReceivedEvent(localEvent);
 			}
 		} catch (MonitorDisconnectedException e) {
-			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE, null, e);
+			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE,
+					null, e);
 		}
 	}
 
@@ -134,8 +149,7 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	public void patientInformationChanged(PatientInformationChangedEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorProxy] Patient Information Changed");
-		InformationChangeReceivedEvent localEvent = 
-			new InformationChangeReceivedEvent();
+		InformationChangeReceivedEvent localEvent = new InformationChangeReceivedEvent();
 		this.raiseInformationChangedReceivedEvent(localEvent);
 	}
 
@@ -160,7 +174,7 @@ public class MonitorProxy extends UnicastRemoteObject implements
 			re.printStackTrace();
 		}
 	}
-	
+
 	public boolean isConnected() {
 		return this.realMonitor != null;
 	}
@@ -168,102 +182,107 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	public String getMonitorID() {
 		return BEDSIDE_SERVER_NAME;
 	}
-	
+
 	public String getMonitorAddress() {
 		return "127.0.0.1:1099";
 	}
-	
-	public void assignPatient(String firstName, String middleName, String lastName) throws RemoteException, MonitorDisconnectedException {
-		if(!this.isConnected()) {
+
+	public void assignPatient(String firstName, String middleName,
+			String lastName) throws RemoteException,
+			MonitorDisconnectedException {
+		if (!this.isConnected()) {
 			throw new MonitorDisconnectedException();
 		}
 		this.realMonitor.assignPatient(firstName, middleName, lastName);
 	}
-	
-	public void unassignPatient() throws RemoteException, MonitorDisconnectedException {
-		if(!this.isConnected()) {
+
+	public void unassignPatient() throws RemoteException,
+			MonitorDisconnectedException {
+		if (!this.isConnected()) {
 			throw new MonitorDisconnectedException();
 		}
 		this.realMonitor.unsassignPatient();
 	}
 
-	public Patient getPatient() throws RemoteException, MonitorDisconnectedException {
-		if(!this.isConnected()) {
+	public Patient getPatient() throws RemoteException,
+			MonitorDisconnectedException {
+		if (!this.isConnected()) {
 			throw new MonitorDisconnectedException();
 		}
 		return this.realMonitor.getPatient();
 	}
-	
+
 	public void addAlarmReceivedListener(AlarmReceivedListener listener) {
 		this.listenerList.add(AlarmReceivedListener.class, listener);
 	}
-	
+
 	public void addAlarmResetListener(AlarmResetListener listener) {
 		this.listenerList.add(AlarmResetListener.class, listener);
 	}
-	
-	public void addCallButtonReceivedListener(CallButtonReceivedListener listener) {
+
+	public void addCallButtonReceivedListener(
+			CallButtonReceivedListener listener) {
 		this.listenerList.add(CallButtonReceivedListener.class, listener);
 	}
-	
+
 	public void addCallButtonResetListener(CallButtonResetListener listener) {
 		this.listenerList.add(CallButtonResetListener.class, listener);
 	}
-	
+
 	public void addDataReceivedListener(DataReceivedListener listener) {
 		this.listenerList.add(DataReceivedListener.class, listener);
 	}
-	
+
 	public void addInformationChangeReceivedListener(
 			InformationChangeReceivedListener listener) {
-		this.listenerList.add(InformationChangeReceivedListener.class, listener);
+		this.listenerList
+				.add(InformationChangeReceivedListener.class, listener);
 	}
-	
-	private void raiseAlarmReceivedEvent(AlarmReceivedEvent event) 
+
+	private void raiseAlarmReceivedEvent(AlarmReceivedEvent event)
 			throws RemoteException {
-		for (AlarmReceivedListener l : this.listenerList.
-				getListeners(AlarmReceivedListener.class)) {
+		for (AlarmReceivedListener l : this.listenerList
+				.getListeners(AlarmReceivedListener.class)) {
 			l.alarmReceived(event);
 		}
 	}
-	
-	private void raiseAlarmResetEvent(AlarmResetEvent event) 
+
+	private void raiseAlarmResetEvent(AlarmResetEvent event)
 			throws RemoteException {
-		for (AlarmResetListener l : this.listenerList.
-				getListeners(AlarmResetListener.class)) {
+		for (AlarmResetListener l : this.listenerList
+				.getListeners(AlarmResetListener.class)) {
 			l.alarmReset(event);
 		}
 	}
-	
+
 	private void raiseCallButtonReceivedEvent(CallButtonReceivedEvent event)
 			throws RemoteException {
-		for (CallButtonReceivedListener l : this.listenerList.
-				getListeners(CallButtonReceivedListener.class)) {
+		for (CallButtonReceivedListener l : this.listenerList
+				.getListeners(CallButtonReceivedListener.class)) {
 			l.callButtonRequestReceived(event);
 		}
 	}
-	
+
 	private void raiseCallButtonResetEvent(CallButtonResetEvent event)
 			throws RemoteException {
-		for (CallButtonResetListener l : this.listenerList.
-				getListeners(CallButtonResetListener.class)) {
+		for (CallButtonResetListener l : this.listenerList
+				.getListeners(CallButtonResetListener.class)) {
 			l.callButtonRequestReset(event);
 		}
 	}
-	
+
 	private void raiseDataReceivedEvent(DataReceivedEvent event)
 			throws RemoteException {
-		for (DataReceivedListener l : this.listenerList.
-				getListeners(DataReceivedListener.class)) {
+		for (DataReceivedListener l : this.listenerList
+				.getListeners(DataReceivedListener.class)) {
 			l.dataReceived(event);
 		}
 	}
-	
+
 	private void raiseInformationChangedReceivedEvent(
-			InformationChangeReceivedEvent event)
-			throws RemoteException {
-		for (InformationChangeReceivedListener l : this.listenerList.
-				getListeners(InformationChangeReceivedListener.class)) {
+			InformationChangeReceivedEvent event) throws RemoteException {
+		for (InformationChangeReceivedListener l : this.listenerList
+				.getListeners(InformationChangeReceivedListener.class)) {
 			l.informationChangeReceived(event);
 		}
 	}

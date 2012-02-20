@@ -22,7 +22,6 @@ import hms.nursingstation.listeners.DataReceivedListener;
 import hms.nursingstation.listeners.InformationChangeReceivedListener;
 import hms.nursingstation.listeners.MonitorStatusChangedListener;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -36,17 +35,18 @@ public class MainWindow extends javax.swing.JFrame {
 
     private NursingStationImpl nursingStation = null;
     private DefaultListModel<String> loggingListModel = new DefaultListModel<String>();
-
+    private MonitorNotificationDialog notificationDialog;
+    
     public MainWindow(NursingStationImpl nursingStation) {
         initComponents();
-
+        this.notificationDialog = new MonitorNotificationDialog(this, true);
         this.setNursingStation(nursingStation);
     }
 
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-
+        this.notificationDialog = new MonitorNotificationDialog(this, true);
         this.setNursingStation(new NursingStationImpl());
     }
     
@@ -69,6 +69,7 @@ public class MainWindow extends javax.swing.JFrame {
                             public void alarmReceived(AlarmReceivedEvent event) {
                                 /* Log alarm */
                                 MainWindow.this.loggingListModel.addElement("Alarm received");
+                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital(), event.generateMessage());
                             }
                         });
 
@@ -77,6 +78,7 @@ public class MainWindow extends javax.swing.JFrame {
                             public void alarmReset(AlarmResetEvent event) {
                                 /* Log reset */
                                 MainWindow.this.loggingListModel.addElement("Alarm reset");
+                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital());
                             }
                         });
                         
@@ -85,6 +87,7 @@ public class MainWindow extends javax.swing.JFrame {
                             public void callButtonRequestReceived(CallButtonReceivedEvent event) {
                                 /* Log call button push */
                                 MainWindow.this.loggingListModel.addElement("Call button pushed");
+                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null, event.generateMessage());
                             }
                         });
                         
@@ -93,6 +96,7 @@ public class MainWindow extends javax.swing.JFrame {
                             public void callButtonRequestReset(CallButtonResetEvent event) {
                                 /* Log call button reset */
                                 MainWindow.this.loggingListModel.addElement("Call button reset");
+                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null);
                             }
                         });
 

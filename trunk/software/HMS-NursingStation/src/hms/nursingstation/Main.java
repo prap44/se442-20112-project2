@@ -5,14 +5,14 @@ import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 
 public class Main {
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		System.setSecurityManager(new RMISecurityManager());
 		NursingStationImpl client = new NursingStationImpl();
-		
+
 		try {
 			MonitorProxy mp = new MonitorProxy();
 			System.out.println("Client created MonitorProxy");
