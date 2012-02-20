@@ -149,9 +149,6 @@ public class MainWindow extends javax.swing.JFrame {
         loggingBasePanel = new javax.swing.JPanel();
         loggingScrollPanel = new javax.swing.JScrollPane();
         loggingList = new javax.swing.JList();
-        menuBar = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nursing Station");
@@ -230,14 +227,6 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(basePanel, gridBagConstraints);
 
-        jMenu1.setText("File");
-        menuBar.add(jMenu1);
-
-        jMenu2.setText("Edit");
-        menuBar.add(jMenu2);
-
-        setJMenuBar(menuBar);
-
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-600)/2, (screenSize.height-400)/2, 600, 400);
     }// </editor-fold>//GEN-END:initComponents
@@ -292,12 +281,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton addMonitorButton;
     private javax.swing.JPanel basePanel;
     private javax.swing.JSplitPane basePanelSpliltPanel;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JPanel loggingBasePanel;
     private javax.swing.JList loggingList;
     private javax.swing.JScrollPane loggingScrollPanel;
-    private javax.swing.JMenuBar menuBar;
     private hms.nursingstation.gui.MonitorDisplayPanelList monitorDisplayPanelList;
     private javax.swing.JPanel monitoringBasePanel;
     private javax.swing.JPanel monitoringButtonPanel;
