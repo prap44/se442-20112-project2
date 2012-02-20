@@ -40,6 +40,17 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow(NursingStationImpl nursingStation) {
         initComponents();
 
+        this.setNursingStation(nursingStation);
+    }
+
+    /** Creates new form MainWindow */
+    public MainWindow() {
+        initComponents();
+
+        this.setNursingStation(new NursingStationImpl());
+    }
+    
+    private void setNursingStation(NursingStationImpl nursingStation) {
         if (nursingStation == null) {
             this.nursingStation = new NursingStationImpl();
         } else {
@@ -102,23 +113,15 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         });
-    }
-
-    /** Creates new form MainWindow */
-    public MainWindow() {
-        initComponents();
-
-        this.nursingStation = new NursingStationImpl();
-
-        ArrayList<MonitorProxy> monitors = new ArrayList<MonitorProxy>();
+        
         try {
-            monitors.add(new MonitorProxy());
-            monitors.add(new MonitorProxy());
+            nursingStation.addMonitor(new MonitorProxy());
+            nursingStation.addMonitor(new MonitorProxy());
         } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.monitorDisplayPanelList.setMonitors(monitors);
+        this.monitorDisplayPanelList.setNursingStation(this.nursingStation);
     }
 
     /** This method is called from within the constructor to
@@ -235,7 +238,7 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addMonitorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addMonitorButtonActionPerformed
-        this.monitorDisplayPanelList.requestAddPanel();
+        this.monitorDisplayPanelList.addMonitorRequest();
     }//GEN-LAST:event_addMonitorButtonActionPerformed
 
     /**

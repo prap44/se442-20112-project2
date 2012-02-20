@@ -30,6 +30,10 @@ public class EditSensorDialog extends javax.swing.JDialog {
                     new NumericDocumentFilter(this.sensorOffsetField.getDocument(), true, true));
             ((PlainDocument)this.sensorScaleField.getDocument()).setDocumentFilter(
                     new NumericDocumentFilter(this.sensorScaleField.getDocument(), true, true));
+            ((PlainDocument)this.sensorHighLimitField.getDocument()).setDocumentFilter(
+                    new NumericDocumentFilter(this.sensorScaleField.getDocument(), false, true));
+            ((PlainDocument)this.sensorLowLimitField.getDocument()).setDocumentFilter(
+                    new NumericDocumentFilter(this.sensorScaleField.getDocument(), false, true));
         } catch(Throwable t) {
         }
     }
@@ -55,6 +59,8 @@ public class EditSensorDialog extends javax.swing.JDialog {
         this.sensorNameField.setText(sensor.getName());
         this.sensorOffsetField.setText(Double.toString(sensor.getOffset()));
         this.sensorScaleField.setText(Double.toString(sensor.getScalar()));
+        this.sensorHighLimitField.setText(Integer.toString(sensor.getHighLimit()));
+        this.sensorLowLimitField.setText(Integer.toString(sensor.getLowLimit()));
         this.setModal(true);
         this.setLocationRelativeTo(this.getParent());
         this.setVisible(true);
@@ -68,6 +74,8 @@ public class EditSensorDialog extends javax.swing.JDialog {
             sensor.setName(this.sensorNameField.getText());
             sensor.setOffset(this.getSensorOffset());
             sensor.setScalar(sensorScale);
+            sensor.setHighLimit(this.getSensorHighLimit());
+            sensor.setLowLimit(this.getSensorLowLimit());
         }
         
         return okPushed;
@@ -102,6 +110,8 @@ public class EditSensorDialog extends javax.swing.JDialog {
             sensor = new Sensor(this.sensorNameField.getText(),
                     sensorScale,
                     this.getSensorOffset(),
+                    getSensorHighLimit(),
+                    getSensorLowLimit(),
                     50);
         }
         
@@ -123,6 +133,22 @@ public class EditSensorDialog extends javax.swing.JDialog {
         
         return Double.parseDouble(this.sensorScaleField.getText());
     }
+    
+    private int getSensorHighLimit() {
+        if(this.sensorHighLimitField.getText().isEmpty()) {
+            return 0;
+        }
+        
+        return Integer.parseInt(this.sensorHighLimitField.getText());
+    }
+    
+    private int getSensorLowLimit() {
+        if(this.sensorLowLimitField.getText().isEmpty()) {
+            return 0;
+        }
+        
+        return Integer.parseInt(this.sensorLowLimitField.getText());
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -141,6 +167,10 @@ public class EditSensorDialog extends javax.swing.JDialog {
         sensorOffsetField = new javax.swing.JTextField();
         sensorScaleLabel = new javax.swing.JLabel();
         sensorScaleField = new javax.swing.JTextField();
+        sensorHighLimitLabel = new javax.swing.JLabel();
+        sensorHighLimitField = new javax.swing.JTextField();
+        sensorLowLimitLabel = new javax.swing.JLabel();
+        sensorLowLimitField = new javax.swing.JTextField();
         buttonPanel = new javax.swing.JPanel();
         buttonPanelSpacer = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
@@ -205,6 +235,40 @@ public class EditSensorDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 4);
         basePanel.add(sensorScaleField, gridBagConstraints);
 
+        sensorHighLimitLabel.setText("High Limit:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        basePanel.add(sensorHighLimitLabel, gridBagConstraints);
+
+        sensorHighLimitField.setText("90");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 4);
+        basePanel.add(sensorHighLimitField, gridBagConstraints);
+
+        sensorLowLimitLabel.setText("Low Limit:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        basePanel.add(sensorLowLimitLabel, gridBagConstraints);
+
+        sensorLowLimitField.setText("10");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 4);
+        basePanel.add(sensorLowLimitField, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -258,7 +322,7 @@ public class EditSensorDialog extends javax.swing.JDialog {
         getContentPane().add(buttonPanel, gridBagConstraints);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-433)/2, (screenSize.height-174)/2, 433, 174);
+        setBounds((screenSize.width-433)/2, (screenSize.height-258)/2, 433, 258);
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
@@ -333,6 +397,10 @@ public class EditSensorDialog extends javax.swing.JDialog {
     private javax.swing.JPanel buttonPanelSpacer;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton okButton;
+    private javax.swing.JTextField sensorHighLimitField;
+    private javax.swing.JLabel sensorHighLimitLabel;
+    private javax.swing.JTextField sensorLowLimitField;
+    private javax.swing.JLabel sensorLowLimitLabel;
     private javax.swing.JTextField sensorNameField;
     private javax.swing.JLabel sensorNameLabel;
     private javax.swing.JTextField sensorOffsetField;

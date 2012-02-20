@@ -171,7 +171,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                 } else {
                     ConnectionFailedDialog cfd = new ConnectionFailedDialog(this, true);
                     cfd.showModal();
-                    return null;
+//                    return null;
                 }
             } catch (IOException ex) {
                 Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);

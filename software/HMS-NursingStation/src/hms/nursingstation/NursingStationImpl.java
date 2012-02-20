@@ -67,6 +67,10 @@ public class NursingStationImpl {
 		return this.bedsideStations.size();
 	}
 	
+	public boolean containsMonitor(MonitorProxy monitor) {
+		return this.bedsideStations.contains(monitor);
+	}
+	
 	public void addMonitorStatusChangedListener(MonitorStatusChangedListener listener) {
 		this.listenerList.add(MonitorStatusChangedListener.class, listener);
 	}

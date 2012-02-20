@@ -12,6 +12,8 @@ import hms.common.events.PatientDataEvent;
 import hms.common.listeners.PatientDataListener;
 import hms.common.events.PatientInformationChangedEvent;
 import hms.common.Sensor;
+import hms.common.events.PatientAlarmEvent;
+import hms.common.events.PatientCallButtonEvent;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,12 +123,13 @@ public class MainWindow extends javax.swing.JFrame {
         this.sensorTableModel.setRowCount(0);
         
         for(Sensor s : this.sensorList) {
-            Object[] row = new Object[5];
+            Object[] row = new Object[6];
             row[0] = s.getName();
             row[1] = s.convert(s.getCurrentValue());
             row[2] = s.getCurrentValue();
-            row[3] = s.getOffset();
-            row[4] = s.getScalar();
+            row[3] = s.getLowLimit();
+            row[4] = s.getHighLimit();
+            row[5] = s.getAlarmState();
             this.sensorTableModel.addRow(row);
         }
         
@@ -142,8 +145,9 @@ public class MainWindow extends javax.swing.JFrame {
             this.sensorTableModel.setValueAt(s.getName(), i, 0);
             this.sensorTableModel.setValueAt(s.convert(s.getCurrentValue()), i, 1);
             this.sensorTableModel.setValueAt(s.getCurrentValue(), i, 2);
-            this.sensorTableModel.setValueAt(s.getOffset(), i, 3);
-            this.sensorTableModel.setValueAt(s.getScalar(), i, 4);
+            this.sensorTableModel.setValueAt(s.getLowLimit(), i, 3);
+            this.sensorTableModel.setValueAt(s.getHighLimit(), i, 4);
+            this.sensorTableModel.setValueAt(s.getAlarmState(), i, 5);
         }
         
         this.sensorTable.repaint();
@@ -152,8 +156,11 @@ public class MainWindow extends javax.swing.JFrame {
     
     private void updateButtonStatus() {
         boolean sensorButtonsEnabled = this.sensorTable.getSelectedRow() >= 0;
+        boolean alarmResetButtonEnabled = sensorButtonsEnabled &&
+                this.sensorList.get(this.sensorTable.getSelectedRow()).getAlarmState();
         this.editSensorButton.setEnabled(sensorButtonsEnabled);
         this.removeSensorButton.setEnabled(sensorButtonsEnabled);
+        this.resetAlarmButton.setEnabled(alarmResetButtonEnabled);
     }
     
     private void updatePatientFieldStatus() {
@@ -202,6 +209,10 @@ public class MainWindow extends javax.swing.JFrame {
         addSensorButton = new javax.swing.JButton();
         removeSensorButton = new javax.swing.JButton();
         editSensorButton = new javax.swing.JButton();
+        resetAlarmButton = new javax.swing.JButton();
+        patientInterfacePanel = new javax.swing.JPanel();
+        callNurseButton = new javax.swing.JButton();
+        resetCallNurseButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bedside Monitor");
@@ -410,17 +421,17 @@ public class MainWindow extends javax.swing.JFrame {
 
         sensorTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Vital", "Value", "Raw Value", "Offset", "Scale"
+                "Vital", "Value", "Raw Value", "Low Thresh.", "High Thresh.", "Alarm"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -476,6 +487,15 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         sensorButtonPanel.add(editSensorButton, gridBagConstraints);
 
+        resetAlarmButton.setText("Reset");
+        resetAlarmButton.setEnabled(false);
+        resetAlarmButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetAlarmButtonActionPerformed(evt);
+            }
+        });
+        sensorButtonPanel.add(resetAlarmButton, new java.awt.GridBagConstraints());
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -490,6 +510,32 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         basePanel.add(sensorPanel, gridBagConstraints);
+
+        patientInterfacePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Patient Interface"));
+        patientInterfacePanel.setLayout(new java.awt.GridBagLayout());
+
+        callNurseButton.setText("Call Nurse");
+        callNurseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                callNurseButtonActionPerformed(evt);
+            }
+        });
+        patientInterfacePanel.add(callNurseButton, new java.awt.GridBagConstraints());
+
+        resetCallNurseButton.setText("Reset");
+        resetCallNurseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetCallNurseButtonActionPerformed(evt);
+            }
+        });
+        patientInterfacePanel.add(resetCallNurseButton, new java.awt.GridBagConstraints());
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        basePanel.add(patientInterfacePanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -585,6 +631,35 @@ public class MainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_monitorInfoResetButtonActionPerformed
 
+    private void callNurseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_callNurseButtonActionPerformed
+        try {
+            this.monitor.raisePatientCallButtonEvent(new PatientCallButtonEvent(true));
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_callNurseButtonActionPerformed
+
+    private void resetCallNurseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetCallNurseButtonActionPerformed
+        try {
+            this.monitor.raisePatientCallButtonEvent(new PatientCallButtonEvent(false));
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_resetCallNurseButtonActionPerformed
+
+    private void resetAlarmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetAlarmButtonActionPerformed
+        if(this.sensorTable.getSelectedRow() >= 0) {
+            Sensor sensor = this.sensorList.get(this.sensorTable.getSelectedRow());
+            sensor.setAlarmState(false);
+            this.updateTableValues();
+            try {
+                this.monitor.raisePatientAlarmEvent(new PatientAlarmEvent(sensor.getName(), false));
+            } catch (RemoteException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_resetAlarmButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -623,6 +698,7 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addSensorButton;
     private javax.swing.JPanel basePanel;
+    private javax.swing.JButton callNurseButton;
     private javax.swing.JButton editSensorButton;
     private javax.swing.JTextField monitorAddressField;
     private javax.swing.JLabel monitorAddressLabel;
@@ -641,11 +717,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel patientInfoButtonSpacerPanel;
     private javax.swing.JPanel patientInfoPanel;
     private javax.swing.JButton patientInfoResetButton;
+    private javax.swing.JPanel patientInterfacePanel;
     private javax.swing.JTextField patientLastNameField;
     private javax.swing.JLabel patientLastNameLabel;
     private javax.swing.JTextField patientMiddleNameField;
     private javax.swing.JLabel patientMiddleNameLabel;
     private javax.swing.JButton removeSensorButton;
+    private javax.swing.JButton resetAlarmButton;
+    private javax.swing.JButton resetCallNurseButton;
     private javax.swing.JPanel sensorButtonPanel;
     private javax.swing.JPanel sensorPanel;
     private javax.swing.JScrollPane sensorScrollPanel;

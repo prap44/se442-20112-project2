@@ -7,6 +7,8 @@
 package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
+import hms.nursingstation.events.DataReceivedEvent;
+import hms.nursingstation.listeners.DataReceivedListener;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
@@ -26,30 +28,34 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     private ArrayList<VitalDisplayPanel> panels = new ArrayList<VitalDisplayPanel>();
     private int previousColumnCount = 0;
     private int defaultVDPanelMinWidth = (new VitalDisplayPanel().getMinimumSize().width);
-    private int defaultVDPanelMinHeight = (new VitalDisplayPanel().getPreferredSize().height);
     
     /* Used to reduce number of redundant "invokeWait()" calls to
      * arrangeGrid() when resizing/etc */
     private boolean gridArrangeInvokeWaiting = true;
 
     /** Creates new form VitalDisplayGrid */
+    public VitalDisplayGrid(MonitorProxy monitor) {
+        initComponents();
+        this.setMonitor(monitor);
+    }
+    
     public VitalDisplayGrid() {
         initComponents();
+    }
+    
+    public final void setMonitor(MonitorProxy monitor) {
+        this.monitor = monitor;
+        this.monitor.addDataReceivedListener(new DataReceivedListener() {
+            @Override
+            public void dataReceived(DataReceivedEvent event) {
+                VitalDisplayGrid.this.setData(event.getVitals());
+            }
+        });
     }
     
     public void setData(Map<String, Integer> data) {
         this.data = data;
         this.arrangeGrid();
-    }
-    
-    public boolean hasElements() {
-        return this.data != null && !this.data.isEmpty();
-    }
-    
-    public int getExpectedHeight() {
-        int columnCount = Math.max(this.basePanel.getWidth() / defaultVDPanelMinWidth, 1);
-        int rowCount = this.data.size() / columnCount + 1;
-        return rowCount * defaultVDPanelMinHeight;
     }
     
     private void arrangeGrid() {
@@ -120,9 +126,6 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             }
         }
         
-//        synchronized(VitalDisplayGrid.this.getTreeLock()) {
-//            VitalDisplayGrid.this.validateTree();
-//        }
         this.validate();
     }
 
