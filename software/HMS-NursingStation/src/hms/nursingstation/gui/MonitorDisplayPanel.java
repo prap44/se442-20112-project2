@@ -113,20 +113,20 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private void postInit() {
         this.vitalDisplayGrid.setVisible(false);
         
-        Map<String, Integer> data = new TreeMap<String, Integer>();
-        data.put("Vital Stat 1", 50);
-        data.put("Vital Stat 2", 9000);
-        data.put("Vital Stat 3", 2);
-        data.put("Vital Stat 4", 50);
-        data.put("Vital Stat 5", 9000);
-        data.put("Vital Stat 6", 2);
-        data.put("Vital Stat 7", 50);
-        data.put("Vital Stat 8", 9000);
-        data.put("Vital Stat 9", 2);
-        data.put("Vital Stat 10", 50);
-        data.put("Vital Stat 11", 9000);
-        data.put("Vital Stat 12", 2);
-        this.vitalDisplayGrid.setData(data);
+//        Map<String, Integer> data = new TreeMap<String, Integer>();
+//        data.put("Vital Stat 1", 50);
+//        data.put("Vital Stat 2", 9000);
+//        data.put("Vital Stat 3", 2);
+//        data.put("Vital Stat 4", 50);
+//        data.put("Vital Stat 5", 9000);
+//        data.put("Vital Stat 6", 2);
+//        data.put("Vital Stat 7", 50);
+//        data.put("Vital Stat 8", 9000);
+//        data.put("Vital Stat 9", 2);
+//        data.put("Vital Stat 10", 50);
+//        data.put("Vital Stat 11", 9000);
+//        data.put("Vital Stat 12", 2);
+//        this.vitalDisplayGrid.setData(data);
         
         try {
             /* Set the monitor's ID and patient's name from monitor reference */
