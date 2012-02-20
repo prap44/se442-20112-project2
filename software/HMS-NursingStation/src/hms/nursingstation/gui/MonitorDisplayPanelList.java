@@ -11,7 +11,9 @@
  */
 package hms.nursingstation.gui;
 
-import hms.common.Monitor;
+import hms.nursingstation.MonitorProxy;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,7 @@ import java.util.List;
  */
 public class MonitorDisplayPanelList extends javax.swing.JPanel {
 
-    private List<Monitor> monitors = null;
+    private List<MonitorProxy> monitors = null;
     private List<MonitorDisplayPanel> panels = new ArrayList<MonitorDisplayPanel>();
     
     /** Creates new form PatientDisplayPanelList */
@@ -29,12 +31,64 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         initComponents();
     }
     
-    public void setMonitors(List<Monitor> monitors) {
+    public void setMonitors(List<MonitorProxy> monitors) {
         this.monitors = monitors;
+        this.arrangeList();
+    }
+    
+    private int findPanel(MonitorProxy monitor) {
+        for(int i = 0; i < this.panels.size(); i++) {
+            if(this.panels.get(i).getMonitor() == monitor) {
+                return i;
+            }
+        }
+        
+        return -1;
     }
     
     private void arrangeList() {
+        if(this.monitors != null) {
+            GridBagConstraints gbConstraints = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
+            
+            /* Cull unnecessary panels */
+            for(MonitorDisplayPanel panel : this.panels) {
+                if(!this.monitors.contains(panel.getMonitor())) {
+                    this.panels.remove(panel);
+                    this.listPanel.remove(panel);
+                }
+            }
+            
+            /* Add new panels and sort existing ones */
+            for(int i = 0; i < this.monitors.size(); i++) {
+                MonitorProxy monitor = this.monitors.get(i);
+                MonitorDisplayPanel panel;
+                gbConstraints.gridy = i;
+                
+                /* Check if panel exists */
+                int panelIndex = this.findPanel(monitor);
+                if(panelIndex >= 0) {
+                    panel = this.panels.get(panelIndex);
+                    
+                    /* Check if panel is in the correct list location */
+                    if(panelIndex != i) {
+                        /* Swap panel at index 'i' with panel at index 'panelIndex' */
+                        this.panels.set(panelIndex, this.panels.get(i));
+                        this.panels.set(i, panel);
+                        this.listPanel.add(panel, gbConstraints);
+                    }
+                    
+                    /* TODO: Update the panel's display */
+                } else {
+                    /* Panel does not exist, add it to the list */
+                    panel = new MonitorDisplayPanel(monitor);
+                    this.panels.add(i, panel);
+                    this.listPanel.add(panel, gbConstraints);
+                }
+            }
+            
+        }
         
+        this.basePanel.validate();
     }
 
     /** This method is called from within the constructor to
@@ -52,7 +106,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         listPanel = new javax.swing.JPanel();
         spacerPanel = new javax.swing.JPanel();
 
-        setLayout(new java.awt.GridLayout());
+        setLayout(new java.awt.GridLayout(1, 0));
 
         scrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 

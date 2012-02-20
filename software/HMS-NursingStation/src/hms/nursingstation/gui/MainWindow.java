@@ -1,14 +1,17 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * MainWindow.java
  *
  * Created on Feb 17, 2012, 5:12:33 PM
  */
 package hms.nursingstation.gui;
+
+import hms.nursingstation.MonitorProxy;
+import hms.nursingstation.NursingStationImpl;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 /**
  *
@@ -16,9 +19,33 @@ package hms.nursingstation.gui;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    private NursingStationImpl nursingStation = null;
+    
+    public MainWindow(NursingStationImpl nursingStation) {
+        initComponents();
+        
+        if(nursingStation == null) {
+            this.nursingStation = new NursingStationImpl();
+        } else {
+            this.nursingStation = nursingStation;
+        }
+    }
+    
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
+        
+        this.nursingStation = new NursingStationImpl();
+        
+        ArrayList<MonitorProxy> monitors = new ArrayList<MonitorProxy>();
+        try {
+            monitors.add(new MonitorProxy());
+            monitors.add(new MonitorProxy());
+        } catch (IOException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        this.monitorDisplayPanelList.setMonitors(monitors);
     }
 
     /** This method is called from within the constructor to
@@ -34,10 +61,9 @@ public class MainWindow extends javax.swing.JFrame {
         basePanel = new javax.swing.JPanel();
         basePanelSpliltPanel = new javax.swing.JSplitPane();
         monitoringBasePanel = new javax.swing.JPanel();
-        monitorDisplayPanelList1 = new hms.common.gui.MonitorDisplayPanelList();
+        monitorDisplayPanelList = new hms.nursingstation.gui.MonitorDisplayPanelList();
         monitoringButtonPanel = new javax.swing.JPanel();
         addMonitorButton = new javax.swing.JButton();
-        removeMonitorButton = new javax.swing.JButton();
         monitoringButtonPanelSpacer = new javax.swing.JPanel();
         loggingBasePanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -69,7 +95,7 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        monitoringBasePanel.add(monitorDisplayPanelList1, gridBagConstraints);
+        monitoringBasePanel.add(monitorDisplayPanelList, gridBagConstraints);
 
         monitoringButtonPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -80,14 +106,6 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         monitoringButtonPanel.add(addMonitorButton, new java.awt.GridBagConstraints());
-
-        removeMonitorButton.setText("Remove");
-        removeMonitorButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeMonitorButtonActionPerformed(evt);
-            }
-        });
-        monitoringButtonPanel.add(removeMonitorButton, new java.awt.GridBagConstraints());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -176,10 +194,6 @@ public class MainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_addMonitorButtonActionPerformed
 
-    private void removeMonitorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeMonitorButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_removeMonitorButtonActionPerformed
-
     private void viewSystemLogEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSystemLogEventButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_viewSystemLogEventButtonActionPerformed
@@ -217,6 +231,7 @@ public class MainWindow extends javax.swing.JFrame {
             @Override
             public void run() {
                 MainWindow window = new MainWindow();
+                window.setState(JFrame.MAXIMIZED_BOTH);
                 window.setVisible(true);
         
                 synchronized(window.getTreeLock()) {
@@ -237,11 +252,10 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel loggingButtonPanel;
     private javax.swing.JPanel loggingButtonPanelSpacer;
     private javax.swing.JMenuBar menuBar;
-    private hms.common.gui.MonitorDisplayPanelList monitorDisplayPanelList1;
+    private hms.nursingstation.gui.MonitorDisplayPanelList monitorDisplayPanelList;
     private javax.swing.JPanel monitoringBasePanel;
     private javax.swing.JPanel monitoringButtonPanel;
     private javax.swing.JPanel monitoringButtonPanelSpacer;
-    private javax.swing.JButton removeMonitorButton;
     private javax.swing.JButton viewSystemLogEventButton;
     // End of variables declaration//GEN-END:variables
 }

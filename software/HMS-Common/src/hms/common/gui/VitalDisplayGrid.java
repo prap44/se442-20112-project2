@@ -11,7 +11,6 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.swing.SwingUtilities;
 
@@ -25,6 +24,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     private ArrayList<VitalDisplayPanel> panels = new ArrayList<VitalDisplayPanel>();
     private int previousColumnCount = 0;
     private int defaultVDPanelMinWidth = (new VitalDisplayPanel().getMinimumSize().width);
+    private int defaultVDPanelMinHeight = (new VitalDisplayPanel().getMinimumSize().height);
     
     /* Used to reduce number of redundant "invokeWait()" calls to
      * arrangeGrid() when resizing/etc */
@@ -45,6 +45,11 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
         return this.data != null && !this.data.isEmpty();
     }
     
+    public int getExpectedHeight() {
+        int rowCount = this.data.size() / this.previousColumnCount;
+        return rowCount * defaultVDPanelMinHeight;
+    }
+    
     private void arrangeGrid() {
         this.gridArrangeInvokeWaiting = false;
         
@@ -52,7 +57,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             Set<String> keys = this.data.keySet();
             Set<String> knownKeys = new TreeSet<String>();
             
-            GridBagConstraints gbContraints = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+            GridBagConstraints gbContraints = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
             int columnCount = Math.max(this.basePanel.getWidth() / defaultVDPanelMinWidth, 1);
             int index = 0;
             
