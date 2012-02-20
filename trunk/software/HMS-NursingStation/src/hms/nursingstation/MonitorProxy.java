@@ -18,6 +18,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MonitorProxy extends UnicastRemoteObject implements
 		PatientDataListener, PatientAlarmListener, PatientCallButtonListener,
@@ -37,11 +39,22 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	public void patientCallButtonPressed(PatientCallButtonEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorProxy] Patient Call Button Pressed");
-		Patient p = this.realMonitor.getPatient();
-		if (p != null) {
-			System.out.println("[MonitorProxy] Patient "
-					+ p.getPatientFirstName() + " " + p.getPatientLastName()
-					+ " pressed the call button");
+		Patient p;
+		try {
+			p = this.getPatient();
+			if (p != null) {
+				if (event.isActive()) {
+					System.out.println("[MonitorProxy] Patient "
+							+ p.getPatientFirstName() + " " + p.getPatientLastName()
+							+ " pressed the call button");
+				} else {
+					System.out.println("[MonitorProxy] Patient "
+							+ p.getPatientFirstName() + " " + p.getPatientLastName()
+							+ "'s call button was reset");					
+				}
+			}
+		} catch (MonitorDisconnectedException e) {
+			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -49,12 +62,23 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	public void patientAlarmReceived(PatientAlarmEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorProxy] Patient Alarm Received");
-		Patient p = this.realMonitor.getPatient();
-		String vital = event.getVital();
-		if (p != null) {
-			System.out.println("[MonitorProxy] Patient "
-					+ p.getPatientFirstName() + " " + p.getPatientLastName()
-					+ "'s vital sign " + vital + " is critical");
+		Patient p;
+		try {
+			p = this.getPatient();
+			String vital = event.getVital();
+			if (p != null) {
+				if (event.isAlarmOn()) {
+					System.out.println("[MonitorProxy] Patient "
+							+ p.getPatientFirstName() + " " + p.getPatientLastName()
+							+ "'s vital sign " + vital + " is critical");
+				} else {
+					System.out.println("[MonitorProxy] Patient "
+							+ p.getPatientFirstName() + " " + p.getPatientLastName()
+							+ "'s alarm for vital sign " + vital + " was reset");
+				}
+			}
+		} catch (MonitorDisconnectedException e) {
+			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -62,14 +86,19 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	public void patientDataReceived(PatientDataEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorProxy] Patient Data Received");
-		Patient p = this.realMonitor.getPatient();
-		Map<String, Integer> patientVitals = event.getVitals();
-		if (p != null) {
-			System.out.println("[MonitorProxy] Patient: "
-					+ p.getPatientFirstName() + " " + p.getPatientLastName());
-			String vital = patientVitals.keySet().iterator().next();
-			System.out.println("[MonitorProxy] Patient Vital Signs: " + vital
-					+ ", " + patientVitals.get(vital));
+		Patient p;
+		try {
+			p = this.getPatient();
+			Map<String, Integer> patientVitals = event.getVitals();
+			if (p != null) {
+				System.out.println("[MonitorProxy] Patient: "
+						+ p.getPatientFirstName() + " " + p.getPatientLastName());
+				String vital = patientVitals.keySet().iterator().next();
+				System.out.println("[MonitorProxy] Patient Vital Signs: " + vital
+						+ ", " + patientVitals.get(vital));
+			}
+		} catch (MonitorDisconnectedException e) {
+			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -106,14 +135,14 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	}
 
 	public void setPatient(Patient patient) throws RemoteException, MonitorDisconnectedException {
-		if(this.realMonitor == null) {
+		if(!this.isConnected()) {
 			throw new MonitorDisconnectedException();
 		}
 		this.realMonitor.setPatient(patient);
 	}
 
 	public Patient getPatient() throws RemoteException, MonitorDisconnectedException {
-		if(this.realMonitor == null) {
+		if(!this.isConnected()) {
 			throw new MonitorDisconnectedException();
 		}
 		return this.realMonitor.getPatient();
