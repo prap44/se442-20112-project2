@@ -13,28 +13,10 @@ package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.gui.MonitorDisplayPanel.DisplayExpandedEvent;
-import java.awt.AWTEvent;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.peer.ComponentPeer;
-import java.security.AccessControlContext;
 import java.util.ArrayList;
 import java.util.List;
-import sun.awt.AWTAccessor.ComponentAccessor;
-import sun.awt.AppContext;
-import sun.awt.CausedFocusEvent.Cause;
-import sun.awt.RequestFocusController;
 
 /**
  *
