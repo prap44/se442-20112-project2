@@ -7,10 +7,25 @@ package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.NursingStationImpl;
+import hms.nursingstation.events.AlarmReceivedEvent;
+import hms.nursingstation.events.AlarmResetEvent;
+import hms.nursingstation.events.CallButtonReceivedEvent;
+import hms.nursingstation.events.CallButtonResetEvent;
+import hms.nursingstation.events.DataReceivedEvent;
+import hms.nursingstation.events.InformationChangeReceivedEvent;
+import hms.nursingstation.events.MonitorStatusChangedEvent;
+import hms.nursingstation.listeners.AlarmReceivedListener;
+import hms.nursingstation.listeners.AlarmResetListener;
+import hms.nursingstation.listeners.CallButtonReceivedListener;
+import hms.nursingstation.listeners.CallButtonResetListener;
+import hms.nursingstation.listeners.DataReceivedListener;
+import hms.nursingstation.listeners.InformationChangeReceivedListener;
+import hms.nursingstation.listeners.MonitorStatusChangedListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 
 /**
@@ -20,23 +35,81 @@ import javax.swing.JFrame;
 public class MainWindow extends javax.swing.JFrame {
 
     private NursingStationImpl nursingStation = null;
-    
+    private DefaultListModel<String> loggingListModel = new DefaultListModel<String>();
+
     public MainWindow(NursingStationImpl nursingStation) {
         initComponents();
-        
-        if(nursingStation == null) {
+
+        if (nursingStation == null) {
             this.nursingStation = new NursingStationImpl();
         } else {
             this.nursingStation = nursingStation;
         }
+
+        this.nursingStation.addMonitorStatusChangedListener(new MonitorStatusChangedListener() {
+
+            @Override
+            public void monitorStatusChanged(MonitorStatusChangedEvent event) {
+                MonitorProxy monitor = event.getMonitor();
+                switch (event.getOperation()) {
+                    case ADDED:
+                        monitor.addAlarmReceivedListener(new AlarmReceivedListener() {
+                            @Override
+                            public void alarmReceived(AlarmReceivedEvent event) {
+                                /* Log alarm */
+                                MainWindow.this.loggingListModel.addElement("Alarm received");
+                            }
+                        });
+
+                        monitor.addAlarmResetListener(new AlarmResetListener() {
+                            @Override
+                            public void alarmReset(AlarmResetEvent event) {
+                                /* Log reset */
+                                MainWindow.this.loggingListModel.addElement("Alarm reset");
+                            }
+                        });
+                        
+                        monitor.addCallButtonReceivedListener(new CallButtonReceivedListener() {
+                            @Override
+                            public void callButtonRequestReceived(CallButtonReceivedEvent event) {
+                                /* Log call button push */
+                                MainWindow.this.loggingListModel.addElement("Call button pushed");
+                            }
+                        });
+                        
+                        monitor.addCallButtonResetListener(new CallButtonResetListener() {
+                            @Override
+                            public void callButtonRequestReset(CallButtonResetEvent event) {
+                                /* Log call button reset */
+                                MainWindow.this.loggingListModel.addElement("Call button reset");
+                            }
+                        });
+
+                        monitor.addDataReceivedListener(new DataReceivedListener() {
+                            @Override
+                            public void dataReceived(DataReceivedEvent event) {
+                            }
+                        });
+                        
+                        monitor.addInformationChangeReceivedListener(new InformationChangeReceivedListener() {
+                            @Override
+                            public void informationChangeReceived(InformationChangeReceivedEvent event) {
+                            }
+                        });
+                        break;
+                    case REMOVED:
+                        break;
+                }
+            }
+        });
     }
-    
+
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-        
+
         this.nursingStation = new NursingStationImpl();
-        
+
         ArrayList<MonitorProxy> monitors = new ArrayList<MonitorProxy>();
         try {
             monitors.add(new MonitorProxy());
@@ -44,7 +117,7 @@ public class MainWindow extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         this.monitorDisplayPanelList.setMonitors(monitors);
     }
 
@@ -66,8 +139,8 @@ public class MainWindow extends javax.swing.JFrame {
         addMonitorButton = new javax.swing.JButton();
         monitoringButtonPanelSpacer = new javax.swing.JPanel();
         loggingBasePanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        loggingScrollPanel = new javax.swing.JScrollPane();
+        loggingList = new javax.swing.JList();
         menuBar = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -121,12 +194,7 @@ public class MainWindow extends javax.swing.JFrame {
         loggingBasePanel.setPreferredSize(new java.awt.Dimension(150, 152));
         loggingBasePanel.setLayout(new java.awt.GridBagLayout());
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jList1);
+        loggingScrollPanel.setViewportView(loggingList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -134,7 +202,7 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        loggingBasePanel.add(jScrollPane1, gridBagConstraints);
+        loggingBasePanel.add(loggingScrollPanel, gridBagConstraints);
 
         basePanelSpliltPanel.setRightComponent(loggingBasePanel);
 
@@ -205,8 +273,8 @@ public class MainWindow extends javax.swing.JFrame {
                 MainWindow window = new MainWindow();
                 window.setState(JFrame.MAXIMIZED_BOTH);
                 window.setVisible(true);
-        
-                synchronized(window.getTreeLock()) {
+
+                synchronized (window.getTreeLock()) {
                     window.validateTree();
                 }
             }
@@ -216,11 +284,11 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton addMonitorButton;
     private javax.swing.JPanel basePanel;
     private javax.swing.JSplitPane basePanelSpliltPanel;
-    private javax.swing.JList jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel loggingBasePanel;
+    private javax.swing.JList loggingList;
+    private javax.swing.JScrollPane loggingScrollPanel;
     private javax.swing.JMenuBar menuBar;
     private hms.nursingstation.gui.MonitorDisplayPanelList monitorDisplayPanelList;
     private javax.swing.JPanel monitoringBasePanel;

@@ -1,20 +1,20 @@
 package hms.nursingstation;
 
 import hms.common.Patient;
-import hms.common.events.PatientAlarmEvent;
-import hms.common.events.PatientCallButtonEvent;
-import hms.common.events.PatientDataEvent;
-import hms.common.listeners.PatientAlarmListener;
-import hms.common.listeners.PatientCallButtonListener;
-import hms.common.listeners.PatientDataListener;
+import hms.nursingstation.events.MonitorStatusChangedEvent;
+import hms.nursingstation.events.MonitorStatusChangedEvent.MonitorChangedOperation;
+import hms.nursingstation.listeners.MonitorStatusChangedListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.event.EventListenerList;
 
 public class NursingStationImpl {
 	
 	private ArrayList<Patient> patients = new ArrayList<Patient>();
 	private ArrayList<MonitorProxy> bedsideStations = new ArrayList<MonitorProxy>();
+	private EventListenerList listenerList = new EventListenerList();
 	
 	public boolean addPatient(Patient patient) {
 		return this.patients.add(patient);
@@ -41,6 +41,7 @@ public class NursingStationImpl {
 	}
 	
 	public boolean addMonitor(MonitorProxy monitor) {
+		this.raiseMonitorStatusChangedEvent(new MonitorStatusChangedEvent(monitor, MonitorChangedOperation.ADDED));
 		return this.bedsideStations.add(monitor);
 	}
 	
@@ -49,15 +50,35 @@ public class NursingStationImpl {
 	}
 	
 	public MonitorProxy removeMonitor(int index) {
-		return this.bedsideStations.remove(index);
+		MonitorProxy monitor = this.bedsideStations.remove(index);
+		this.raiseMonitorStatusChangedEvent(new MonitorStatusChangedEvent(monitor, MonitorChangedOperation.REMOVED));
+		return monitor;
 	}
 	
 	public boolean removeMonitor(MonitorProxy monitor) {
-		return this.bedsideStations.remove(monitor);
+		boolean removed = this.bedsideStations.remove(monitor);
+		if(removed) {
+			this.raiseMonitorStatusChangedEvent(new MonitorStatusChangedEvent(monitor, MonitorChangedOperation.REMOVED));
+		}
+		return removed;
 	}
 	
 	public int getMonitorCount() {
 		return this.bedsideStations.size();
+	}
+	
+	public void addMonitorStatusChangedListener(MonitorStatusChangedListener listener) {
+		this.listenerList.add(MonitorStatusChangedListener.class, listener);
+	}
+	
+	public void removeMonitorStatusChangedListener(MonitorStatusChangedListener listener) {
+		this.listenerList.remove(MonitorStatusChangedListener.class, listener);
+	}
+	
+	private void raiseMonitorStatusChangedEvent(MonitorStatusChangedEvent event) {
+		for(MonitorStatusChangedListener l : this.listenerList.getListeners(MonitorStatusChangedListener.class)) {
+			l.monitorStatusChanged(event);
+		}
 	}
 	
 }

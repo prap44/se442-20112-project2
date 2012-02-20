@@ -39,7 +39,10 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		PatientDataListener, PatientAlarmListener, PatientCallButtonListener,
 		PatientInformationChangedListener {
 	
+	private static final long serialVersionUID = -3195762579705707707L;
+
 	public class MonitorDisconnectedException extends Exception {
+		private static final long serialVersionUID = -8207360613569516548L;
 	}
 
 	static final String BEDSIDE_SERVER_NAME = "hms.bedsidemonitor";
@@ -162,6 +165,14 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		return this.realMonitor != null;
 	}
 
+	public String getMonitorID() {
+		return BEDSIDE_SERVER_NAME;
+	}
+	
+	public String getMonitorAddress() {
+		return "127.0.0.1:1099";
+	}
+	
 	public void assignPatient(String firstName, String middleName, String lastName) throws RemoteException, MonitorDisconnectedException {
 		if(!this.isConnected()) {
 			throw new MonitorDisconnectedException();

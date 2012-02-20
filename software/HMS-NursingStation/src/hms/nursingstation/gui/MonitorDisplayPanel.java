@@ -14,6 +14,8 @@ package hms.nursingstation.gui;
 import hms.common.Patient;
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
+import hms.nursingstation.events.InformationChangeReceivedEvent;
+import hms.nursingstation.listeners.InformationChangeReceivedListener;
 import java.awt.Font;
 import java.rmi.RemoteException;
 import java.util.EventListener;
@@ -21,7 +23,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.EventListenerList;
 
 /**
  *
@@ -78,6 +79,16 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     }
     
     private MonitorProxy monitor = null;
+    private InformationChangeReceivedListener infoChangedListener = new InformationChangeReceivedListener() {
+        @Override
+        public void informationChangeReceived(InformationChangeReceivedEvent event) {
+            try {
+                MonitorDisplayPanel.this.updateIdentifyingData();
+            } catch (RemoteException ex) {
+                Logger.getLogger(MonitorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    };
 
     /** Creates new form PatientDisplayPanel */
     public MonitorDisplayPanel(MonitorProxy monitor) {
@@ -141,7 +152,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private void updateIdentifyingData() throws RemoteException {
         if(this.monitor != null && this.monitor.isConnected()) {
             try {
-                this.monitorIDValueLabel.setText("TEMP REPLACE");
+                this.monitorIDValueLabel.setText(monitor.getMonitorID());
                 this.monitorIDValueLabel.setFont(this.monitorIDValueLabel.getFont().deriveFont(Font.PLAIN));
                 
                 Patient patient = this.monitor.getPatient();
@@ -164,7 +175,13 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     }
     
     public final void setMonitor(MonitorProxy monitor) {
+        if(this.monitor != null) {
+            /* TODO: Remove listeners when monitor is changed */
+        }
+        
         this.monitor = monitor;
+        
+        this.monitor.addInformationChangeReceivedListener(this.infoChangedListener);
     }
     
     public final MonitorProxy getMonitor() {

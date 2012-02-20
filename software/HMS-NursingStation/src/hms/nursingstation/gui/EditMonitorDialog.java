@@ -8,6 +8,7 @@ package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JViewport;
+import javax.swing.plaf.basic.BasicScrollPaneUI.ViewportChangeHandler;
 
 /**
  *
@@ -54,6 +56,9 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     
     public boolean showEditDialogModal(MonitorProxy monitor) {
         this.returnStatus = false;
+        
+        this.monitorIDField.setText(monitor.getMonitorID());
+        this.monitorAddressField.setText(monitor.getMonitorAddress());
         
         if(monitor.isConnected()) {
             try {
@@ -130,6 +135,9 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         MonitorProxy monitor = null;
         
         this.returnStatus = false;
+        
+        this.monitorIDField.setText("hms.bedsidemonitor");
+        this.monitorAddressField.setText("127.0.0.1:1099");
         
         this.patientFirstNameField.setText("");
         this.patientMiddleNameField.setText("");
@@ -419,7 +427,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         buttonPanelSpacer.setLayout(buttonPanelSpacerLayout);
         buttonPanelSpacerLayout.setHorizontalGroup(
             buttonPanelSpacerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 345, Short.MAX_VALUE)
+            .addGap(0, 349, Short.MAX_VALUE)
         );
         buttonPanelSpacerLayout.setVerticalGroup(
             buttonPanelSpacerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -454,7 +462,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 4);
         buttonPanel.add(cancelButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -486,8 +494,11 @@ public class EditMonitorDialog extends javax.swing.JDialog {
 //        Dimension size = this.vitalDisplayScrollPanel.getViewport().getSize();
 //        this.vitalDisplayScrollPanel.getViewport().setSize(size.width, Integer.MAX_VALUE);
 //        this.vitalDisplayScrollPanel.getViewport().validate();
-        JViewport viewport = this.vitalDisplayScrollPanel.getViewport();
-        viewport.setSize(viewport.getWidth(), this.vitalDisplayGrid.getExpectedHeight());
+        
+//        JViewport viewport = this.vitalDisplayScrollPanel.getViewport();
+//        viewport.setSize(viewport.getWidth(), this.vitalDisplayGrid.getExpectedHeight());
+        
+        this.vitalDisplayViewpanel.setPreferredSize(new Dimension(this.vitalDisplayScrollPanel.getViewport().getWidth(), this.vitalDisplayGrid.getHeight()));
     }//GEN-LAST:event_vitalDisplayScrollPanelComponentResized
 
     /**
