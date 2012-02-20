@@ -8,6 +8,8 @@ import hms.common.PatientCallButtonEvent;
 import hms.common.PatientCallButtonListener;
 import hms.common.PatientDataEvent;
 import hms.common.PatientDataListener;
+import hms.common.PatientInformationChangedEvent;
+import hms.common.PatientInformationChangedListener;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -20,16 +22,14 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 
 public class MonitorProxy extends UnicastRemoteObject implements
-		PatientDataListener, PatientAlarmListener, PatientCallButtonListener {
+		PatientDataListener, PatientAlarmListener, 
+		PatientCallButtonListener, PatientInformationChangedListener {
 	
 	static final String BEDSIDE_SERVER_NAME = "hms.bedsidemonitor";
 
 	private Monitor realMonitor;
 	
 	public MonitorProxy() throws IOException {
-		//super();
-		//this.connectToMonitor();
-		//this.registerProxy();
 	}
 
 	@Override
@@ -64,6 +64,12 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		System.out.println("[MonitorProxy] Patient Hearbeat Vital Signs: " + 
 				patientVitals.get("heartbeat"));
 	}
+
+	@Override
+	public void patientInformationChanged(PatientInformationChangedEvent event)
+			throws RemoteException {
+		System.out.println("[MonitorProxy] Patient Information Changed");
+	}
 	
 	public void connectToMonitor() {
 		try {
@@ -81,6 +87,7 @@ public class MonitorProxy extends UnicastRemoteObject implements
 			realMonitor.addPatientAlarmListener(this);
 			realMonitor.addPatientCallButtonListener(this);
 			realMonitor.addPatientDataListener(this);
+			realMonitor.addPatientInformationChangedListener(this);
 		} catch (RemoteException re) {
 			re.printStackTrace();
 		}
