@@ -10,6 +10,7 @@ import hms.bedsidemonitor.PatientImpl;
 import hms.common.Patient;
 import hms.common.PatientDataEvent;
 import hms.common.PatientDataListener;
+import hms.common.PatientInformationChangedEvent;
 import hms.common.Sensor;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -546,6 +547,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.patient.setPatientMiddleName(this.patientMiddleNameField.getText());
                 this.patient.setPatientLastName(this.patientLastNameField.getText());
             }
+            this.monitor.raisePatientInformationChangedEvent(new PatientInformationChangedEvent());
         } catch (RemoteException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
