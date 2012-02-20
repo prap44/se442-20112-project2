@@ -13,7 +13,9 @@ package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.NursingStationImpl;
+import hms.nursingstation.events.MonitorStatusChangedEvent;
 import hms.nursingstation.gui.MonitorDisplayPanel.DisplayExpandedEvent;
+import hms.nursingstation.listeners.MonitorStatusChangedListener;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         public void deletePanelButtonPressed(MonitorDisplayPanel.DeletePanelEvent event) {
             if(MonitorDisplayPanelList.this.nursingStation != null) {
                 MonitorDisplayPanelList.this.nursingStation.removeMonitor(event.getPanel().getMonitor());
-                MonitorDisplayPanelList.this.arrangeList();
+                MonitorDisplayPanelList.this.refreshList();
             }
         }
     }
@@ -39,7 +41,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         @Override
         public void editPanelButtonPressed(MonitorDisplayPanel.EditPanelEvent event) {
             if(MonitorDisplayPanelList.this.editMonitorDialog.showEditDialogModal(event.getPanel().getMonitor())) {
-                MonitorDisplayPanelList.this.arrangeList();
+                MonitorDisplayPanelList.this.refreshList();
             }
         }
     }
@@ -63,6 +65,12 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
     
     public final void setNursingStation(NursingStationImpl nursingStation) {
         this.nursingStation = nursingStation;
+        this.nursingStation.addMonitorStatusChangedListener(new MonitorStatusChangedListener() {
+            @Override
+            public void monitorStatusChanged(MonitorStatusChangedEvent event) {
+                MonitorDisplayPanelList.this.refreshList();
+            }
+        });
     }
     
     private int findPanel(MonitorProxy monitor) {
@@ -79,11 +87,11 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         MonitorProxy monitor = this.editMonitorDialog.showAddDialogModal();
         if(monitor != null) {
             this.nursingStation.addMonitor(monitor);
-            this.arrangeList();
+            this.refreshList();
         }
     }
     
-    private void arrangeList() {
+    private void refreshList() {
         this.validate();
         
         if(this.nursingStation != null) {
@@ -129,7 +137,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                     panel.addDisplayExpandedListener(new MonitorDisplayPanel.DisplayExpandedListener() {
                         @Override
                         public void displayExpaned(DisplayExpandedEvent event) {
-                            MonitorDisplayPanelList.this.arrangeList();
+                            MonitorDisplayPanelList.this.refreshList();
                         }
                     });
                     this.panels.add(i, panel);
@@ -187,7 +195,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         this.basePanel.setPreferredSize(new Dimension(viewportWidth, this.basePanel.getPreferredSize().height));
         this.basePanel.setMaximumSize(new Dimension(viewportWidth, Integer.MAX_VALUE));
         
-        this.arrangeList();
+        this.refreshList();
         
         this.validate();
     }//GEN-LAST:event_scrollPanelComponentResized
