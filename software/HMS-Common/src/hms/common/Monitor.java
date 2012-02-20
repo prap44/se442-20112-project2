@@ -13,7 +13,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface Monitor extends Remote {
-	public void setPatient(Patient patient) throws RemoteException;
+	public void assignPatient(String firstName, String middleName, String lastName) throws RemoteException;
+	public void unsassignPatient() throws RemoteException;
 	public Patient getPatient() throws RemoteException;
 	public void addPatientAlarmListener(PatientAlarmListener listener) throws RemoteException;
 	public void addPatientCallButtonListener(PatientCallButtonListener listener) throws RemoteException;

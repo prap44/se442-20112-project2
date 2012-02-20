@@ -162,11 +162,18 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		return this.realMonitor != null;
 	}
 
-	public void setPatient(Patient patient) throws RemoteException, MonitorDisconnectedException {
+	public void assignPatient(String firstName, String middleName, String lastName) throws RemoteException, MonitorDisconnectedException {
 		if(!this.isConnected()) {
 			throw new MonitorDisconnectedException();
 		}
-		this.realMonitor.setPatient(patient);
+		this.realMonitor.assignPatient(firstName, middleName, lastName);
+	}
+	
+	public void unassignPatient() throws RemoteException, MonitorDisconnectedException {
+		if(!this.isConnected()) {
+			throw new MonitorDisconnectedException();
+		}
+		this.realMonitor.unsassignPatient();
 	}
 
 	public Patient getPatient() throws RemoteException, MonitorDisconnectedException {

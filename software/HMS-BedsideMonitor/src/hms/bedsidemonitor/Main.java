@@ -91,11 +91,7 @@ public class Main {
 	private static void testOnePatientDataEvent(Monitor m) 
 			throws RemoteException {
 		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientDataEvent");
-		PatientImpl patient = new PatientImpl();
-		patient.setPatientFirstName("Philip");
-		patient.setPatientMiddleName("Thomas");
-		patient.setPatientLastName("Rodriguez");
-		m.setPatient(patient);
+		m.assignPatient("Philip", "Thomas", "Rodriguez");
 		Map<String, Integer> patientVitals = new HashMap<String, Integer>();
 		patientVitals.put("heartbeat", 100);
 		m.raisePatientDataEvent(new PatientDataEvent(patientVitals));
@@ -105,20 +101,12 @@ public class Main {
 	private static void testTwoPatientDataEvents(Monitor m) 
 			throws RemoteException {
 		System.out.println("[hms.bedsidemonitor.Main] entering testTwoPatientDataEvents");
-		PatientImpl patient1 = new PatientImpl();
-		patient1.setPatientFirstName("Philip");
-		patient1.setPatientMiddleName("Thomas");
-		patient1.setPatientLastName("Rodriguez");
-		m.setPatient(patient1);
+		m.assignPatient("Philip", "Thomas", "Rodriguez");
 		Map<String, Integer> patient1Vitals = new HashMap<String, Integer>();
 		patient1Vitals.put("heartbeat", 100);
 		m.raisePatientDataEvent(new PatientDataEvent(patient1Vitals));
-		
-		PatientImpl patient2 = new PatientImpl();
-		patient2.setPatientFirstName("John");
-		patient2.setPatientMiddleName("A");
-		patient2.setPatientLastName("Smith");
-		m.setPatient(patient2);
+
+		m.assignPatient("John", "A", "Smith");
 		Map<String, Integer> patient2Vitals = new HashMap<String, Integer>();
 		patient2Vitals.put("blood-pressure", 120);
 		m.raisePatientDataEvent(new PatientDataEvent(patient2Vitals));
@@ -128,11 +116,7 @@ public class Main {
 	private static void testOnePatientAlarmTriggeredEvent(Monitor m) 
 			throws RemoteException {
 		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientAlarmTriggeredEvent");
-		PatientImpl patient = new PatientImpl();
-		patient.setPatientFirstName("Philip");
-		patient.setPatientMiddleName("Thomas");
-		patient.setPatientLastName("Rodriguez");
-		m.setPatient(patient);
+		m.assignPatient("Philip", "Thomas", "Rodriguez");
 		m.raisePatientAlarmEvent(new PatientAlarmEvent("heartbeat", true));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientAlarmTriggeredEvent");
 	}
@@ -140,11 +124,7 @@ public class Main {
 	private static void testOnePatientAlarmResetEvent(Monitor m) 
 			throws RemoteException {
 		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientAlarmResetEvent");
-		PatientImpl patient = new PatientImpl();
-		patient.setPatientFirstName("Philip");
-		patient.setPatientMiddleName("Thomas");
-		patient.setPatientLastName("Rodriguez");
-		m.setPatient(patient);
+		m.assignPatient("Philip", "Thomas", "Rodriguez");
 		m.raisePatientAlarmEvent(new PatientAlarmEvent("heartbeat", false));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientAlarmResetEvent");
 	}
@@ -152,11 +132,7 @@ public class Main {
 	private static void testOnePatientCallButtonPressedEvent(Monitor m) 
 			throws RemoteException {
 		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientCallButtonPressedEvent");
-		PatientImpl patient = new PatientImpl();
-		patient.setPatientFirstName("Philip");
-		patient.setPatientMiddleName("Thomas");
-		patient.setPatientLastName("Rodriguez");
-		m.setPatient(patient);
+		m.assignPatient("Philip", "Thomas", "Rodriguez");
 		m.raisePatientCallButtonEvent(new PatientCallButtonEvent(true));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonPressedEvent");
 	}
@@ -164,11 +140,7 @@ public class Main {
 	private static void testOnePatientCallButtonResetEvent(Monitor m) 
 			throws RemoteException {
 		System.out.println("[hms.bedsidemonitor.Main] entering testOnePatientCallButtonResetEvent");
-		PatientImpl patient = new PatientImpl();
-		patient.setPatientFirstName("Philip");
-		patient.setPatientMiddleName("Thomas");
-		patient.setPatientLastName("Rodriguez");
-		m.setPatient(patient);
+		m.assignPatient("Philip", "Thomas", "Rodriguez");
 		m.raisePatientCallButtonEvent(new PatientCallButtonEvent(false));
 		System.out.println("[hms.bedsidemonitor.Main] exiting testOnePatientCallButtonResetEvent");
 	}

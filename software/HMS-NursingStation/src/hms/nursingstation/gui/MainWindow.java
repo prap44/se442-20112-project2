@@ -68,9 +68,6 @@ public class MainWindow extends javax.swing.JFrame {
         loggingBasePanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
-        loggingButtonPanel = new javax.swing.JPanel();
-        loggingButtonPanelSpacer = new javax.swing.JPanel();
-        viewSystemLogEventButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -139,27 +136,6 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         loggingBasePanel.add(jScrollPane1, gridBagConstraints);
 
-        loggingButtonPanel.setLayout(new java.awt.GridBagLayout());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        loggingButtonPanel.add(loggingButtonPanelSpacer, gridBagConstraints);
-
-        viewSystemLogEventButton.setText("View");
-        viewSystemLogEventButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewSystemLogEventButtonActionPerformed(evt);
-            }
-        });
-        loggingButtonPanel.add(viewSystemLogEventButton, new java.awt.GridBagConstraints());
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        loggingBasePanel.add(loggingButtonPanel, gridBagConstraints);
-
         basePanelSpliltPanel.setRightComponent(loggingBasePanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -191,12 +167,8 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addMonitorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addMonitorButtonActionPerformed
-        // TODO add your handling code here:
+        this.monitorDisplayPanelList.requestAddPanel();
     }//GEN-LAST:event_addMonitorButtonActionPerformed
-
-    private void viewSystemLogEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSystemLogEventButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_viewSystemLogEventButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -249,13 +221,10 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel loggingBasePanel;
-    private javax.swing.JPanel loggingButtonPanel;
-    private javax.swing.JPanel loggingButtonPanelSpacer;
     private javax.swing.JMenuBar menuBar;
     private hms.nursingstation.gui.MonitorDisplayPanelList monitorDisplayPanelList;
     private javax.swing.JPanel monitoringBasePanel;
     private javax.swing.JPanel monitoringButtonPanel;
     private javax.swing.JPanel monitoringButtonPanelSpacer;
-    private javax.swing.JButton viewSystemLogEventButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -14,14 +14,14 @@ package hms.nursingstation.gui;
 import hms.common.Patient;
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.rmi.RemoteException;
+import java.util.EventListener;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
+import javax.swing.event.EventListenerList;
 
 /**
  *
@@ -29,6 +29,39 @@ import javax.swing.SwingUtilities;
  */
 public class MonitorDisplayPanel extends javax.swing.JPanel {
     
+    public class DeletePanelEvent {
+        private MonitorDisplayPanel panel;
+        
+        public DeletePanelEvent(MonitorDisplayPanel panel) {
+            this.panel = panel;
+        }
+        
+        public MonitorDisplayPanel getPanel() {
+            return this.panel;
+        }
+    }
+    
+    public interface DeletePanelListener extends EventListener {
+        public void deletePanelButtonPressed(DeletePanelEvent event);
+    }
+    
+    public class EditPanelEvent {
+        private MonitorDisplayPanel panel;
+        
+        public EditPanelEvent(MonitorDisplayPanel panel) {
+            this.panel = panel;
+        }
+        
+        public MonitorDisplayPanel getPanel() {
+            return this.panel;
+        }
+    }
+    
+    public interface EditPanelListener extends EventListener {
+        public void editPanelButtonPressed(EditPanelEvent event);
+    }
+    
+    private EventListenerList listenerList = new EventListenerList();
     private MonitorProxy monitor = null;
 
     /** Creates new form PatientDisplayPanel */
@@ -101,7 +134,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
                     this.patientNameValueLabel.setText((patient.getPatientLastName() + ", " + patient.getPatientFirstName() + " " + patient.getPatientMiddleName()).trim());
                     this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.PLAIN));
                 } else {
-                    this.patientNameValueLabel.setText("Empty");
+                    this.patientNameValueLabel.setText("None Assigned");
                     this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.ITALIC));
                 }
             } catch (MonitorDisconnectedException ex) {
@@ -109,7 +142,9 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
             }
         } else {
             this.monitorIDValueLabel.setText("Disconnected");
-                this.monitorIDValueLabel.setFont(this.monitorIDValueLabel.getFont().deriveFont(Font.ITALIC));
+            this.monitorIDValueLabel.setFont(this.monitorIDValueLabel.getFont().deriveFont(Font.ITALIC));
+            this.patientNameValueLabel.setText("Unknown");
+            this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.ITALIC));
         }
     }
     
@@ -119,6 +154,34 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     
     public final MonitorProxy getMonitor() {
         return this.monitor;
+    }
+    
+    public void addDeletePanelListener(DeletePanelListener l) {
+        this.listenerList.add(DeletePanelListener.class, l);
+    }
+    
+    public void removeDeletePanelListener(DeletePanelListener l) {
+        this.listenerList.remove(DeletePanelListener.class, l);
+    }
+    
+    private void raiseDeletePanelEvent(DeletePanelEvent e) {
+        for(DeletePanelListener l : this.listenerList.getListeners(DeletePanelListener.class)) {
+            l.deletePanelButtonPressed(e);
+        }
+    }
+    
+    public void addEditPanelListener(EditPanelListener l) {
+        this.listenerList.add(EditPanelListener.class, l);
+    }
+    
+    public void removeEditPanelListener(EditPanelListener l) {
+        this.listenerList.remove(EditPanelListener.class, l);
+    }
+    
+    private void raiseEditPanelEvent(EditPanelEvent e) {
+        for(EditPanelListener l : this.listenerList.getListeners(EditPanelListener.class)) {
+            l.editPanelButtonPressed(e);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -138,6 +201,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         patientNameLabel = new javax.swing.JLabel();
         patientNameValueLabel = new javax.swing.JLabel();
         editButton = new javax.swing.JButton();
+        removeButton = new javax.swing.JButton();
         expandButton = new javax.swing.JToggleButton();
         vitalDisplayGrid = new hms.common.gui.VitalDisplayGrid();
 
@@ -202,6 +266,18 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         basePanel.add(editButton, gridBagConstraints);
 
+        removeButton.setText("Remove");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 4);
+        basePanel.add(removeButton, gridBagConstraints);
+
         expandButton.setText(">>");
         expandButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -231,15 +307,16 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
 
     private void expandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandButtonActionPerformed
         this.vitalDisplayGrid.setVisible(this.expandButton.isSelected());
-        
-        synchronized(MonitorDisplayPanel.this.getTreeLock()) {
-            MonitorDisplayPanel.this.validateTree();
-        }
+        this.validate();
     }//GEN-LAST:event_expandButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
-        // TODO add your handling code here:
+        this.raiseEditPanelEvent(new EditPanelEvent(this));
     }//GEN-LAST:event_editButtonActionPerformed
+
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        this.raiseDeletePanelEvent(new DeletePanelEvent(this));
+    }//GEN-LAST:event_removeButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel basePanel;
@@ -250,6 +327,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private javax.swing.JPanel patientDataPanel;
     private javax.swing.JLabel patientNameLabel;
     private javax.swing.JLabel patientNameValueLabel;
+    private javax.swing.JButton removeButton;
     private hms.common.gui.VitalDisplayGrid vitalDisplayGrid;
     // End of variables declaration//GEN-END:variables
 }

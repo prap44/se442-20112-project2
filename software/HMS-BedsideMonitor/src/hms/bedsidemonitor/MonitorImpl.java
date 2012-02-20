@@ -68,9 +68,24 @@ public class MonitorImpl implements Monitor {
 		return this.patient;
 	}
 
-	@Override
 	public void setPatient(Patient patient) throws RemoteException {
 		this.patient = patient;
+	}
+	
+	@Override
+	public void assignPatient(String firstName, String middleName,
+			String lastName) throws RemoteException {
+		if(this.patient == null) {
+			this.patient = new PatientImpl();
+		}
+		this.patient.setPatientFirstName(firstName);
+		this.patient.setPatientMiddleName(middleName);
+		this.patient.setPatientLastName(lastName);
+	}
+	
+	@Override
+	public void unsassignPatient() throws RemoteException {
+		this.patient = null;
 	}
 
 	@Override
