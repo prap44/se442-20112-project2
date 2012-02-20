@@ -13,6 +13,7 @@ package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
@@ -23,13 +24,35 @@ import java.util.List;
  * @author Jackson Lamp (jal2633)
  */
 public class MonitorDisplayPanelList extends javax.swing.JPanel {
+    
+    private class DeletePanelEventHandler implements MonitorDisplayPanel.DeletePanelListener {
+        @Override
+        public void deletePanelButtonPressed(MonitorDisplayPanel.DeletePanelEvent event) {
+            if(MonitorDisplayPanelList.this.monitors != null) {
+                MonitorDisplayPanelList.this.monitors.remove(event.getPanel().getMonitor());
+                MonitorDisplayPanelList.this.arrangeList();
+            }
+        }
+    }
+    
+    private class EditPanelEventHandler implements MonitorDisplayPanel.EditPanelListener {
+        @Override
+        public void editPanelButtonPressed(MonitorDisplayPanel.EditPanelEvent event) {
+            if(MonitorDisplayPanelList.this.editMonitorDialog.showEditDialogModal(event.getPanel().getMonitor())) {
+                MonitorDisplayPanelList.this.arrangeList();
+            }
+        }
+    }
 
+    private EditMonitorDialog editMonitorDialog;
     private List<MonitorProxy> monitors = null;
     private List<MonitorDisplayPanel> panels = new ArrayList<MonitorDisplayPanel>();
     
     /** Creates new form PatientDisplayPanelList */
     public MonitorDisplayPanelList() {
         initComponents();
+        
+        editMonitorDialog = new EditMonitorDialog((Frame)this.getTopLevelAncestor(), true);
     }
     
     public void setMonitors(List<MonitorProxy> monitors) {
@@ -47,15 +70,25 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         return -1;
     }
     
+    public void requestAddPanel() {
+        MonitorProxy monitor = this.editMonitorDialog.showAddDialogModal();
+        if(monitor != null) {
+            this.monitors.add(monitor);
+            this.arrangeList();
+        }
+    }
+    
     private void arrangeList() {
         if(this.monitors != null) {
             GridBagConstraints gbConstraints = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
             
             /* Cull unnecessary panels */
-            for(MonitorDisplayPanel panel : this.panels) {
+            for(int i = 0; i < this.panels.size(); i++) {
+                MonitorDisplayPanel panel = this.panels.get(i);
                 if(!this.monitors.contains(panel.getMonitor())) {
                     this.panels.remove(panel);
                     this.listPanel.remove(panel);
+                    i--;
                 }
             }
             
@@ -82,6 +115,8 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                 } else {
                     /* Panel does not exist, add it to the list */
                     panel = new MonitorDisplayPanel(monitor);
+                    panel.addDeletePanelListener(new DeletePanelEventHandler());
+                    panel.addEditPanelListener(new EditPanelEventHandler());
                     this.panels.add(i, panel);
                     this.listPanel.add(panel, gbConstraints);
                 }

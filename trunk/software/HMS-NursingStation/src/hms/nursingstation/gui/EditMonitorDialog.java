@@ -6,10 +6,14 @@
  */
 package hms.nursingstation.gui;
 
-import hms.common.Monitor;
-import java.awt.Dimension;
+import hms.nursingstation.MonitorProxy;
+import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
+import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JViewport;
 
 /**
@@ -18,6 +22,8 @@ import javax.swing.JViewport;
  */
 public class EditMonitorDialog extends javax.swing.JDialog {
 
+    private boolean returnStatus;
+    
     /** Creates new form EditMonitorDialog */
     public EditMonitorDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -46,10 +52,133 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         }
     }
     
-    void showDialogModal(Monitor monitor) {
+    public boolean showEditDialogModal(MonitorProxy monitor) {
+        this.returnStatus = false;
+        
+        if(monitor.isConnected()) {
+            try {
+                if(monitor.getPatient() == null) {
+                    this.patientFirstNameField.setText("");
+                    this.patientMiddleNameField.setText("");
+                    this.patientLastNameField.setText("");
+                    this.patientAssignedCheckbox.setSelected(false);
+                    this.patientAssignedCheckbox.setEnabled(true);
+                    this.updatePatientFieldsStatus();
+                } else {
+                    this.patientFirstNameField.setText(monitor.getPatient().getPatientFirstName());
+                    this.patientMiddleNameField.setText(monitor.getPatient().getPatientMiddleName());
+                    this.patientLastNameField.setText(monitor.getPatient().getPatientLastName());
+                    this.patientAssignedCheckbox.setSelected(true);
+                    this.patientAssignedCheckbox.setEnabled(true);
+                    this.updatePatientFieldsStatus();
+                }
+            } catch (RemoteException ex) {
+                Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            } catch (MonitorDisconnectedException ex) {
+                Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        } else {
+            this.patientFirstNameField.setText("");
+            this.patientMiddleNameField.setText("");
+            this.patientLastNameField.setText("");
+            this.patientAssignedCheckbox.setSelected(false);
+            this.patientAssignedCheckbox.setEnabled(false);
+            this.updatePatientFieldsStatus();
+        }
+        
         this.setModal(true);
         this.pack();
+        this.setLocationRelativeTo(this.getParent());
         this.setVisible(true);
+        
+        if(this.returnStatus) {
+            if(this.patientAssignedCheckbox.isSelected()) {
+                if(monitor.isConnected()) {
+                    try {
+                        monitor.assignPatient(this.patientFirstNameField.getText(),
+                                this.patientMiddleNameField.getText(),
+                                this.patientLastNameField.getText());
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        return false;
+                    } catch (MonitorDisconnectedException ex) {
+                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        return false;
+                    }
+                }
+            } else {
+                if(monitor.isConnected()) {
+                    try {
+                        monitor.unassignPatient();
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        return false;
+                    } catch (MonitorDisconnectedException ex) {
+                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return this.returnStatus;
+    }
+    
+    public MonitorProxy showAddDialogModal() {
+        MonitorProxy monitor = null;
+        
+        this.returnStatus = false;
+        
+        this.patientFirstNameField.setText("");
+        this.patientMiddleNameField.setText("");
+        this.patientLastNameField.setText("");
+        this.patientAssignedCheckbox.setSelected(false);
+        this.patientAssignedCheckbox.setEnabled(true);
+        this.updatePatientFieldsStatus();
+        
+        this.setModal(true);
+        this.pack();
+        this.setLocationRelativeTo(this.getParent());
+        this.setVisible(true);
+        
+        if(this.returnStatus) {
+            try {
+                monitor = new MonitorProxy();
+                monitor.connectToMonitor();
+                
+                if(monitor.isConnected()) {
+                    try {
+                        monitor.assignPatient(this.patientFirstNameField.getText(),
+                                this.patientMiddleNameField.getText(),
+                                this.patientLastNameField.getText());
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        return null;
+                    } catch (MonitorDisconnectedException ex) {
+                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        return null;
+                    }
+                } else {
+                    ConnectionFailedDialog cfd = new ConnectionFailedDialog(this, true);
+                    cfd.showModal();
+                    return null;
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+        }
+        
+        return monitor;
+    }
+    
+    private void updatePatientFieldsStatus() {
+        boolean arePatientFieldsEnabled = this.patientAssignedCheckbox.isSelected();
+        this.patientFirstNameField.setEnabled(arePatientFieldsEnabled);
+        this.patientMiddleNameField.setEnabled(arePatientFieldsEnabled);
+        this.patientLastNameField.setEnabled(arePatientFieldsEnabled);
     }
 
     /** This method is called from within the constructor to
@@ -82,7 +211,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         vitalDisplayGrid = new hms.common.gui.VitalDisplayGrid();
         vitalDisplayViewpanelSpanner = new javax.swing.JPanel();
         buttonPanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
+        buttonPanelSpacer = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
@@ -103,6 +232,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         monitorConfigurationPanel.add(monitorIDLabel, gridBagConstraints);
 
+        monitorIDField.setEditable(false);
         monitorIDField.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -121,6 +251,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
         monitorConfigurationPanel.add(monitorAddressLabel, gridBagConstraints);
 
+        monitorAddressField.setEditable(false);
         monitorAddressField.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -284,14 +415,14 @@ public class EditMonitorDialog extends javax.swing.JDialog {
 
         buttonPanel.setLayout(new java.awt.GridBagLayout());
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout buttonPanelSpacerLayout = new javax.swing.GroupLayout(buttonPanelSpacer);
+        buttonPanelSpacer.setLayout(buttonPanelSpacerLayout);
+        buttonPanelSpacerLayout.setHorizontalGroup(
+            buttonPanelSpacerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 345, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        buttonPanelSpacerLayout.setVerticalGroup(
+            buttonPanelSpacerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 31, Short.MAX_VALUE)
         );
 
@@ -300,7 +431,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        buttonPanel.add(jPanel1, gridBagConstraints);
+        buttonPanel.add(buttonPanelSpacer, gridBagConstraints);
 
         okButton.setText("OK");
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -338,20 +469,17 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        // Close and apply changes
+        this.returnStatus = true;
         this.setVisible(false);
     }//GEN-LAST:event_okButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        // Close and do not apply changes
+        this.returnStatus = false;
         this.setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void patientAssignedCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientAssignedCheckboxActionPerformed
-        boolean arePatientFieldsEnabled = this.patientAssignedCheckbox.isSelected();
-        this.patientFirstNameField.setEnabled(arePatientFieldsEnabled);
-        this.patientMiddleNameField.setEnabled(arePatientFieldsEnabled);
-        this.patientLastNameField.setEnabled(arePatientFieldsEnabled);
+        this.updatePatientFieldsStatus();
     }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
 
     private void vitalDisplayScrollPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_vitalDisplayScrollPanelComponentResized
@@ -408,8 +536,8 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel basePanel;
     private javax.swing.JPanel buttonPanel;
+    private javax.swing.JPanel buttonPanelSpacer;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField monitorAddressField;
     private javax.swing.JLabel monitorAddressLabel;
     private javax.swing.JPanel monitorConfigurationPanel;
