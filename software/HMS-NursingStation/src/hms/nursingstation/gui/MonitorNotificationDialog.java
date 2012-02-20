@@ -53,7 +53,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
     }
     
     private List<Notification> notifications = new ArrayList<Notification>();
-    private DefaultListModel<String> notificationListModel = new DefaultListModel<String>();
+    private DefaultListModel notificationListModel = new DefaultListModel();
 
     /** Creates new form MonitorNotificationDialog */
     public MonitorNotificationDialog(java.awt.Frame parent, boolean modal) {
