@@ -14,12 +14,14 @@ package hms.nursingstation.gui;
 import hms.common.Patient;
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -230,10 +232,27 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
 
     private void expandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandButtonActionPerformed
         this.vitalDisplayGrid.setVisible(this.expandButton.isSelected());
-        this.vitalDisplayGrid.validate();
-        
         synchronized(this.getTreeLock()) {
             this.validateTree();
+        }
+//        SwingUtilities.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                int height = MonitorDisplayPanel.this.vitalDisplayGrid.getExpectedHeight();
+//                int width = MonitorDisplayPanel.this.vitalDisplayGrid.getWidth();
+//                MonitorDisplayPanel.this.vitalDisplayGrid.setSize(new Dimension(width, height));
+//                
+//                synchronized(MonitorDisplayPanel.this.getTreeLock()) {
+//                    MonitorDisplayPanel.this.validateTree();
+//                }
+//            }
+//        });
+        int height = MonitorDisplayPanel.this.vitalDisplayGrid.getExpectedHeight();
+        int width = MonitorDisplayPanel.this.vitalDisplayGrid.getWidth();
+        MonitorDisplayPanel.this.vitalDisplayGrid.setSize(new Dimension(width, height));
+
+        synchronized(MonitorDisplayPanel.this.getTreeLock()) {
+            MonitorDisplayPanel.this.validateTree();
         }
     }//GEN-LAST:event_expandButtonActionPerformed
 

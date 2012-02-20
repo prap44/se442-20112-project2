@@ -23,19 +23,19 @@ public class VitalDisplayPanel extends javax.swing.JPanel {
         initComponents();
     }
     
-    public void setVitalName(String name) {
+    public final void setVitalName(String name) {
         this.vitalNameLabel.setText(name);
     }
     
-    public String getVitalName() {
+    public final String getVitalName() {
         return this.vitalNameLabel.getText();
     }
     
-    public void setVitalValue(String value) {
+    public final void setVitalValue(String value) {
         this.vitalValueField.setText(value);
     }
     
-    public String getVitalValue() {
+    public final String getVitalValue() {
         return this.vitalValueField.getText();
     }
 

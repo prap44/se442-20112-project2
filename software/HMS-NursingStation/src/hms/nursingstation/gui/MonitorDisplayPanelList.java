@@ -12,6 +12,7 @@
 package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
     
     private void arrangeList() {
         if(this.monitors != null) {
-            GridBagConstraints gbConstraints = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
+            GridBagConstraints gbConstraints = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
             
             /* Cull unnecessary panels */
             for(MonitorDisplayPanel panel : this.panels) {
@@ -85,7 +86,6 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                     this.listPanel.add(panel, gbConstraints);
                 }
             }
-            
         }
         
         this.basePanel.validate();
@@ -109,6 +109,11 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         setLayout(new java.awt.GridLayout(1, 0));
 
         scrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                scrollPanelComponentResized(evt);
+            }
+        });
 
         basePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -117,6 +122,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         basePanel.add(listPanel, gridBagConstraints);
 
@@ -136,6 +142,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weighty = 1.0;
         basePanel.add(spacerPanel, gridBagConstraints);
 
@@ -143,6 +150,22 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
 
         add(scrollPanel);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void scrollPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_scrollPanelComponentResized
+        int viewportWidth = this.scrollPanel.getViewport().getWidth();
+        
+        for(MonitorDisplayPanel panel : this.panels) {
+            panel.setPreferredSize(new Dimension(viewportWidth, panel.getPreferredSize().height));
+        }
+        
+        this.basePanel.setPreferredSize(new Dimension(viewportWidth, this.basePanel.getPreferredSize().height));
+        this.basePanel.setMaximumSize(new Dimension(viewportWidth, this.basePanel.getPreferredSize().height));
+        
+        synchronized(this.getTreeLock()) {
+            this.validateTree();
+        }
+    }//GEN-LAST:event_scrollPanelComponentResized
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel basePanel;
     private javax.swing.JPanel listPanel;
