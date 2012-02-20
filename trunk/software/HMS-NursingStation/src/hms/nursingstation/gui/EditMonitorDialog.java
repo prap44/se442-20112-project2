@@ -10,6 +10,7 @@ import hms.common.Monitor;
 import java.awt.Dimension;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.swing.JViewport;
 
 /**
  *
@@ -354,10 +355,11 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
 
     private void vitalDisplayScrollPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_vitalDisplayScrollPanelComponentResized
-        Dimension size = this.vitalDisplayScrollPanel.getViewport().getSize();
-        this.vitalDisplayScrollPanel.getViewport().setSize(size.width, Integer.MAX_VALUE);
-        
-        this.vitalDisplayScrollPanel.getViewport().validate();
+//        Dimension size = this.vitalDisplayScrollPanel.getViewport().getSize();
+//        this.vitalDisplayScrollPanel.getViewport().setSize(size.width, Integer.MAX_VALUE);
+//        this.vitalDisplayScrollPanel.getViewport().validate();
+        JViewport viewport = this.vitalDisplayScrollPanel.getViewport();
+        viewport.setSize(viewport.getWidth(), this.vitalDisplayGrid.getExpectedHeight());
     }//GEN-LAST:event_vitalDisplayScrollPanelComponentResized
 
     /**

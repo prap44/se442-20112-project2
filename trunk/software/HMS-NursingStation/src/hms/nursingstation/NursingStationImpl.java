@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class NursingStationImpl {
@@ -41,6 +42,10 @@ public class NursingStationImpl {
 		return this.patients.size();
 	}
 	
+	public List<Patient> getPatientList() {
+		return this.patients;
+	}
+	
 	public boolean addMonitor(MonitorProxy monitor) {
 		return this.bedsideStations.add(monitor);
 	}
@@ -53,7 +58,7 @@ public class NursingStationImpl {
 		return this.bedsideStations.remove(index);
 	}
 	
-	public boolean remoteMonitor(MonitorProxy monitor) {
+	public boolean removeMonitor(MonitorProxy monitor) {
 		return this.bedsideStations.remove(monitor);
 	}
 	

@@ -11,12 +11,15 @@
  */
 package hms.nursingstation.gui;
 
-import hms.common.Monitor;
 import hms.common.Patient;
+import hms.nursingstation.MonitorProxy;
+import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
 import java.awt.Font;
 import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,10 +27,40 @@ import java.util.TreeMap;
  */
 public class MonitorDisplayPanel extends javax.swing.JPanel {
     
-    private Monitor monitor = null;
+    private MonitorProxy monitor = null;
 
     /** Creates new form PatientDisplayPanel */
-    public MonitorDisplayPanel() throws RemoteException {
+    public MonitorDisplayPanel(MonitorProxy monitor) {
+        initComponents();
+        
+        this.setMonitor(monitor);
+        
+        this.vitalDisplayGrid.setVisible(false);
+        
+        Map<String, Integer> data = new TreeMap<String, Integer>();
+        data.put("Vital Stat 1", 50);
+        data.put("Vital Stat 2", 9000);
+        data.put("Vital Stat 3", 2);
+        data.put("Vital Stat 4", 50);
+        data.put("Vital Stat 5", 9000);
+        data.put("Vital Stat 6", 2);
+        data.put("Vital Stat 7", 50);
+        data.put("Vital Stat 8", 9000);
+        data.put("Vital Stat 9", 2);
+        data.put("Vital Stat 10", 50);
+        data.put("Vital Stat 11", 9000);
+        data.put("Vital Stat 12", 2);
+        this.vitalDisplayGrid.setData(data);
+        
+        try {
+            /* Set the monitor's ID and patient's name from monitor reference */
+            this.updateIdentifyingData();
+        } catch (RemoteException ex) {
+            Logger.getLogger(MonitorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public MonitorDisplayPanel() {
         initComponents();
         
         this.vitalDisplayGrid.setVisible(false);
@@ -47,27 +80,43 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         data.put("Vital Stat 12", 2);
         this.vitalDisplayGrid.setData(data);
         
-        /* Set the monitor's ID and patient's name from monitor reference */
-        this.updateIdentifyingData();
+        try {
+            /* Set the monitor's ID and patient's name from monitor reference */
+            this.updateIdentifyingData();
+        } catch (RemoteException ex) {
+            Logger.getLogger(MonitorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void updateIdentifyingData() throws RemoteException {
-        if(this.monitor != null) {
-            this.monitorIDValueLabel.setText("TEMP REPLACE");
-            this.monitorIDValueLabel.setFont(this.monitorIDValueLabel.getFont().deriveFont(Font.PLAIN));
-            
-            Patient patient = this.monitor.getPatient();
-            if(this.monitor.getPatient() != null) {
-                this.patientNameValueLabel.setText((patient.getPatientLastName() + ", " + patient.getPatientFirstName() + " " + patient.getPatientMiddleName()).trim());
-                this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.PLAIN));
-            } else {
-                this.patientNameValueLabel.setText("Empty");
-                this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.ITALIC));
+        if(this.monitor != null && this.monitor.isConnected()) {
+            try {
+                this.monitorIDValueLabel.setText("TEMP REPLACE");
+                this.monitorIDValueLabel.setFont(this.monitorIDValueLabel.getFont().deriveFont(Font.PLAIN));
+                
+                Patient patient = this.monitor.getPatient();
+                if(this.monitor.getPatient() != null) {
+                    this.patientNameValueLabel.setText((patient.getPatientLastName() + ", " + patient.getPatientFirstName() + " " + patient.getPatientMiddleName()).trim());
+                    this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.PLAIN));
+                } else {
+                    this.patientNameValueLabel.setText("Empty");
+                    this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.ITALIC));
+                }
+            } catch (MonitorDisconnectedException ex) {
+                Logger.getLogger(MonitorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             this.monitorIDValueLabel.setText("Disconnected");
                 this.monitorIDValueLabel.setFont(this.monitorIDValueLabel.getFont().deriveFont(Font.ITALIC));
         }
+    }
+    
+    public final void setMonitor(MonitorProxy monitor) {
+        this.monitor = monitor;
+    }
+    
+    public final MonitorProxy getMonitor() {
+        return this.monitor;
     }
 
     /** This method is called from within the constructor to
@@ -88,7 +137,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         patientNameValueLabel = new javax.swing.JLabel();
         editButton = new javax.swing.JButton();
         expandButton = new javax.swing.JToggleButton();
-        vitalDisplayGrid = new hms.nursingstation.gui.VitalDisplayGrid();
+        vitalDisplayGrid = new hms.common.gui.VitalDisplayGrid();
 
         setLayout(new java.awt.GridLayout(1, 0));
 
@@ -181,6 +230,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
 
     private void expandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandButtonActionPerformed
         this.vitalDisplayGrid.setVisible(this.expandButton.isSelected());
+        this.vitalDisplayGrid.validate();
         
         synchronized(this.getTreeLock()) {
             this.validateTree();
@@ -200,6 +250,6 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private javax.swing.JPanel patientDataPanel;
     private javax.swing.JLabel patientNameLabel;
     private javax.swing.JLabel patientNameValueLabel;
-    private hms.nursingstation.gui.VitalDisplayGrid vitalDisplayGrid;
+    private hms.common.gui.VitalDisplayGrid vitalDisplayGrid;
     // End of variables declaration//GEN-END:variables
 }
