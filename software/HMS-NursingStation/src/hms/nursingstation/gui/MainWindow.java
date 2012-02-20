@@ -109,6 +109,7 @@ public class MainWindow extends javax.swing.JFrame {
                         monitor.addInformationChangeReceivedListener(new InformationChangeReceivedListener() {
                             @Override
                             public void informationChangeReceived(InformationChangeReceivedEvent event) {
+                                
                             }
                         });
                         break;

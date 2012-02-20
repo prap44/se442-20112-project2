@@ -17,6 +17,7 @@ import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
 import hms.nursingstation.events.InformationChangeReceivedEvent;
 import hms.nursingstation.listeners.InformationChangeReceivedListener;
 import java.awt.Font;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.EventListener;
 import java.util.Map;
@@ -95,35 +96,21 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         initComponents();
         
         this.setMonitor(monitor);
-        
-        this.vitalDisplayGrid.setVisible(false);
-        
-        Map<String, Integer> data = new TreeMap<String, Integer>();
-        data.put("Vital Stat 1", 50);
-        data.put("Vital Stat 2", 9000);
-        data.put("Vital Stat 3", 2);
-        data.put("Vital Stat 4", 50);
-        data.put("Vital Stat 5", 9000);
-        data.put("Vital Stat 6", 2);
-        data.put("Vital Stat 7", 50);
-        data.put("Vital Stat 8", 9000);
-        data.put("Vital Stat 9", 2);
-        data.put("Vital Stat 10", 50);
-        data.put("Vital Stat 11", 9000);
-        data.put("Vital Stat 12", 2);
-        this.vitalDisplayGrid.setData(data);
-        
-        try {
-            /* Set the monitor's ID and patient's name from monitor reference */
-            this.updateIdentifyingData();
-        } catch (RemoteException ex) {
-            Logger.getLogger(MonitorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.postInit();
     }
     
     public MonitorDisplayPanel() {
         initComponents();
         
+        try {
+            this.setMonitor(new MonitorProxy());
+        } catch (IOException ex) {
+            Logger.getLogger(MonitorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.postInit();
+    }
+    
+    private void postInit() {
         this.vitalDisplayGrid.setVisible(false);
         
         Map<String, Integer> data = new TreeMap<String, Integer>();
