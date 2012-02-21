@@ -2,15 +2,21 @@ package hms.bedsidemonitor;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executor;
 
 import javax.swing.event.EventListenerList;
 
+import hms.bedsidemonitor.threads.PatientAlarmWorker;
+import hms.bedsidemonitor.threads.PatientCallButtonWorker;
+import hms.bedsidemonitor.threads.PatientDataWorker;
+import hms.bedsidemonitor.threads.PatientInformationChangedWorker;
 import hms.common.Monitor;
 import hms.common.Patient;
 import hms.common.Sensor;
@@ -68,9 +74,16 @@ public class MonitorImpl implements Monitor {
 		}
 	};
 
+	private PatientAlarmWorker paWorker;
+	private PatientCallButtonWorker pcbWorker;
+	private PatientDataWorker pdWorker;
+	private PatientInformationChangedWorker picWorker;
+
 	public MonitorImpl() {
 		this.sensorPollingTimer.scheduleAtFixedRate(
 				this.sensorPollingTimerTask, 0, SENSOR_POLL_INTERVAL_MS);
+		this.initializeWorkerThreads();
+		this.executeWorkerThreads();
 	}
 
 	public List<Sensor> getSensorList() {
@@ -154,28 +167,37 @@ public class MonitorImpl implements Monitor {
 				listener);
 	}
 
+	@Override
+	public EventListenerList getEventListenerList() throws RemoteException {
+		return this.listenerList;
+	}
+
 	public void raisePatientAlarmEvent(PatientAlarmEvent event)
 			throws RemoteException {
 		System.out.println("[MonitorImpl] entering raisePatientAlarmEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ listenerList.getListeners(PatientDataListener.class).length);
-		for (PatientAlarmListener listener : this.listenerList
-				.getListeners(PatientAlarmListener.class)) {
-			listener.patientAlarmReceived(event);
-		}
+//		for (Iterator<PatientAlarmListener> it =
+//				Arrays.asList(this.listenerList.
+//				getListeners(PatientAlarmListener.class)).iterator();
+//				it.hasNext();) {
+//			PatientAlarmListener listener = it.next();
+//			listener.patientAlarmReceived(event);
+//		}
+		
+		this.paWorker.addPatientAlarmEvent(event);
+		
 		System.out.println("[MonitorImpl] exiting raisePatientAlarmEvent");
 	}
 
 	public void raisePatientCallButtonEvent(final PatientCallButtonEvent event)
 			throws RemoteException {
-		System.out
-				.println("[MonitorImpl] entering raisePatientCallButtonEvent");
+		System.out.println("[MonitorImpl] entering raisePatientCallButtonEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ listenerList.getListeners(PatientDataListener.class).length);
-		for (final PatientCallButtonListener listener : this.listenerList
-				.getListeners(PatientCallButtonListener.class)) {
-			listener.patientCallButtonPressed(event);
-		}
+		
+		this.pcbWorker.addPatientCallButtonEvent(event);
+		
 		System.out.println("[MonitorImpl] exiting raisePatientCallButtonEvent");
 	}
 
@@ -184,26 +206,61 @@ public class MonitorImpl implements Monitor {
 			throws RemoteException {
 		System.out.println("[MonitorImpl] entering raisePatientDataEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
-				+ listenerList.getListeners(PatientDataListener.class).length);
-		for (PatientDataListener listener : this.listenerList
-				.getListeners(PatientDataListener.class)) {
-			listener.patientDataReceived(event);
-		}
+				+ this.listenerList.getListeners(PatientDataListener.class).length);
+//		for (Iterator<PatientDataListener> it =
+//				Arrays.asList(this.listenerList.
+//				getListeners(PatientDataListener.class)).iterator();
+//				it.hasNext();) {
+//			PatientDataListener listener = it.next();
+//			listener.patientDataReceived(event);
+//		}
+		
+		this.pdWorker.addPatientDataEvent(event);
+		
 		System.out.println("[MonitorImpl] exiting raisePatientDataEvent");
 	}
 
 	@Override
 	public void raisePatientInformationChangedEvent(
 			PatientInformationChangedEvent event) throws RemoteException {
-		System.out
-				.println("[MonitorImpl] entering raisePatientInformationChangedEvent");
+		System.out.println("[MonitorImpl] entering raisePatientInformationChangedEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ listenerList.getListeners(PatientDataListener.class).length);
-		for (PatientInformationChangedListener listener : this.listenerList
-				.getListeners(PatientInformationChangedListener.class)) {
-			listener.patientInformationChanged(event);
-		}
-		System.out
-				.println("[MonitorImpl] exiting raisePatientInformationChangedEvent");
+//		for (Iterator<PatientInformationChangedListener> it =
+//				Arrays.asList(this.listenerList.
+//				getListeners(PatientInformationChangedListener.class)).iterator();
+//				it.hasNext();) {
+//			PatientInformationChangedListener listener = it.next();
+//			listener.patientInformationChanged(event);
+//		}
+		
+		this.picWorker.addPatientInformationChangedEvent(event);
+		
+		System.out.println("[MonitorImpl] exiting raisePatientInformationChangedEvent");
+	}
+	
+	private void initializeWorkerThreads() {
+		this.paWorker = new PatientAlarmWorker(this);
+		this.pcbWorker = new PatientCallButtonWorker(this);
+		this.pdWorker = new PatientDataWorker(this);
+		this.picWorker = new PatientInformationChangedWorker(this);
+	}
+	
+	private void executeWorkerThreads() {
+		Executor monitorExecutor = new Executor() {
+			
+			@Override
+			public void execute(Runnable command) {
+				Thread t = new Thread(command);
+				t.setDaemon(true);
+				t.start();
+			}
+			
+		};
+		
+		monitorExecutor.execute(paWorker);
+		monitorExecutor.execute(pcbWorker);
+		monitorExecutor.execute(pdWorker);
+		monitorExecutor.execute(picWorker);
 	}
 }
