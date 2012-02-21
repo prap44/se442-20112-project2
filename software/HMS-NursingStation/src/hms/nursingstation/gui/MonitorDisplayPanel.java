@@ -20,8 +20,6 @@ import java.awt.Font;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.EventListener;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
