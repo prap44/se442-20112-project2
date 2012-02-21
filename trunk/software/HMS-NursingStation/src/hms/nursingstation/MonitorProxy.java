@@ -164,25 +164,23 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		this.raiseInformationChangedReceivedEvent(localEvent);
 	}
 
-	public void connectToMonitor() {
-		try {
-			Registry registry = LocateRegistry.getRegistry();
-			this.realMonitor = (Monitor) registry.lookup(BEDSIDE_SERVER_NAME);
-		} catch (NotBoundException nbe) {
-			nbe.printStackTrace();
-		} catch (RemoteException re) {
-			re.printStackTrace();
-		}
+	public void connectToMonitor() throws RemoteException, NotBoundException {
+		Registry registry = LocateRegistry.getRegistry();
+		this.realMonitor = (Monitor) registry.lookup(BEDSIDE_SERVER_NAME);
+		this.realMonitor.addPatientAlarmListener(this);
+		this.realMonitor.addPatientCallButtonListener(this);
+		this.realMonitor.addPatientDataListener(this);
+		this.realMonitor.addPatientInformationChangedListener(this);
 	}
-
-	public void registerProxy() {
-		try {
-			realMonitor.addPatientAlarmListener(this);
-			realMonitor.addPatientCallButtonListener(this);
-			realMonitor.addPatientDataListener(this);
-			realMonitor.addPatientInformationChangedListener(this);
-		} catch (RemoteException re) {
-			re.printStackTrace();
+	
+	public void disconnectFromMonitor() throws RemoteException {
+		if(this.isConnected()) {
+			Monitor monitor = this.realMonitor;
+			this.realMonitor = null;
+			monitor.removePatientAlarmListener(this);
+			monitor.removePatientCallButtonListener(this);
+			monitor.removePatientDataListener(this);
+			monitor.removePatientInformationChangedListener(this);
 		}
 	}
 

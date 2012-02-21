@@ -22,8 +22,12 @@ import hms.nursingstation.listeners.DataReceivedListener;
 import hms.nursingstation.listeners.InformationChangeReceivedListener;
 import hms.nursingstation.listeners.MonitorStatusChangedListener;
 import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -59,62 +63,67 @@ public class MainWindow extends javax.swing.JFrame {
 
         this.nursingStation.addMonitorStatusChangedListener(new MonitorStatusChangedListener() {
             @Override
-            public void monitorStatusChanged(MonitorStatusChangedEvent event) {
-                MonitorProxy monitor = event.getMonitor();
-                switch (event.getOperation()) {
-                    case ADDED:
-                        monitor.addAlarmReceivedListener(new AlarmReceivedListener() {
-                            @Override
-                            public void alarmReceived(AlarmReceivedEvent event) {
-                                /* Log alarm */
-                                MainWindow.this.loggingListModel.addElement("Alarm received");
-                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital(), event.generateMessage());
-                            }
-                        });
+            public void monitorStatusChanged(final MonitorStatusChangedEvent event) {
+            	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						MonitorProxy monitor = event.getMonitor();
+		                switch (event.getOperation()) {
+		                    case ADDED:
+		                        monitor.addAlarmReceivedListener(new AlarmReceivedListener() {
+		                            @Override
+		                            public void alarmReceived(AlarmReceivedEvent event) {
+		                                /* Log alarm */
+		                                MainWindow.this.loggingListModel.addElement("Alarm received");
+		                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital(), event.generateMessage());
+		                            }
+		                        });
 
-                        monitor.addAlarmResetListener(new AlarmResetListener() {
-                            @Override
-                            public void alarmReset(AlarmResetEvent event) {
-                                /* Log reset */
-                                MainWindow.this.loggingListModel.addElement("Alarm reset");
-                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital());
-                            }
-                        });
-                        
-                        monitor.addCallButtonReceivedListener(new CallButtonReceivedListener() {
-                            @Override
-                            public void callButtonRequestReceived(CallButtonReceivedEvent event) {
-                                /* Log call button push */
-                                MainWindow.this.loggingListModel.addElement("Call button pushed");
-                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null, event.generateMessage());
-                            }
-                        });
-                        
-                        monitor.addCallButtonResetListener(new CallButtonResetListener() {
-                            @Override
-                            public void callButtonRequestReset(CallButtonResetEvent event) {
-                                /* Log call button reset */
-                                MainWindow.this.loggingListModel.addElement("Call button reset");
-                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null);
-                            }
-                        });
+		                        monitor.addAlarmResetListener(new AlarmResetListener() {
+		                            @Override
+		                            public void alarmReset(AlarmResetEvent event) {
+		                                /* Log reset */
+		                                MainWindow.this.loggingListModel.addElement("Alarm reset");
+		                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital());
+		                            }
+		                        });
+		                        
+		                        monitor.addCallButtonReceivedListener(new CallButtonReceivedListener() {
+		                            @Override
+		                            public void callButtonRequestReceived(CallButtonReceivedEvent event) {
+		                                /* Log call button push */
+		                                MainWindow.this.loggingListModel.addElement("Call button pushed");
+		                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null, event.generateMessage());
+		                            }
+		                        });
+		                        
+		                        monitor.addCallButtonResetListener(new CallButtonResetListener() {
+		                            @Override
+		                            public void callButtonRequestReset(CallButtonResetEvent event) {
+		                                /* Log call button reset */
+		                                MainWindow.this.loggingListModel.addElement("Call button reset");
+		                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null);
+		                            }
+		                        });
 
-                        monitor.addDataReceivedListener(new DataReceivedListener() {
-                            @Override
-                            public void dataReceived(DataReceivedEvent event) {
-                            }
-                        });
-                        
-                        monitor.addInformationChangeReceivedListener(new InformationChangeReceivedListener() {
-                            @Override
-                            public void informationChangeReceived(InformationChangeReceivedEvent event) {
-                                
-                            }
-                        });
-                        break;
-                    case REMOVED:
-                        break;
-                }
+		                        monitor.addDataReceivedListener(new DataReceivedListener() {
+		                            @Override
+		                            public void dataReceived(DataReceivedEvent event) {
+		                            }
+		                        });
+		                        
+		                        monitor.addInformationChangeReceivedListener(new InformationChangeReceivedListener() {
+		                            @Override
+		                            public void informationChangeReceived(InformationChangeReceivedEvent event) {
+		                                
+		                            }
+		                        });
+		                        break;
+		                    case REMOVED:
+		                        break;
+		                }
+					}
+				});
             }
         });
         
@@ -149,9 +158,13 @@ public class MainWindow extends javax.swing.JFrame {
         loggingScrollPanel = new javax.swing.JScrollPane();
         loggingList = new javax.swing.JList();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nursing Station");
         setMinimumSize(new java.awt.Dimension(300, 200));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         basePanel.setMinimumSize(new java.awt.Dimension(400, 400));
@@ -233,6 +246,18 @@ public class MainWindow extends javax.swing.JFrame {
     private void addMonitorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addMonitorButtonActionPerformed
         this.monitorDisplayPanelList.addMonitorRequest();
     }//GEN-LAST:event_addMonitorButtonActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        for(int i = 0; i < this.nursingStation.getMonitorCount(); i++) {
+            try {
+                this.nursingStation.getMonitor(i).disconnectFromMonitor();
+            } catch (RemoteException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        System.exit(0);
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

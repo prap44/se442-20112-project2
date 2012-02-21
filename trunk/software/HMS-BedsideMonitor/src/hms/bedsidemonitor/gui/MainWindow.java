@@ -16,6 +16,7 @@ import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -221,8 +222,12 @@ public class MainWindow extends javax.swing.JFrame {
         callNurseButton = new javax.swing.JButton();
         resetCallNurseButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bedside Monitor");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         basePanel.setPreferredSize(new java.awt.Dimension(464, 500));
@@ -671,6 +676,20 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_resetAlarmButtonActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            this.monitor.unbind();
+        } catch (RemoteException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+        System.exit(0);
+    }//GEN-LAST:event_formWindowClosing
+
     /**
      * @param args the command line arguments
      */
@@ -681,7 +700,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         try {
             UnicastRemoteObject.exportObject(monitor);
-            Naming.rebind("hms.bedsidemonitor", monitor);
+            monitor.rebind("hms.bedsidemonitor");
         } catch (MalformedURLException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         } catch (RemoteException ex) {
