@@ -161,9 +161,13 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     private void updateButtonStatus() {
-        boolean sensorButtonsEnabled = this.sensorTable.getSelectedRow() >= 0;
-        boolean alarmResetButtonEnabled = sensorButtonsEnabled &&
-                this.sensorList.get(this.sensorTable.getSelectedRow()).getAlarmState();
+    	int selectedRow = this.sensorTable.getSelectedRow();
+        boolean sensorButtonsEnabled = selectedRow >= 0 && !this.sensorList.isEmpty();
+        boolean alarmResetButtonEnabled = false;
+        if (selectedRow < this.sensorList.size()) {
+        	alarmResetButtonEnabled = sensorButtonsEnabled &&
+	                this.sensorList.get(selectedRow).getAlarmState();
+        }
         this.editSensorButton.setEnabled(sensorButtonsEnabled);
         this.removeSensorButton.setEnabled(sensorButtonsEnabled);
         this.resetAlarmButton.setEnabled(alarmResetButtonEnabled);

@@ -34,9 +34,6 @@ public class PatientAlarmWorker implements Runnable {
 								iterator(); it.hasNext();) {
 						PatientAlarmListener l = it.next();
 						l.patientAlarmReceived(head);
-						
-						System.out.println("[PatientAlarmWorker] " +
-							"patientAlarmReceived");
 					}
 				}
 			}

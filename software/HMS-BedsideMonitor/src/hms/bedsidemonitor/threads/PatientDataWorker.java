@@ -34,9 +34,6 @@ public class PatientDataWorker implements Runnable {
 								iterator(); it.hasNext();) {
 						PatientDataListener l = it.next();
 						l.patientDataReceived(head);
-						
-						System.out.println("[PatientDataWorker] " +
-							"patientDataReceived");
 					}
 				}
 			}

@@ -34,9 +34,6 @@ public class PatientInformationChangedWorker implements Runnable {
 								iterator(); it.hasNext();) {
 						PatientInformationChangedListener l = it.next();
 						l.patientInformationChanged(head);
-						
-						System.out.println("[PatientInformationChangedWorker] " +
-							"patientInformationChanged");
 					}
 				}
 			}
