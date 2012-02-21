@@ -11,15 +11,11 @@ import hms.nursingstation.events.AlarmReceivedEvent;
 import hms.nursingstation.events.AlarmResetEvent;
 import hms.nursingstation.events.CallButtonReceivedEvent;
 import hms.nursingstation.events.CallButtonResetEvent;
-import hms.nursingstation.events.DataReceivedEvent;
-import hms.nursingstation.events.InformationChangeReceivedEvent;
 import hms.nursingstation.events.MonitorStatusChangedEvent;
 import hms.nursingstation.listeners.AlarmReceivedListener;
 import hms.nursingstation.listeners.AlarmResetListener;
 import hms.nursingstation.listeners.CallButtonReceivedListener;
 import hms.nursingstation.listeners.CallButtonResetListener;
-import hms.nursingstation.listeners.DataReceivedListener;
-import hms.nursingstation.listeners.InformationChangeReceivedListener;
 import hms.nursingstation.listeners.MonitorStatusChangedListener;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
@@ -38,7 +34,63 @@ public class MainWindow extends javax.swing.JFrame {
     private NursingStationImpl nursingStation = null;
     private DefaultListModel loggingListModel = new DefaultListModel();
     private MonitorNotificationDialog notificationDialog;
-    
+    private AlarmReceivedListener alarmReceivedListener = new AlarmReceivedListener() {
+
+        @Override
+        public void alarmReceived(final AlarmReceivedEvent event) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    /* Log alarm */
+                    MainWindow.this.loggingListModel.addElement("Alarm received");
+                    MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital(), event.generateMessage());
+                }
+            });
+        }
+    };
+    private AlarmResetListener alarmResetListener = new AlarmResetListener() {
+
+        @Override
+        public void alarmReset(final AlarmResetEvent event) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    /* Log reset */
+                    MainWindow.this.loggingListModel.addElement("Alarm reset");
+                    MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital());
+                }
+            });
+        }
+    };
+    private CallButtonReceivedListener callButtonReceivedListener = new CallButtonReceivedListener() {
+
+        @Override
+        public void callButtonRequestReceived(final CallButtonReceivedEvent event) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    /* Log call button push */
+                    MainWindow.this.loggingListModel.addElement("Call button pushed");
+                    MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null, event.generateMessage());
+                }
+            });
+        }
+    };
+    private CallButtonResetListener callButtonResetListener = new CallButtonResetListener() {
+
+        @Override
+        public void callButtonRequestReset(final CallButtonResetEvent event) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    /* Log call button reset */
+                    MainWindow.this.loggingListModel.addElement("Call button reset");
+                    MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null);
+                }
+            });
+        }
+    };
+
     public MainWindow(NursingStationImpl nursingStation) {
         initComponents();
         this.loggingList.setModel(loggingListModel);
@@ -53,7 +105,7 @@ public class MainWindow extends javax.swing.JFrame {
         this.notificationDialog = new MonitorNotificationDialog(this, true);
         this.setNursingStation(new NursingStationImpl());
     }
-    
+
     private void setNursingStation(NursingStationImpl nursingStation) {
         if (nursingStation == null) {
             this.nursingStation = new NursingStationImpl();
@@ -62,71 +114,29 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         this.nursingStation.addMonitorStatusChangedListener(new MonitorStatusChangedListener() {
+
             @Override
             public void monitorStatusChanged(final MonitorStatusChangedEvent event) {
-            	SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						MonitorProxy monitor = event.getMonitor();
-		                switch (event.getOperation()) {
-		                    case ADDED:
-		                        monitor.addAlarmReceivedListener(new AlarmReceivedListener() {
-		                            @Override
-		                            public void alarmReceived(AlarmReceivedEvent event) {
-		                                /* Log alarm */
-		                                MainWindow.this.loggingListModel.addElement("Alarm received");
-		                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital(), event.generateMessage());
-		                            }
-		                        });
+                SwingUtilities.invokeLater(new Runnable() {
 
-		                        monitor.addAlarmResetListener(new AlarmResetListener() {
-		                            @Override
-		                            public void alarmReset(AlarmResetEvent event) {
-		                                /* Log reset */
-		                                MainWindow.this.loggingListModel.addElement("Alarm reset");
-		                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.ALARM, event.getVital());
-		                            }
-		                        });
-		                        
-		                        monitor.addCallButtonReceivedListener(new CallButtonReceivedListener() {
-		                            @Override
-		                            public void callButtonRequestReceived(CallButtonReceivedEvent event) {
-		                                /* Log call button push */
-		                                MainWindow.this.loggingListModel.addElement("Call button pushed");
-		                                MainWindow.this.notificationDialog.addNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null, event.generateMessage());
-		                            }
-		                        });
-		                        
-		                        monitor.addCallButtonResetListener(new CallButtonResetListener() {
-		                            @Override
-		                            public void callButtonRequestReset(CallButtonResetEvent event) {
-		                                /* Log call button reset */
-		                                MainWindow.this.loggingListModel.addElement("Call button reset");
-		                                MainWindow.this.notificationDialog.removeNotification(event.getMonitor(), MonitorNotificationDialog.NotificationType.REQUEST, null);
-		                            }
-		                        });
-
-		                        monitor.addDataReceivedListener(new DataReceivedListener() {
-		                            @Override
-		                            public void dataReceived(DataReceivedEvent event) {
-		                            }
-		                        });
-		                        
-		                        monitor.addInformationChangeReceivedListener(new InformationChangeReceivedListener() {
-		                            @Override
-		                            public void informationChangeReceived(InformationChangeReceivedEvent event) {
-		                                
-		                            }
-		                        });
-		                        break;
-		                    case REMOVED:
-		                        break;
-		                }
-					}
-				});
+                    @Override
+                    public void run() {
+                        MonitorProxy monitor = event.getMonitor();
+                        switch (event.getOperation()) {
+                            case ADDED:
+                                monitor.addAlarmReceivedListener(MainWindow.this.alarmReceivedListener);
+                                monitor.addAlarmResetListener(MainWindow.this.alarmResetListener);
+                                monitor.addCallButtonReceivedListener(MainWindow.this.callButtonReceivedListener);
+                                monitor.addCallButtonResetListener(MainWindow.this.callButtonResetListener);
+                                break;
+                            case REMOVED:
+                                break;
+                        }
+                    }
+                });
             }
         });
-        
+
 //        try {
 //            nursingStation.addMonitor(new MonitorProxy());
 //            nursingStation.addMonitor(new MonitorProxy());
@@ -248,14 +258,14 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_addMonitorButtonActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        for(int i = 0; i < this.nursingStation.getMonitorCount(); i++) {
+        for (int i = 0; i < this.nursingStation.getMonitorCount(); i++) {
             try {
                 this.nursingStation.getMonitor(i).disconnectFromMonitor();
             } catch (RemoteException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         System.exit(0);
     }//GEN-LAST:event_formWindowClosing
 
@@ -265,10 +275,10 @@ public class MainWindow extends javax.swing.JFrame {
     public static void main(String args[]) {
         /* Initialize RMI interface */
         System.setSecurityManager(new RMISecurityManager());
-        
+
         /* Initialize nursing station */
         final NursingStationImpl nursingStation = new NursingStationImpl();
-        
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -294,6 +304,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 MainWindow window = new MainWindow(nursingStation);
