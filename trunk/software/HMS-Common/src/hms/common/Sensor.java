@@ -112,7 +112,6 @@ public class Sensor {
 		spikeCheck();
 		if( randomNumber.nextInt()%17 == 0){
 			this.vitalSpike();
-			//System.out.println("Vital: " + name + " spiked");
 		}
 		if (this.getSpikeFlag() == false){
 			if(randomNumber.nextInt()%2 == 0){
@@ -138,7 +137,6 @@ public class Sensor {
 			
 			this.setSpikeFlag(false);
 			rawData = this.getCurrentValue()/convert;
-			System.out.println("VitalSign " +  this.getName() + " raw data read: " +  rawData);
 			return rawData;
 	}
 	private void vitalSpike(){

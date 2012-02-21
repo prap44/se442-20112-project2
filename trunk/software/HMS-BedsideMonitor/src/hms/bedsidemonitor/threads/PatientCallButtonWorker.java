@@ -34,9 +34,6 @@ public class PatientCallButtonWorker implements Runnable {
 								iterator(); it.hasNext();) {
 						PatientCallButtonListener l = it.next();
 						l.patientCallButtonPressed(head);
-
-						System.out.println("[PatientCallButtonWorker] " +
-							"patientCallButtonPressed");
 					}
 				}
 			}

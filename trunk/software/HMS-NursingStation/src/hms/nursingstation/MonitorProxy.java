@@ -24,6 +24,7 @@ import hms.nursingstation.listeners.DataReceivedListener;
 import hms.nursingstation.listeners.InformationChangeReceivedListener;
 
 import java.io.IOException;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -57,24 +58,15 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	@Override
 	public void patientCallButtonPressed(PatientCallButtonEvent event)
 			throws RemoteException {
-		System.out.println("[MonitorProxy] Patient Call Button Pressed");
 		Patient p;
 		try {
 			p = this.getPatient();
 			if (p != null) {
 				if (event.isActive()) {
-					System.out.println("[MonitorProxy] Patient "
-							+ p.getPatientFirstName() + " "
-							+ p.getPatientLastName()
-							+ " pressed the call button");
 					CallButtonReceivedEvent localEvent = new CallButtonReceivedEvent(
 							this);
 					this.raiseCallButtonReceivedEvent(localEvent);
 				} else {
-					System.out.println("[MonitorProxy] Patient "
-							+ p.getPatientFirstName() + " "
-							+ p.getPatientLastName()
-							+ "'s call button was reset");
 					final CallButtonResetEvent localEvent = new CallButtonResetEvent(
 							this);
 					SwingUtilities.invokeLater(new Runnable() {
@@ -83,7 +75,6 @@ public class MonitorProxy extends UnicastRemoteObject implements
 							try {
 								MonitorProxy.this.raiseCallButtonResetEvent(localEvent);
 							} catch (RemoteException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -99,27 +90,16 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	@Override
 	public void patientAlarmReceived(PatientAlarmEvent event)
 			throws RemoteException {
-		System.out.println("[MonitorProxy] Patient Alarm Received");
 		Patient p;
 		try {
 			p = this.getPatient();
 			String vital = event.getVital();
 			if (p != null) {
 				if (event.isAlarmOn()) {
-					System.out.println("[MonitorProxy] Patient "
-							+ p.getPatientFirstName() + " "
-							+ p.getPatientLastName() + "'s vital sign " + vital
-							+ " is critical");
 					AlarmReceivedEvent localEvent = new AlarmReceivedEvent(
 							this, vital);
 					this.raiseAlarmReceivedEvent(localEvent);
 				} else {
-					System.out
-							.println("[MonitorProxy] Patient "
-									+ p.getPatientFirstName() + " "
-									+ p.getPatientLastName()
-									+ "'s alarm for vital sign " + vital
-									+ " was reset");
 					AlarmResetEvent localEvent = new AlarmResetEvent(this,
 							vital);
 					this.raiseAlarmResetEvent(localEvent);
@@ -134,18 +114,11 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	@Override
 	public void patientDataReceived(PatientDataEvent event)
 			throws RemoteException {
-		System.out.println("[MonitorProxy] Patient Data Received");
 		Patient p;
 		try {
 			p = this.getPatient();
 			Map<String, Integer> patientVitals = event.getVitals();
 			if (p != null) {
-				System.out.println("[MonitorProxy] Patient: "
-						+ p.getPatientFirstName() + " "
-						+ p.getPatientLastName());
-				String vital = patientVitals.keySet().iterator().next();
-				System.out.println("[MonitorProxy] Patient Vital Signs: "
-						+ vital + ", " + patientVitals.get(vital));
 				DataReceivedEvent localEvent = new DataReceivedEvent(
 						patientVitals);
 				this.raiseDataReceivedEvent(localEvent);
@@ -159,14 +132,12 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	@Override
 	public void patientInformationChanged(PatientInformationChangedEvent event)
 			throws RemoteException {
-		System.out.println("[MonitorProxy] Patient Information Changed");
 		InformationChangeReceivedEvent localEvent = new InformationChangeReceivedEvent();
 		this.raiseInformationChangedReceivedEvent(localEvent);
 	}
 
 	public void connectToMonitor() throws RemoteException, NotBoundException {
-		Registry registry = LocateRegistry.getRegistry();
-		this.realMonitor = (Monitor) registry.lookup(BEDSIDE_SERVER_NAME);
+		this.realMonitor = lookupRemoteMonitor();
 		this.realMonitor.addPatientAlarmListener(this);
 		this.realMonitor.addPatientCallButtonListener(this);
 		this.realMonitor.addPatientDataListener(this);
@@ -294,6 +265,12 @@ public class MonitorProxy extends UnicastRemoteObject implements
 				.getListeners(InformationChangeReceivedListener.class)) {
 			l.informationChangeReceived(event);
 		}
+	}
+	
+	private Monitor lookupRemoteMonitor() throws RemoteException,
+			NotBoundException, AccessException {
+		Registry registry = LocateRegistry.getRegistry();
+		return (Monitor) registry.lookup(BEDSIDE_SERVER_NAME);
 	}
 
 }

@@ -142,9 +142,7 @@ public class MonitorImpl implements Monitor {
 	@Override
 	public void addPatientAlarmListener(PatientAlarmListener listener)
 			throws RemoteException {
-		System.out.println("[MonitorImpl] entering addPatientAlarmListener");
 		this.listenerList.add(PatientAlarmListener.class, listener);
-		System.out.println("[MonitorImpl] exiting addPatientAlarmListener");
 	}
 
 	@Override
@@ -198,48 +196,24 @@ public class MonitorImpl implements Monitor {
 
 	public void raisePatientAlarmEvent(PatientAlarmEvent event)
 			throws RemoteException {
-		System.out.println("[MonitorImpl] entering raisePatientAlarmEvent");
-		System.out.println("[MonitorImpl] listenerList.length == "
-				+ listenerList.getListeners(PatientDataListener.class).length);
-		
 		this.paWorker.addPatientAlarmEvent(event);
-		
-		System.out.println("[MonitorImpl] exiting raisePatientAlarmEvent");
 	}
 
 	public void raisePatientCallButtonEvent(final PatientCallButtonEvent event)
 			throws RemoteException {
-		System.out.println("[MonitorImpl] entering raisePatientCallButtonEvent");
-		System.out.println("[MonitorImpl] listenerList.length == "
-				+ listenerList.getListeners(PatientDataListener.class).length);
-		
 		this.pcbWorker.addPatientCallButtonEvent(event);
-		
-		System.out.println("[MonitorImpl] exiting raisePatientCallButtonEvent");
 	}
 
 	@Override
 	public void raisePatientDataEvent(PatientDataEvent event)
 			throws RemoteException {
-		System.out.println("[MonitorImpl] entering raisePatientDataEvent");
-		System.out.println("[MonitorImpl] listenerList.length == "
-				+ this.listenerList.getListeners(PatientDataListener.class).length);
-		
 		this.pdWorker.addPatientDataEvent(event);
-		
-		System.out.println("[MonitorImpl] exiting raisePatientDataEvent");
 	}
 
 	@Override
 	public void raisePatientInformationChangedEvent(
 			PatientInformationChangedEvent event) throws RemoteException {
-		System.out.println("[MonitorImpl] entering raisePatientInformationChangedEvent");
-		System.out.println("[MonitorImpl] listenerList.length == "
-				+ listenerList.getListeners(PatientDataListener.class).length);
-		
 		this.picWorker.addPatientInformationChangedEvent(event);
-		
-		System.out.println("[MonitorImpl] exiting raisePatientInformationChangedEvent");
 	}
 	
 	private void initializeWorkerThreads() {
