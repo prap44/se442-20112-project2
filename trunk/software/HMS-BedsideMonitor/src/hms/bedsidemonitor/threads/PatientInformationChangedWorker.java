@@ -1,9 +1,7 @@
 package hms.bedsidemonitor.threads;
 
 import hms.common.Monitor;
-import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientInformationChangedEvent;
-import hms.common.listeners.PatientAlarmListener;
 import hms.common.listeners.PatientInformationChangedListener;
 
 import java.rmi.RemoteException;

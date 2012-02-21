@@ -11,12 +11,8 @@ import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JViewport;
-import javax.swing.plaf.basic.BasicScrollPaneUI.ViewportChangeHandler;
 
 /**
  *

@@ -2,9 +2,7 @@ package hms.bedsidemonitor;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -177,13 +175,6 @@ public class MonitorImpl implements Monitor {
 		System.out.println("[MonitorImpl] entering raisePatientAlarmEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ listenerList.getListeners(PatientDataListener.class).length);
-//		for (Iterator<PatientAlarmListener> it =
-//				Arrays.asList(this.listenerList.
-//				getListeners(PatientAlarmListener.class)).iterator();
-//				it.hasNext();) {
-//			PatientAlarmListener listener = it.next();
-//			listener.patientAlarmReceived(event);
-//		}
 		
 		this.paWorker.addPatientAlarmEvent(event);
 		
@@ -207,13 +198,6 @@ public class MonitorImpl implements Monitor {
 		System.out.println("[MonitorImpl] entering raisePatientDataEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ this.listenerList.getListeners(PatientDataListener.class).length);
-//		for (Iterator<PatientDataListener> it =
-//				Arrays.asList(this.listenerList.
-//				getListeners(PatientDataListener.class)).iterator();
-//				it.hasNext();) {
-//			PatientDataListener listener = it.next();
-//			listener.patientDataReceived(event);
-//		}
 		
 		this.pdWorker.addPatientDataEvent(event);
 		
@@ -226,13 +210,6 @@ public class MonitorImpl implements Monitor {
 		System.out.println("[MonitorImpl] entering raisePatientInformationChangedEvent");
 		System.out.println("[MonitorImpl] listenerList.length == "
 				+ listenerList.getListeners(PatientDataListener.class).length);
-//		for (Iterator<PatientInformationChangedListener> it =
-//				Arrays.asList(this.listenerList.
-//				getListeners(PatientInformationChangedListener.class)).iterator();
-//				it.hasNext();) {
-//			PatientInformationChangedListener listener = it.next();
-//			listener.patientInformationChanged(event);
-//		}
 		
 		this.picWorker.addPatientInformationChangedEvent(event);
 		
