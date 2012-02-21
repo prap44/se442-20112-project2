@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 
 public class PatientImpl implements Patient, Serializable {
+	
+	private static final long serialVersionUID = -5478633863523753993L;
+	
 	private String firstName = "";
 	private String middleName = "";
 	private String lastName = "";

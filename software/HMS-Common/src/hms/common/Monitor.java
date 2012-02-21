@@ -12,6 +12,8 @@ import hms.common.listeners.PatientInformationChangedListener;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import javax.swing.event.EventListenerList;
+
 public interface Monitor extends Remote {
 	public void assignPatient(String firstName, String middleName, String lastName) throws RemoteException;
 	public void unsassignPatient() throws RemoteException;
@@ -24,6 +26,7 @@ public interface Monitor extends Remote {
 	public void removePatientCallButtonListener(PatientCallButtonListener listener) throws RemoteException;
 	public void removePatientDataListener(PatientDataListener listener) throws RemoteException;
 	public void removePatientInformationChangedListener(PatientInformationChangedListener listener) throws RemoteException;
+	public EventListenerList getEventListenerList() throws RemoteException;
 	public void raisePatientAlarmEvent(PatientAlarmEvent event) throws RemoteException;
 	public void raisePatientCallButtonEvent(PatientCallButtonEvent event) throws RemoteException;
 	public void raisePatientDataEvent(PatientDataEvent event) throws RemoteException;
