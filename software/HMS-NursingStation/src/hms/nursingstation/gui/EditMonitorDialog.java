@@ -10,6 +10,7 @@ import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -151,10 +152,9 @@ public class EditMonitorDialog extends javax.swing.JDialog {
             try {
                 monitor = new MonitorProxy();
                 monitor.connectToMonitor();
-                
+
                 if(monitor.isConnected()) {
                     try {
-                    	monitor.registerProxy();
                         monitor.assignPatient(this.patientFirstNameField.getText(),
                                 this.patientMiddleNameField.getText(),
                                 this.patientLastNameField.getText());
@@ -170,9 +170,12 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                     cfd.showModal();
 //                    return null;
                 }
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
             } catch (IOException ex) {
-                Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
+                ex.printStackTrace();
+            } catch (NotBoundException ex) {
+                ex.printStackTrace();
             }
         }
         

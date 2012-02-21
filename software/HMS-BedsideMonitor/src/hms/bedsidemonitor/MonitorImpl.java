@@ -1,5 +1,9 @@
 package hms.bedsidemonitor;
 
+import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +35,7 @@ public class MonitorImpl implements Monitor {
 	
 	private final int SENSOR_POLL_INTERVAL_MS = 250;
 
+	private String id = null;
 	private EventListenerList listenerList = new EventListenerList();
 	private Patient patient = null;
 	private List<Sensor> sensors = new ArrayList<Sensor>();
@@ -82,6 +87,27 @@ public class MonitorImpl implements Monitor {
 				this.sensorPollingTimerTask, 0, SENSOR_POLL_INTERVAL_MS);
 		this.initializeWorkerThreads();
 		this.executeWorkerThreads();
+	}
+	
+	public void bind(String id) throws MalformedURLException, RemoteException, AlreadyBoundException {
+		Naming.bind(id, this);
+		this.id = id;
+	}
+	
+	public void rebind(String id) throws RemoteException, MalformedURLException {
+		Naming.rebind(id, this);
+		this.id = id;
+	}
+	
+	public void unbind() throws RemoteException, MalformedURLException, NotBoundException {
+		if(this.id != null) {
+			Naming.unbind(this.id);
+			this.id = null;
+		}
+	}
+	
+	public String getID() {
+		return this.id;
 	}
 
 	public List<Sensor> getSensorList() {

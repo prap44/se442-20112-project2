@@ -14,16 +14,17 @@ public final class MonitorImpl_Stub
     private static java.lang.reflect.Method $method_addPatientDataListener_2;
     private static java.lang.reflect.Method $method_addPatientInformationChangedListener_3;
     private static java.lang.reflect.Method $method_assignPatient_4;
-    private static java.lang.reflect.Method $method_getPatient_5;
-    private static java.lang.reflect.Method $method_raisePatientAlarmEvent_6;
-    private static java.lang.reflect.Method $method_raisePatientCallButtonEvent_7;
-    private static java.lang.reflect.Method $method_raisePatientDataEvent_8;
-    private static java.lang.reflect.Method $method_raisePatientInformationChangedEvent_9;
-    private static java.lang.reflect.Method $method_removePatientAlarmListener_10;
-    private static java.lang.reflect.Method $method_removePatientCallButtonListener_11;
-    private static java.lang.reflect.Method $method_removePatientDataListener_12;
-    private static java.lang.reflect.Method $method_removePatientInformationChangedListener_13;
-    private static java.lang.reflect.Method $method_unsassignPatient_14;
+    private static java.lang.reflect.Method $method_getEventListenerList_5;
+    private static java.lang.reflect.Method $method_getPatient_6;
+    private static java.lang.reflect.Method $method_raisePatientAlarmEvent_7;
+    private static java.lang.reflect.Method $method_raisePatientCallButtonEvent_8;
+    private static java.lang.reflect.Method $method_raisePatientDataEvent_9;
+    private static java.lang.reflect.Method $method_raisePatientInformationChangedEvent_10;
+    private static java.lang.reflect.Method $method_removePatientAlarmListener_11;
+    private static java.lang.reflect.Method $method_removePatientCallButtonListener_12;
+    private static java.lang.reflect.Method $method_removePatientDataListener_13;
+    private static java.lang.reflect.Method $method_removePatientInformationChangedListener_14;
+    private static java.lang.reflect.Method $method_unsassignPatient_15;
     
     static {
 	try {
@@ -32,16 +33,17 @@ public final class MonitorImpl_Stub
 	    $method_addPatientDataListener_2 = hms.common.Monitor.class.getMethod("addPatientDataListener", new java.lang.Class[] {hms.common.listeners.PatientDataListener.class});
 	    $method_addPatientInformationChangedListener_3 = hms.common.Monitor.class.getMethod("addPatientInformationChangedListener", new java.lang.Class[] {hms.common.listeners.PatientInformationChangedListener.class});
 	    $method_assignPatient_4 = hms.common.Monitor.class.getMethod("assignPatient", new java.lang.Class[] {java.lang.String.class, java.lang.String.class, java.lang.String.class});
-	    $method_getPatient_5 = hms.common.Monitor.class.getMethod("getPatient", new java.lang.Class[] {});
-	    $method_raisePatientAlarmEvent_6 = hms.common.Monitor.class.getMethod("raisePatientAlarmEvent", new java.lang.Class[] {hms.common.events.PatientAlarmEvent.class});
-	    $method_raisePatientCallButtonEvent_7 = hms.common.Monitor.class.getMethod("raisePatientCallButtonEvent", new java.lang.Class[] {hms.common.events.PatientCallButtonEvent.class});
-	    $method_raisePatientDataEvent_8 = hms.common.Monitor.class.getMethod("raisePatientDataEvent", new java.lang.Class[] {hms.common.events.PatientDataEvent.class});
-	    $method_raisePatientInformationChangedEvent_9 = hms.common.Monitor.class.getMethod("raisePatientInformationChangedEvent", new java.lang.Class[] {hms.common.events.PatientInformationChangedEvent.class});
-	    $method_removePatientAlarmListener_10 = hms.common.Monitor.class.getMethod("removePatientAlarmListener", new java.lang.Class[] {hms.common.listeners.PatientAlarmListener.class});
-	    $method_removePatientCallButtonListener_11 = hms.common.Monitor.class.getMethod("removePatientCallButtonListener", new java.lang.Class[] {hms.common.listeners.PatientCallButtonListener.class});
-	    $method_removePatientDataListener_12 = hms.common.Monitor.class.getMethod("removePatientDataListener", new java.lang.Class[] {hms.common.listeners.PatientDataListener.class});
-	    $method_removePatientInformationChangedListener_13 = hms.common.Monitor.class.getMethod("removePatientInformationChangedListener", new java.lang.Class[] {hms.common.listeners.PatientInformationChangedListener.class});
-	    $method_unsassignPatient_14 = hms.common.Monitor.class.getMethod("unsassignPatient", new java.lang.Class[] {});
+	    $method_getEventListenerList_5 = hms.common.Monitor.class.getMethod("getEventListenerList", new java.lang.Class[] {});
+	    $method_getPatient_6 = hms.common.Monitor.class.getMethod("getPatient", new java.lang.Class[] {});
+	    $method_raisePatientAlarmEvent_7 = hms.common.Monitor.class.getMethod("raisePatientAlarmEvent", new java.lang.Class[] {hms.common.events.PatientAlarmEvent.class});
+	    $method_raisePatientCallButtonEvent_8 = hms.common.Monitor.class.getMethod("raisePatientCallButtonEvent", new java.lang.Class[] {hms.common.events.PatientCallButtonEvent.class});
+	    $method_raisePatientDataEvent_9 = hms.common.Monitor.class.getMethod("raisePatientDataEvent", new java.lang.Class[] {hms.common.events.PatientDataEvent.class});
+	    $method_raisePatientInformationChangedEvent_10 = hms.common.Monitor.class.getMethod("raisePatientInformationChangedEvent", new java.lang.Class[] {hms.common.events.PatientInformationChangedEvent.class});
+	    $method_removePatientAlarmListener_11 = hms.common.Monitor.class.getMethod("removePatientAlarmListener", new java.lang.Class[] {hms.common.listeners.PatientAlarmListener.class});
+	    $method_removePatientCallButtonListener_12 = hms.common.Monitor.class.getMethod("removePatientCallButtonListener", new java.lang.Class[] {hms.common.listeners.PatientCallButtonListener.class});
+	    $method_removePatientDataListener_13 = hms.common.Monitor.class.getMethod("removePatientDataListener", new java.lang.Class[] {hms.common.listeners.PatientDataListener.class});
+	    $method_removePatientInformationChangedListener_14 = hms.common.Monitor.class.getMethod("removePatientInformationChangedListener", new java.lang.Class[] {hms.common.listeners.PatientInformationChangedListener.class});
+	    $method_unsassignPatient_15 = hms.common.Monitor.class.getMethod("unsassignPatient", new java.lang.Class[] {});
 	} catch (java.lang.NoSuchMethodException e) {
 	    throw new java.lang.NoSuchMethodError(
 		"stub class initialization failed");
@@ -130,12 +132,28 @@ public final class MonitorImpl_Stub
 	}
     }
     
+    // implementation of getEventListenerList()
+    public javax.swing.event.EventListenerList getEventListenerList()
+	throws java.rmi.RemoteException
+    {
+	try {
+	    Object $result = ref.invoke(this, $method_getEventListenerList_5, null, -8046636107515234324L);
+	    return ((javax.swing.event.EventListenerList) $result);
+	} catch (java.lang.RuntimeException e) {
+	    throw e;
+	} catch (java.rmi.RemoteException e) {
+	    throw e;
+	} catch (java.lang.Exception e) {
+	    throw new java.rmi.UnexpectedException("undeclared checked exception", e);
+	}
+    }
+    
     // implementation of getPatient()
     public hms.common.Patient getPatient()
 	throws java.rmi.RemoteException
     {
 	try {
-	    Object $result = ref.invoke(this, $method_getPatient_5, null, 7359554706859095563L);
+	    Object $result = ref.invoke(this, $method_getPatient_6, null, 7359554706859095563L);
 	    return ((hms.common.Patient) $result);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
@@ -151,7 +169,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_raisePatientAlarmEvent_6, new java.lang.Object[] {$param_PatientAlarmEvent_1}, 2602065639540856541L);
+	    ref.invoke(this, $method_raisePatientAlarmEvent_7, new java.lang.Object[] {$param_PatientAlarmEvent_1}, 2602065639540856541L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -166,7 +184,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_raisePatientCallButtonEvent_7, new java.lang.Object[] {$param_PatientCallButtonEvent_1}, -7080763452036864895L);
+	    ref.invoke(this, $method_raisePatientCallButtonEvent_8, new java.lang.Object[] {$param_PatientCallButtonEvent_1}, -7080763452036864895L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -181,7 +199,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_raisePatientDataEvent_8, new java.lang.Object[] {$param_PatientDataEvent_1}, -4392790567309205476L);
+	    ref.invoke(this, $method_raisePatientDataEvent_9, new java.lang.Object[] {$param_PatientDataEvent_1}, -4392790567309205476L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -196,7 +214,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_raisePatientInformationChangedEvent_9, new java.lang.Object[] {$param_PatientInformationChangedEvent_1}, -6510407993850393368L);
+	    ref.invoke(this, $method_raisePatientInformationChangedEvent_10, new java.lang.Object[] {$param_PatientInformationChangedEvent_1}, -6510407993850393368L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -211,7 +229,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_removePatientAlarmListener_10, new java.lang.Object[] {$param_PatientAlarmListener_1}, 2776089302039083690L);
+	    ref.invoke(this, $method_removePatientAlarmListener_11, new java.lang.Object[] {$param_PatientAlarmListener_1}, 2776089302039083690L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -226,7 +244,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_removePatientCallButtonListener_11, new java.lang.Object[] {$param_PatientCallButtonListener_1}, 928211223795374257L);
+	    ref.invoke(this, $method_removePatientCallButtonListener_12, new java.lang.Object[] {$param_PatientCallButtonListener_1}, 928211223795374257L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -241,7 +259,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_removePatientDataListener_12, new java.lang.Object[] {$param_PatientDataListener_1}, -8662049240858972479L);
+	    ref.invoke(this, $method_removePatientDataListener_13, new java.lang.Object[] {$param_PatientDataListener_1}, -8662049240858972479L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -256,7 +274,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_removePatientInformationChangedListener_13, new java.lang.Object[] {$param_PatientInformationChangedListener_1}, 5291874997918654543L);
+	    ref.invoke(this, $method_removePatientInformationChangedListener_14, new java.lang.Object[] {$param_PatientInformationChangedListener_1}, 5291874997918654543L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {
@@ -271,7 +289,7 @@ public final class MonitorImpl_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    ref.invoke(this, $method_unsassignPatient_14, null, 5191500577513850854L);
+	    ref.invoke(this, $method_unsassignPatient_15, null, 5191500577513850854L);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
 	} catch (java.rmi.RemoteException e) {

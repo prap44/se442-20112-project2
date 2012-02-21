@@ -12,6 +12,9 @@ import hms.nursingstation.listeners.DataReceivedListener;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,7 +28,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     
     private MonitorProxy monitor;
     private Map<String, Integer> data;
-    private ArrayList<VitalDisplayPanel> panels = new ArrayList<VitalDisplayPanel>();
+    private List<VitalDisplayPanel> panels = new ArrayList<VitalDisplayPanel>();
     private int previousColumnCount = 0;
     private int defaultVDPanelMinWidth = (new VitalDisplayPanel().getMinimumSize().width);
     
@@ -74,10 +77,12 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             this.previousColumnCount = columnCount;
             
             /* Cull unused panels and update existing ones */
-            for(VitalDisplayPanel panel : this.panels) {
+            Iterator<VitalDisplayPanel> iter = this.panels.iterator();
+            while(iter.hasNext()) {
+                VitalDisplayPanel panel = iter.next();
                 if(!data.containsKey(panel.getVitalName())) {
                     /* Remove from list and display panel */
-                    this.panels.remove(panel);
+                    iter.remove();
                     this.basePanel.remove(panel);
                     panelListChanged = true;
                 } else {
