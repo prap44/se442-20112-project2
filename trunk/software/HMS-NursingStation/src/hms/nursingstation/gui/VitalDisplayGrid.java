@@ -77,12 +77,11 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             this.previousColumnCount = columnCount;
             
             /* Cull unused panels and update existing ones */
-            Iterator<VitalDisplayPanel> iter = this.panels.iterator();
-            while(iter.hasNext()) {
-                VitalDisplayPanel panel = iter.next();
+            while(index < this.panels.size()) {
+                VitalDisplayPanel panel = this.panels.get(index);
                 if(!data.containsKey(panel.getVitalName())) {
                     /* Remove from list and display panel */
-                    iter.remove();
+                    this.panels.remove(index);
                     this.basePanel.remove(panel);
                     panelListChanged = true;
                 } else {
