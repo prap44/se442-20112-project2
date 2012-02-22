@@ -162,11 +162,13 @@ public class MonitorImpl implements Monitor {
 		this.patient.setPatientFirstName(firstName);
 		this.patient.setPatientMiddleName(middleName);
 		this.patient.setPatientLastName(lastName);
+		this.raisePatientInformationChangedEvent(new PatientInformationChangedEvent());
 	}
 
 	@Override
 	public void unsassignPatient() throws RemoteException {
 		this.patient = null;
+		this.raisePatientInformationChangedEvent(new PatientInformationChangedEvent());
 	}
 
 	@Override

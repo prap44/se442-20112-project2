@@ -143,7 +143,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         this.patientMiddleNameField.setText("");
         this.patientLastNameField.setText("");
         this.patientAssignedCheckbox.setSelected(false);
-        this.patientAssignedCheckbox.setEnabled(true);
+        this.patientAssignedCheckbox.setEnabled(false);
         this.updatePatientFieldsStatus();
         
         this.setModal(true);
@@ -156,19 +156,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                 monitor = new MonitorProxy();
                 monitor.connectToMonitor();
 
-                if(monitor.isConnected()) {
-                    try {
-                        monitor.assignPatient(this.patientFirstNameField.getText(),
-                                this.patientMiddleNameField.getText(),
-                                this.patientLastNameField.getText());
-                    } catch (RemoteException ex) {
-                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
-                        return null;
-                    } catch (MonitorDisconnectedException ex) {
-                        Logger.getLogger(EditMonitorDialog.class.getName()).log(Level.SEVERE, null, ex);
-                        return null;
-                    }
-                } else {
+                if(!monitor.isConnected()) {
                     ConnectionFailedDialog cfd = new ConnectionFailedDialog(this, true);
                     cfd.showModal();
 //                    return null;

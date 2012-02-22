@@ -14,6 +14,7 @@ import hms.common.events.PatientInformationChangedEvent;
 import hms.common.Sensor;
 import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
+import hms.common.listeners.PatientInformationChangedListener;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
@@ -89,6 +90,29 @@ public class MainWindow extends javax.swing.JFrame {
                 @Override
                 public void patientDataReceived(PatientDataEvent event) throws RemoteException {
                     SwingUtilities.invokeLater(this.updateTableRunnable);
+                }
+            });
+            
+            this.monitor.addPatientInformationChangedListener(new PatientInformationChangedListener() {
+                @Override
+                public void patientInformationChanged(PatientInformationChangedEvent event) throws RemoteException {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                boolean patientAssigned = MainWindow.this.monitor.getPatient() != null;
+                                MainWindow.this.patientAssignedCheckbox.setSelected(patientAssigned);
+                                if (patientAssigned) {
+                                    MainWindow.this.patientFirstNameField.setText(MainWindow.this.monitor.getPatient().getPatientFirstName());
+                                    MainWindow.this.patientMiddleNameField.setText(MainWindow.this.monitor.getPatient().getPatientMiddleName());
+                                    MainWindow.this.patientLastNameField.setText(MainWindow.this.monitor.getPatient().getPatientLastName());
+                                }
+                                MainWindow.this.updatePatientFieldStatus();
+                            } catch (RemoteException ex) {
+                                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    });
                 }
             });
             
