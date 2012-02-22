@@ -15,6 +15,17 @@ public class NursingStationImpl {
 	private ArrayList<Patient> patients = new ArrayList<Patient>();
 	private ArrayList<MonitorProxy> bedsideStations = new ArrayList<MonitorProxy>();
 	private EventListenerList listenerList = new EventListenerList();
+	
+	private MonitorStatusChangedListener monitorStatusChangedListener = new MonitorStatusChangedListener() {
+		@Override
+		public void monitorStatusChanged(MonitorStatusChangedEvent event) {
+			switch(event.getOperation()) {
+			case REMOVED:
+				NursingStationImpl.this.removeMonitor(event.getMonitor());
+				break;
+			}
+		}
+	};
 
 	public boolean addPatient(Patient patient) {
 		return this.patients.add(patient);
@@ -43,6 +54,7 @@ public class NursingStationImpl {
 	public boolean addMonitor(MonitorProxy monitor) {
 		this.raiseMonitorStatusChangedEvent(new MonitorStatusChangedEvent(
 				monitor, MonitorChangedOperation.ADDED));
+		monitor.addMonitorStatusChangedListener(this.monitorStatusChangedListener);
 		return this.bedsideStations.add(monitor);
 	}
 

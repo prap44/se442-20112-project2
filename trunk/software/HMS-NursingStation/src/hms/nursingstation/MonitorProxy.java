@@ -2,10 +2,12 @@ package hms.nursingstation;
 
 import hms.common.Monitor;
 import hms.common.Patient;
+import hms.common.events.MonitorShutdownEvent;
 import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
 import hms.common.events.PatientDataEvent;
 import hms.common.events.PatientInformationChangedEvent;
+import hms.common.listeners.MonitorShutdownListener;
 import hms.common.listeners.PatientAlarmListener;
 import hms.common.listeners.PatientCallButtonListener;
 import hms.common.listeners.PatientDataListener;
@@ -16,12 +18,15 @@ import hms.nursingstation.events.CallButtonReceivedEvent;
 import hms.nursingstation.events.CallButtonResetEvent;
 import hms.nursingstation.events.DataReceivedEvent;
 import hms.nursingstation.events.InformationChangeReceivedEvent;
+import hms.nursingstation.events.MonitorStatusChangedEvent;
+import hms.nursingstation.events.MonitorStatusChangedEvent.MonitorChangedOperation;
 import hms.nursingstation.listeners.AlarmReceivedListener;
 import hms.nursingstation.listeners.AlarmResetListener;
 import hms.nursingstation.listeners.CallButtonReceivedListener;
 import hms.nursingstation.listeners.CallButtonResetListener;
 import hms.nursingstation.listeners.DataReceivedListener;
 import hms.nursingstation.listeners.InformationChangeReceivedListener;
+import hms.nursingstation.listeners.MonitorStatusChangedListener;
 
 import java.io.IOException;
 import java.rmi.AccessException;
@@ -39,7 +44,7 @@ import javax.swing.event.EventListenerList;
 
 public class MonitorProxy extends UnicastRemoteObject implements
 		PatientDataListener, PatientAlarmListener, PatientCallButtonListener,
-		PatientInformationChangedListener {
+		PatientInformationChangedListener, MonitorShutdownListener {
 
 	private static final long serialVersionUID = -3195762579705707707L;
 
@@ -135,6 +140,13 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		InformationChangeReceivedEvent localEvent = new InformationChangeReceivedEvent();
 		this.raiseInformationChangedReceivedEvent(localEvent);
 	}
+	
+	@Override
+	public void monitorShuttingDown(MonitorShutdownEvent event)
+			throws RemoteException {
+		this.raiseMonitorStatusChangedEvent(new MonitorStatusChangedEvent(this, MonitorChangedOperation.REMOVED));
+		this.disconnectFromMonitor();
+	}
 
 	public void connectToMonitor() throws RemoteException, NotBoundException {
 		this.realMonitor = lookupRemoteMonitor();
@@ -142,6 +154,7 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		this.realMonitor.addPatientCallButtonListener(this);
 		this.realMonitor.addPatientDataListener(this);
 		this.realMonitor.addPatientInformationChangedListener(this);
+		this.realMonitor.addMonitorShutdownListener(this);
 	}
 	
 	public void disconnectFromMonitor() throws RemoteException {
@@ -152,6 +165,7 @@ public class MonitorProxy extends UnicastRemoteObject implements
 			monitor.removePatientCallButtonListener(this);
 			monitor.removePatientDataListener(this);
 			monitor.removePatientInformationChangedListener(this);
+			monitor.removeMonitorShutdownListener(this);
 		}
 	}
 
@@ -218,6 +232,41 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		this.listenerList
 				.add(InformationChangeReceivedListener.class, listener);
 	}
+	
+	public void addMonitorStatusChangedListener(MonitorStatusChangedListener listener) {
+		this.listenerList.add(MonitorStatusChangedListener.class, listener);
+	}
+
+	public void removeAlarmReceivedListener(AlarmReceivedListener listener) {
+		this.listenerList.remove(AlarmReceivedListener.class, listener);
+	}
+
+	public void removeAlarmResetListener(AlarmResetListener listener) {
+		this.listenerList.remove(AlarmResetListener.class, listener);
+	}
+
+	public void removeCallButtonReceivedListener(
+			CallButtonReceivedListener listener) {
+		this.listenerList.remove(CallButtonReceivedListener.class, listener);
+	}
+
+	public void removeCallButtonResetListener(CallButtonResetListener listener) {
+		this.listenerList.remove(CallButtonResetListener.class, listener);
+	}
+
+	public void removeDataReceivedListener(DataReceivedListener listener) {
+		this.listenerList.remove(DataReceivedListener.class, listener);
+	}
+
+	public void removeInformationChangeReceivedListener(
+			InformationChangeReceivedListener listener) {
+		this.listenerList
+				.remove(InformationChangeReceivedListener.class, listener);
+	}
+	
+	public void removeMonitorStatusChangedListener(MonitorStatusChangedListener listener) {
+		this.listenerList.remove(MonitorStatusChangedListener.class, listener);
+	}
 
 	private void raiseAlarmReceivedEvent(AlarmReceivedEvent event)
 			throws RemoteException {
@@ -264,6 +313,12 @@ public class MonitorProxy extends UnicastRemoteObject implements
 		for (InformationChangeReceivedListener l : this.listenerList
 				.getListeners(InformationChangeReceivedListener.class)) {
 			l.informationChangeReceived(event);
+		}
+	}
+	
+	private void raiseMonitorStatusChangedEvent(MonitorStatusChangedEvent event) {
+		for(MonitorStatusChangedListener l : this.listenerList.getListeners(MonitorStatusChangedListener.class)) {
+			l.monitorStatusChanged(event);
 		}
 	}
 	

@@ -12,6 +12,7 @@ import hms.common.events.PatientDataEvent;
 import hms.common.listeners.PatientDataListener;
 import hms.common.events.PatientInformationChangedEvent;
 import hms.common.Sensor;
+import hms.common.events.MonitorShutdownEvent;
 import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
 import java.net.MalformedURLException;
@@ -33,52 +34,52 @@ import javax.swing.table.DefaultTableModel;
  * @author Jackson Lamp
  */
 public class MainWindow extends javax.swing.JFrame {
-    
+
     private EditSensorDialog editSensorDialog;
     private List<Sensor> sensorList = new ArrayList<Sensor>();
     private DefaultTableModel sensorTableModel;
-    
     private MonitorImpl monitor = null;
     private PatientImpl patient = new PatientImpl();
-    
     private boolean suppressSensorTableModelSelectionEvents = false;
     private boolean callNurseActive = false;
 
     public MainWindow(MonitorImpl monitor) throws RemoteException {
         initComponents();
-        
-        if(monitor != null) {
+
+        if (monitor != null) {
             this.monitor = monitor;
         } else {
             this.monitor = new MonitorImpl();
         }
-        
+
         try {
             this.postInit();
-        } catch(Throwable t) {
+        } catch (Throwable t) {
         }
     }
-    
+
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-        
+
         this.monitor = new MonitorImpl();
-        
+
         try {
             this.postInit();
-        } catch(Throwable t) {
+        } catch (Throwable t) {
         }
     }
-    
+
     private void postInit() throws RemoteException {
         /* Create the edit sensor dialog */
         this.editSensorDialog = new EditSensorDialog(this, true);
-        
-        if(monitor != null) {
+
+        if (monitor != null) {
             this.sensorList = this.monitor.getSensorList();
             this.monitor.addPatientDataListener(new PatientDataListener() {
+
                 private Runnable updateTableRunnable = new Runnable() {
+
                     @Override
                     public void run() {
                         MainWindow.this.updateTableValues();
@@ -94,28 +95,29 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         this.sensorTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if(!MainWindow.this.suppressSensorTableModelSelectionEvents) {
+                if (!MainWindow.this.suppressSensorTableModelSelectionEvents) {
                     MainWindow.this.updateButtonStatus();
                 }
             }
         });
 
         /* Get the sensor's table model for easy access */
-        this.sensorTableModel = (DefaultTableModel)this.sensorTable.getModel();
+        this.sensorTableModel = (DefaultTableModel) this.sensorTable.getModel();
 
         /* Make sure everything is up to date */
         this.updateTable();
         this.updateButtonStatus();
         this.updatePatientFieldStatus();
     }
-    
+
     private void updateTable() {
         int selectedRow = this.sensorTable.getSelectedRow();
         this.sensorTableModel.setRowCount(0);
-        
-        for(Sensor s : this.sensorList) {
+
+        for (Sensor s : this.sensorList) {
             Object[] row = new Object[6];
             row[0] = s.getName();
             row[1] = s.convert(s.getCurrentValue());
@@ -125,15 +127,15 @@ public class MainWindow extends javax.swing.JFrame {
             row[5] = s.getAlarmState();
             this.sensorTableModel.addRow(row);
         }
-        
+
         this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
         this.sensorTable.validate();
     }
-    
+
     private void updateTableValues() {
         this.suppressSensorTableModelSelectionEvents = true;
-        
-        for(int i = 0; i < this.sensorList.size(); ++i) {
+
+        for (int i = 0; i < this.sensorList.size(); ++i) {
             Sensor s = this.sensorList.get(i);
             this.sensorTableModel.setValueAt(s.getName(), i, 0);
             this.sensorTableModel.setValueAt(s.convert(s.getCurrentValue()), i, 1);
@@ -142,18 +144,18 @@ public class MainWindow extends javax.swing.JFrame {
             this.sensorTableModel.setValueAt(s.getHighLimit(), i, 4);
             this.sensorTableModel.setValueAt(s.getAlarmState(), i, 5);
         }
-        
+
         this.sensorTable.repaint();
         this.suppressSensorTableModelSelectionEvents = false;
     }
-    
+
     private void updateButtonStatus() {
-    	int selectedRow = this.sensorTable.getSelectedRow();
+        int selectedRow = this.sensorTable.getSelectedRow();
         boolean sensorButtonsEnabled = selectedRow >= 0 && !this.sensorList.isEmpty();
         boolean alarmResetButtonEnabled = false;
         if (selectedRow < this.sensorList.size()) {
-        	alarmResetButtonEnabled = sensorButtonsEnabled &&
-	                this.sensorList.get(selectedRow).getAlarmState();
+            alarmResetButtonEnabled = sensorButtonsEnabled
+                    && this.sensorList.get(selectedRow).getAlarmState();
         }
         this.editSensorButton.setEnabled(sensorButtonsEnabled);
         this.removeSensorButton.setEnabled(sensorButtonsEnabled);
@@ -161,7 +163,7 @@ public class MainWindow extends javax.swing.JFrame {
         this.callNurseButton.setEnabled(!callNurseActive);
         this.resetCallNurseButton.setEnabled(callNurseActive);
     }
-    
+
     private void updatePatientFieldStatus() {
         boolean patientFieldsEnabled = this.patientAssignedCheckbox.isSelected();
         this.patientFirstNameField.setEnabled(patientFieldsEnabled);
@@ -557,8 +559,8 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void addSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSensorButtonActionPerformed
         Sensor sensor = this.editSensorDialog.showAddDialog();
-        
-        if(sensor != null) {
+
+        if (sensor != null) {
             sensorList.add(sensor);
             this.updateTable();
         }
@@ -566,7 +568,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void removeSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSensorButtonActionPerformed
         int selectedIndex = this.sensorTable.getSelectedRow();
-        if(selectedIndex >= 0) {
+        if (selectedIndex >= 0) {
             this.sensorList.remove(selectedIndex);
             this.updateTable();
         }
@@ -574,10 +576,10 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void editSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSensorButtonActionPerformed
         int selectedIndex = this.sensorTable.getSelectedRow();
-        if(selectedIndex >= 0) {
+        if (selectedIndex >= 0) {
             Sensor sensor = this.sensorList.get(selectedIndex);
-            
-            if(this.editSensorDialog.showEditDialog(sensor)) {
+
+            if (this.editSensorDialog.showEditDialog(sensor)) {
                 this.updateTable();
             }
         }
@@ -605,15 +607,15 @@ public class MainWindow extends javax.swing.JFrame {
     private void patientInfoResetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientInfoResetButtonActionPerformed
         try {
             Patient localPatient = this.monitor.getPatient();
-            if(localPatient == null) {
+            if (localPatient == null) {
                 this.patientAssignedCheckbox.setSelected(false);
                 this.updatePatientFieldStatus();
                 this.patientFirstNameField.setText(this.patient.getPatientFirstName());
                 this.patientMiddleNameField.setText(this.patient.getPatientMiddleName());
                 this.patientLastNameField.setText(this.patient.getPatientLastName());
             } else {
-                if(localPatient instanceof PatientImpl) {
-                    this.patient = (PatientImpl)localPatient;
+                if (localPatient instanceof PatientImpl) {
+                    this.patient = (PatientImpl) localPatient;
                 }
                 this.patientAssignedCheckbox.setSelected(true);
                 this.updatePatientFieldStatus();
@@ -655,7 +657,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_resetCallNurseButtonActionPerformed
 
     private void resetAlarmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetAlarmButtonActionPerformed
-        if(this.sensorTable.getSelectedRow() >= 0) {
+        if (this.sensorTable.getSelectedRow() >= 0) {
             Sensor sensor = this.sensorList.get(this.sensorTable.getSelectedRow());
             sensor.setAlarmState(false);
             this.updateTableValues();
@@ -670,6 +672,10 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
+            /* Notifies the clients that the server is shutting down and waits
+             * for them to perform their cleanup operations before
+             * disconnecting */
+            this.monitor.raiseMonitorShutdownEvent(new MonitorShutdownEvent());
             this.monitor.unbind();
         } catch (RemoteException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -678,7 +684,7 @@ public class MainWindow extends javax.swing.JFrame {
         } catch (NotBoundException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
+
         System.exit(0);
     }//GEN-LAST:event_formWindowClosing
 
@@ -689,7 +695,7 @@ public class MainWindow extends javax.swing.JFrame {
         /* Initialize RMI interface */
         System.setSecurityManager(new RMISecurityManager());
         final MonitorImpl monitor = new MonitorImpl();
-        
+
         try {
             UnicastRemoteObject.exportObject(monitor);
             monitor.rebind("hms.bedsidemonitor");
@@ -698,7 +704,7 @@ public class MainWindow extends javax.swing.JFrame {
         } catch (RemoteException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
