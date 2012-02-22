@@ -18,6 +18,8 @@ import hms.nursingstation.gui.MonitorDisplayPanel.DisplayExpandedEvent;
 import hms.nursingstation.listeners.MonitorStatusChangedListener;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,6 +140,12 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                     panel.addDisplayExpandedListener(new MonitorDisplayPanel.DisplayExpandedListener() {
                         @Override
                         public void displayExpaned(DisplayExpandedEvent event) {
+                            MonitorDisplayPanelList.this.refreshList();
+                        }
+                    });
+                    panel.addComponentListener(new ComponentAdapter() {
+                        @Override
+                        public void componentResized(ComponentEvent e) {
                             MonitorDisplayPanelList.this.refreshList();
                         }
                     });

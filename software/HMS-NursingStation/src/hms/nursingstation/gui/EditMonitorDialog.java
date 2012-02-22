@@ -206,9 +206,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         patientLastNameField = new javax.swing.JTextField();
         vitalStatisticsPanel = new javax.swing.JPanel();
         vitalDisplayScrollPanel = new javax.swing.JScrollPane();
-        vitalDisplayViewpanel = new javax.swing.JPanel();
         vitalDisplayGrid = new hms.nursingstation.gui.VitalDisplayGrid();
-        vitalDisplayViewpanelSpanner = new javax.swing.JPanel();
         buttonPanel = new javax.swing.JPanel();
         buttonPanelSpacer = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
@@ -351,41 +349,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                 vitalDisplayScrollPanelComponentResized(evt);
             }
         });
-
-        vitalDisplayViewpanel.setMinimumSize(new java.awt.Dimension(0, 0));
-        vitalDisplayViewpanel.setPreferredSize(new java.awt.Dimension(0, 0));
-        vitalDisplayViewpanel.setLayout(new java.awt.GridBagLayout());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        vitalDisplayViewpanel.add(vitalDisplayGrid, gridBagConstraints);
-
-        vitalDisplayViewpanelSpanner.setBackground(new java.awt.Color(105, 105, 105));
-        vitalDisplayViewpanelSpanner.setMinimumSize(new java.awt.Dimension(0, 0));
-        vitalDisplayViewpanelSpanner.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        javax.swing.GroupLayout vitalDisplayViewpanelSpannerLayout = new javax.swing.GroupLayout(vitalDisplayViewpanelSpanner);
-        vitalDisplayViewpanelSpanner.setLayout(vitalDisplayViewpanelSpannerLayout);
-        vitalDisplayViewpanelSpannerLayout.setHorizontalGroup(
-            vitalDisplayViewpanelSpannerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 430, Short.MAX_VALUE)
-        );
-        vitalDisplayViewpanelSpannerLayout.setVerticalGroup(
-            vitalDisplayViewpanelSpannerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 196, Short.MAX_VALUE)
-        );
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        vitalDisplayViewpanel.add(vitalDisplayViewpanelSpanner, gridBagConstraints);
-
-        vitalDisplayScrollPanel.setViewportView(vitalDisplayViewpanel);
+        vitalDisplayScrollPanel.setViewportView(vitalDisplayGrid);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -482,14 +446,8 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
 
     private void vitalDisplayScrollPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_vitalDisplayScrollPanelComponentResized
-//        Dimension size = this.vitalDisplayScrollPanel.getViewport().getSize();
-//        this.vitalDisplayScrollPanel.getViewport().setSize(size.width, Integer.MAX_VALUE);
-//        this.vitalDisplayScrollPanel.getViewport().validate();
-        
-//        JViewport viewport = this.vitalDisplayScrollPanel.getViewport();
-//        viewport.setSize(viewport.getWidth(), this.vitalDisplayGrid.getExpectedHeight());
-        
-        this.vitalDisplayViewpanel.setPreferredSize(new Dimension(this.vitalDisplayScrollPanel.getViewport().getWidth(), this.vitalDisplayGrid.getHeight()));
+        int viewportWidth = this.vitalDisplayScrollPanel.getViewport().getWidth();
+        this.vitalDisplayGrid.setPreferredSize(new Dimension(viewportWidth, this.vitalDisplayGrid.getPreferredSize().height));
     }//GEN-LAST:event_vitalDisplayScrollPanelComponentResized
 
     /**
@@ -556,8 +514,6 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     private javax.swing.JLabel patientMiddleNameLabel;
     private hms.nursingstation.gui.VitalDisplayGrid vitalDisplayGrid;
     private javax.swing.JScrollPane vitalDisplayScrollPanel;
-    private javax.swing.JPanel vitalDisplayViewpanel;
-    private javax.swing.JPanel vitalDisplayViewpanelSpanner;
     private javax.swing.JPanel vitalStatisticsPanel;
     // End of variables declaration//GEN-END:variables
 }

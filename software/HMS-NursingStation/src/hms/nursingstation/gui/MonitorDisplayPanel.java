@@ -326,6 +326,16 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
 
         vitalDisplayGrid.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         vitalDisplayGrid.setData(null);
+        vitalDisplayGrid.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                vitalDisplayGridComponentResized(evt);
+            }
+        });
+        vitalDisplayGrid.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                vitalDisplayGridPropertyChange(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -339,7 +349,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
 
     private void expandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandButtonActionPerformed
         this.vitalDisplayGrid.setVisible(this.expandButton.isSelected());
-        this.validate();
+        this.revalidate();
         this.raiseDisplayExpandedEvent(new DisplayExpandedEvent(this));
     }//GEN-LAST:event_expandButtonActionPerformed
 
@@ -350,6 +360,16 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         this.raiseDeletePanelEvent(new DeletePanelEvent(this));
     }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void vitalDisplayGridComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_vitalDisplayGridComponentResized
+        revalidate();
+    }//GEN-LAST:event_vitalDisplayGridComponentResized
+
+    private void vitalDisplayGridPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_vitalDisplayGridPropertyChange
+        if(evt.getPropertyName().equals("preferredSize")) {
+            revalidate();
+        }
+    }//GEN-LAST:event_vitalDisplayGridPropertyChange
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel basePanel;

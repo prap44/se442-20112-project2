@@ -154,7 +154,11 @@ public class MainWindow extends javax.swing.JFrame {
             this.sensorTableModel.addRow(row);
         }
 
-        this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+        if(selectedRow < this.sensorTableModel.getRowCount()) {
+            this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+        } else {
+            this.sensorTable.getSelectionModel().setSelectionInterval(-1, -1);
+        }
         this.sensorTable.validate();
     }
 
@@ -593,6 +597,7 @@ public class MainWindow extends javax.swing.JFrame {
             sensorList.add(sensor);
             this.updateTable();
         }
+        this.updateButtonStatus();
     }//GEN-LAST:event_addSensorButtonActionPerformed
 
     private void removeSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSensorButtonActionPerformed
@@ -601,6 +606,7 @@ public class MainWindow extends javax.swing.JFrame {
             this.sensorList.remove(selectedIndex);
             this.updateTable();
         }
+        this.updateButtonStatus();
     }//GEN-LAST:event_removeSensorButtonActionPerformed
 
     private void editSensorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSensorButtonActionPerformed
@@ -612,6 +618,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.updateTable();
             }
         }
+        this.updateButtonStatus();
     }//GEN-LAST:event_editSensorButtonActionPerformed
 
     private void patientInfoApplyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_patientInfoApplyButtonActionPerformed
