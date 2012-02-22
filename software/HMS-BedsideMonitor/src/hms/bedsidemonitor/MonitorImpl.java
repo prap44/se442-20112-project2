@@ -22,10 +22,12 @@ import hms.bedsidemonitor.threads.PatientInformationChangedWorker;
 import hms.common.Monitor;
 import hms.common.Patient;
 import hms.common.Sensor;
+import hms.common.events.MonitorShutdownEvent;
 import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
 import hms.common.events.PatientDataEvent;
 import hms.common.events.PatientInformationChangedEvent;
+import hms.common.listeners.MonitorShutdownListener;
 import hms.common.listeners.PatientAlarmListener;
 import hms.common.listeners.PatientCallButtonListener;
 import hms.common.listeners.PatientDataListener;
@@ -163,6 +165,12 @@ public class MonitorImpl implements Monitor {
 		this.listenerList
 				.add(PatientInformationChangedListener.class, listener);
 	}
+	
+	@Override
+	public void addMonitorShutdownListener(MonitorShutdownListener listener)
+			throws RemoteException {
+		this.listenerList.add(MonitorShutdownListener.class, listener);
+	}
 
 	@Override
 	public void removePatientAlarmListener(PatientAlarmListener listener)
@@ -187,6 +195,12 @@ public class MonitorImpl implements Monitor {
 			PatientInformationChangedListener listener) throws RemoteException {
 		this.listenerList.remove(PatientInformationChangedListener.class,
 				listener);
+	}
+	
+	@Override
+	public void removeMonitorShutdownListener(MonitorShutdownListener listener)
+			throws RemoteException {
+		this.listenerList.remove(MonitorShutdownListener.class, listener);
 	}
 
 	@Override
@@ -214,6 +228,15 @@ public class MonitorImpl implements Monitor {
 	public void raisePatientInformationChangedEvent(
 			PatientInformationChangedEvent event) throws RemoteException {
 		this.picWorker.addPatientInformationChangedEvent(event);
+	}
+	
+	@Override
+	public void raiseMonitorShutdownEvent(MonitorShutdownEvent event)
+			throws RemoteException {
+		/* Don't use a thread here for now, we want this to be a synchronous operation */
+		for(MonitorShutdownListener l : this.listenerList.getListeners(MonitorShutdownListener.class)) {
+			l.monitorShuttingDown(event);
+		}
 	}
 	
 	private void initializeWorkerThreads() {
