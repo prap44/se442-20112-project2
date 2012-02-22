@@ -12,9 +12,7 @@ import hms.nursingstation.listeners.DataReceivedListener;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,6 +30,13 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     private int previousColumnCount = 0;
     private int defaultVDPanelMinWidth = (new VitalDisplayPanel().getMinimumSize().width);
     
+    private DataReceivedListener dataReceivedListener = new DataReceivedListener() {
+        @Override
+        public void dataReceived(DataReceivedEvent event) {
+            VitalDisplayGrid.this.setData(event.getVitals());
+        }
+    };
+    
     /* Used to reduce number of redundant "invokeWait()" calls to
      * arrangeGrid() when resizing/etc */
     private boolean gridArrangeInvokeWaiting = true;
@@ -47,13 +52,14 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     }
     
     public final void setMonitor(MonitorProxy monitor) {
+        if(this.monitor != null) {
+            this.monitor.removeDataReceivedListener(dataReceivedListener);
+        }
         this.monitor = monitor;
-        this.monitor.addDataReceivedListener(new DataReceivedListener() {
-            @Override
-            public void dataReceived(DataReceivedEvent event) {
-                VitalDisplayGrid.this.setData(event.getVitals());
-            }
-        });
+        if(this.monitor != null) {
+            this.monitor.addDataReceivedListener(this.dataReceivedListener);
+        }
+        this.arrangeGrid();
     }
     
     public void setData(Map<String, Integer> data) {

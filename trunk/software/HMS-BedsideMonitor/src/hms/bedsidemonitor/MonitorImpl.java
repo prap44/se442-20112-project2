@@ -34,7 +34,7 @@ import hms.common.listeners.PatientDataListener;
 import hms.common.listeners.PatientInformationChangedListener;
 
 public class MonitorImpl implements Monitor {
-	
+
 	private final int SENSOR_POLL_INTERVAL_MS = 250;
 
 	private String id = null;
@@ -44,12 +44,20 @@ public class MonitorImpl implements Monitor {
 
 	private Timer sensorPollingTimer = new Timer(true);
 	private TimerTask sensorPollingTimerTask = new TimerTask() {
+		/**
+		 * Used to implement the "empty" transmission that indicates that data
+		 * polling has been halted
+		 */
+		private boolean isHalted = true;
+
 		@Override
 		public void run() {
+			Map<String, Integer> data = new HashMap<String, Integer>();
 			if (MonitorImpl.this.patient != null
 					&& MonitorImpl.this.sensors != null
 					&& !MonitorImpl.this.sensors.isEmpty()) {
-				Map<String, Integer> data = new HashMap<String, Integer>();
+				/* Gather vitals from sensors and transmit them to the clients */
+				this.isHalted = false;
 				for (Sensor s : MonitorImpl.this.sensors) {
 					s.vitalChange();
 					data.put(s.getName(), s.convert(s.getCurrentValue()));
@@ -75,6 +83,19 @@ public class MonitorImpl implements Monitor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else if (!this.isHalted) {
+				/*
+				 * Send out one "empty" event to notify clients that
+				 * transmission has stopped
+				 */
+				try {
+					MonitorImpl.this
+							.raisePatientDataEvent(new PatientDataEvent(data));
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				this.isHalted = true;
 			}
 		}
 	};
@@ -90,12 +111,13 @@ public class MonitorImpl implements Monitor {
 		this.initializeWorkerThreads();
 		this.executeWorkerThreads();
 	}
-	
-	public void bind(String id) throws MalformedURLException, RemoteException, AlreadyBoundException {
+
+	public void bind(String id) throws MalformedURLException, RemoteException,
+			AlreadyBoundException {
 		Naming.bind(id, this);
 		this.id = id;
 	}
-	
+
 	public void rebind(String id) throws RemoteException, MalformedURLException {
 		Naming.rebind(id, this);
 		this.id = id;
@@ -113,7 +135,7 @@ public class MonitorImpl implements Monitor {
 			this.id = null;
 		}
 	}
-	
+
 	public String getID() {
 		return this.id;
 	}
@@ -171,7 +193,7 @@ public class MonitorImpl implements Monitor {
 		this.listenerList
 				.add(PatientInformationChangedListener.class, listener);
 	}
-	
+
 	@Override
 	public void addMonitorShutdownListener(MonitorShutdownListener listener)
 			throws RemoteException {
@@ -202,7 +224,7 @@ public class MonitorImpl implements Monitor {
 		this.listenerList.remove(PatientInformationChangedListener.class,
 				listener);
 	}
-	
+
 	@Override
 	public void removeMonitorShutdownListener(MonitorShutdownListener listener)
 			throws RemoteException {
@@ -235,35 +257,39 @@ public class MonitorImpl implements Monitor {
 			PatientInformationChangedEvent event) throws RemoteException {
 		this.picWorker.addPatientInformationChangedEvent(event);
 	}
-	
+
 	@Override
 	public void raiseMonitorShutdownEvent(MonitorShutdownEvent event)
 			throws RemoteException {
-		/* Don't use a thread here for now, we want this to be a synchronous operation */
-		for(MonitorShutdownListener l : this.listenerList.getListeners(MonitorShutdownListener.class)) {
+		/*
+		 * Don't use a thread here for now, we want this to be a synchronous
+		 * operation
+		 */
+		for (MonitorShutdownListener l : this.listenerList
+				.getListeners(MonitorShutdownListener.class)) {
 			l.monitorShuttingDown(event);
 		}
 	}
-	
+
 	private void initializeWorkerThreads() {
 		this.paWorker = new PatientAlarmWorker(this);
 		this.pcbWorker = new PatientCallButtonWorker(this);
 		this.pdWorker = new PatientDataWorker(this);
 		this.picWorker = new PatientInformationChangedWorker(this);
 	}
-	
+
 	private void executeWorkerThreads() {
 		Executor monitorExecutor = new Executor() {
-			
+
 			@Override
 			public void execute(Runnable command) {
 				Thread t = new Thread(command);
 				t.setDaemon(true);
 				t.start();
 			}
-			
+
 		};
-		
+
 		monitorExecutor.execute(paWorker);
 		monitorExecutor.execute(pcbWorker);
 		monitorExecutor.execute(pdWorker);

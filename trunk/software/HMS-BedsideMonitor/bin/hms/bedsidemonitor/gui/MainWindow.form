@@ -71,6 +71,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="monitorIDField">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Constraints>
@@ -121,6 +122,7 @@
                 <Component class="javax.swing.JButton" name="monitorInfoApplyButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Apply"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="monitorInfoApplyButtonActionPerformed"/>
@@ -134,6 +136,7 @@
                 <Component class="javax.swing.JButton" name="monitorInfoResetButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Reset"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="monitorInfoResetButtonActionPerformed"/>

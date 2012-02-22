@@ -12,7 +12,6 @@ import hms.common.events.PatientDataEvent;
 import hms.common.listeners.PatientDataListener;
 import hms.common.events.PatientInformationChangedEvent;
 import hms.common.Sensor;
-import hms.common.events.MonitorShutdownEvent;
 import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
 import java.net.MalformedURLException;
@@ -92,6 +91,9 @@ public class MainWindow extends javax.swing.JFrame {
                     SwingUtilities.invokeLater(this.updateTableRunnable);
                 }
             });
+            
+            this.monitorIDField.setText(this.monitor.getID());
+            this.monitorAddressField.setText("127.0.0.1:1099");
         }
 
         this.sensorTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -237,6 +239,7 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         monitorInfoPanel.add(monitorIDLabel, gridBagConstraints);
 
+        monitorIDField.setEditable(false);
         monitorIDField.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -275,6 +278,7 @@ public class MainWindow extends javax.swing.JFrame {
         monitorInfoButtonPanel.add(monitorInfoButtonSpacerPanel, gridBagConstraints);
 
         monitorInfoApplyButton.setText("Apply");
+        monitorInfoApplyButton.setEnabled(false);
         monitorInfoApplyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 monitorInfoApplyButtonActionPerformed(evt);
@@ -287,6 +291,7 @@ public class MainWindow extends javax.swing.JFrame {
         monitorInfoButtonPanel.add(monitorInfoApplyButton, gridBagConstraints);
 
         monitorInfoResetButton.setText("Reset");
+        monitorInfoResetButton.setEnabled(false);
         monitorInfoResetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 monitorInfoResetButtonActionPerformed(evt);
