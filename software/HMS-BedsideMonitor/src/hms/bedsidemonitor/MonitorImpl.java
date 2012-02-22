@@ -100,9 +100,15 @@ public class MonitorImpl implements Monitor {
 		Naming.rebind(id, this);
 		this.id = id;
 	}
-	
-	public void unbind() throws RemoteException, MalformedURLException, NotBoundException {
-		if(this.id != null) {
+
+	public void unbind() throws RemoteException, MalformedURLException,
+			NotBoundException {
+		if (this.id != null) {
+			/*
+			 * Notifies the clients that the server is shutting down and waits
+			 * for them to perform their cleanup operations before disconnecting
+			 */
+			this.raiseMonitorShutdownEvent(new MonitorShutdownEvent());
 			Naming.unbind(this.id);
 			this.id = null;
 		}
