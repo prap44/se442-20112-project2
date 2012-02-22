@@ -66,6 +66,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
                 updateButtonStatus();
             }
         });
+        
         updateButtonStatus();
     }
     
@@ -75,7 +76,6 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         this.notificationListModel.addElement(notification.generateEntry());
         if(!this.isVisible()) {
             this.setVisible(true);
-            this.setLocationRelativeTo(this.getParent());
         }
         updateButtonStatus();
     }
@@ -86,7 +86,7 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
             if(n.monitor.equals(monitor) && n.type.equals(type) &&
                     (n.vital == null) == (vital == null) && (vital == null || n.vital.equals(vital))) {
                 this.notifications.remove(i);
-                this.notificationList.remove(i);
+                this.notificationListModel.remove(i);
             }
         }
         updateButtonStatus();
@@ -119,7 +119,8 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
         acknowledgeButton = new javax.swing.JButton();
         acknowledgeAllButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setResizable(false);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         basePanel.setLayout(new java.awt.GridBagLayout());
@@ -176,7 +177,8 @@ public class MonitorNotificationDialog extends javax.swing.JDialog {
 
         getContentPane().add(basePanel);
 
-        pack();
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds((screenSize.width-553)/2, (screenSize.height-256)/2, 553, 256);
     }// </editor-fold>//GEN-END:initComponents
 
     private void acknowledgeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acknowledgeAllButtonActionPerformed
