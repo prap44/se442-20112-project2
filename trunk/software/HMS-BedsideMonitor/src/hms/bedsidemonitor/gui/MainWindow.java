@@ -672,10 +672,6 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
-            /* Notifies the clients that the server is shutting down and waits
-             * for them to perform their cleanup operations before
-             * disconnecting */
-            this.monitor.raiseMonitorShutdownEvent(new MonitorShutdownEvent());
             this.monitor.unbind();
         } catch (RemoteException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
