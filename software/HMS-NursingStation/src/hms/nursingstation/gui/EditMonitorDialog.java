@@ -56,6 +56,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         
         this.monitorIDField.setText(monitor.getMonitorID());
         this.monitorAddressField.setText(monitor.getMonitorAddress());
+        this.vitalDisplayGrid.setMonitor(monitor);
         
         if(monitor.isConnected()) {
             try {
@@ -94,6 +95,8 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         this.pack();
         this.setLocationRelativeTo(this.getParent());
         this.setVisible(true);
+        
+        this.vitalDisplayGrid.setMonitor(null);
         
         if(this.returnStatus) {
             if(this.patientAssignedCheckbox.isSelected()) {

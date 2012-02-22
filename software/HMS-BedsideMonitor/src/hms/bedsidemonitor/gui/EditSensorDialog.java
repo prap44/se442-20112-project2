@@ -97,6 +97,8 @@ public class EditSensorDialog extends javax.swing.JDialog {
         this.sensorNameField.setText("");
         this.sensorOffsetField.setText("0");
         this.sensorScaleField.setText("1");
+        this.sensorHighLimitField.setText("90");
+        this.sensorLowLimitField.setText("10");
         this.setModal(true);
         this.setLocationRelativeTo(this.getParent());
         this.setVisible(true);
