@@ -119,19 +119,10 @@ public class MonitorProxy extends UnicastRemoteObject implements
 	@Override
 	public void patientDataReceived(PatientDataEvent event)
 			throws RemoteException {
-		Patient p;
-		try {
-			p = this.getPatient();
-			Map<String, Integer> patientVitals = event.getVitals();
-			if (p != null) {
-				DataReceivedEvent localEvent = new DataReceivedEvent(
-						patientVitals);
-				this.raiseDataReceivedEvent(localEvent);
-			}
-		} catch (MonitorDisconnectedException e) {
-			Logger.getLogger(MonitorProxy.class.getName()).log(Level.SEVERE,
-					null, e);
-		}
+		Map<String, Integer> patientVitals = event.getVitals();
+			DataReceivedEvent localEvent = new DataReceivedEvent(
+					patientVitals);
+		this.raiseDataReceivedEvent(localEvent);
 	}
 
 	@Override

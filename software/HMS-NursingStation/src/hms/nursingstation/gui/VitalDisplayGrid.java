@@ -12,6 +12,7 @@ import hms.nursingstation.listeners.DataReceivedListener;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +66,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
         if(this.monitor != null) {
             this.monitor.addDataReceivedListener(this.dataReceivedListener);
         }
-        this.arrangeGrid();
+        this.setData(new HashMap<String, Integer>());
     }
     
     public void setData(Map<String, Integer> data) {
@@ -143,6 +144,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
         }
         
         this.validate();
+        this.repaint();
     }
 
     /** This method is called from within the constructor to
