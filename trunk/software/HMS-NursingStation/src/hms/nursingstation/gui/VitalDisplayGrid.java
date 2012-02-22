@@ -32,8 +32,14 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     
     private DataReceivedListener dataReceivedListener = new DataReceivedListener() {
         @Override
-        public void dataReceived(DataReceivedEvent event) {
-            VitalDisplayGrid.this.setData(event.getVitals());
+        public void dataReceived(final DataReceivedEvent event) {
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    VitalDisplayGrid.this.setData(event.getVitals());
+                }
+            });
         }
     };
     
