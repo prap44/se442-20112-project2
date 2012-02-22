@@ -15,7 +15,6 @@ import hms.common.Sensor;
 import hms.common.events.PatientAlarmEvent;
 import hms.common.events.PatientCallButtonEvent;
 import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
@@ -50,20 +49,8 @@ public class MainWindow extends javax.swing.JFrame {
         
         if(monitor != null) {
             this.monitor = monitor;
-            this.sensorList = this.monitor.getSensorList();
-            this.monitor.addPatientDataListener(new PatientDataListener() {
-                private Runnable updateTableRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        MainWindow.this.updateTableValues();
-                    }
-                };
-
-                @Override
-                public void patientDataReceived(PatientDataEvent event) throws RemoteException {
-                    SwingUtilities.invokeLater(this.updateTableRunnable);
-                }
-            });
+        } else {
+            this.monitor = new MonitorImpl();
         }
         
         try {
@@ -77,13 +64,25 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         
         this.monitor = new MonitorImpl();
-        this.sensorList = this.monitor.getSensorList();
+        
         try {
+            this.postInit();
+        } catch(Throwable t) {
+        }
+    }
+    
+    private void postInit() throws RemoteException {
+        /* Create the edit sensor dialog */
+        this.editSensorDialog = new EditSensorDialog(this, true);
+        
+        if(monitor != null) {
+            this.sensorList = this.monitor.getSensorList();
             this.monitor.addPatientDataListener(new PatientDataListener() {
                 private Runnable updateTableRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        MainWindow.this.updateTable();
+                        MainWindow.this.updateTableValues();
+                        MainWindow.this.updateButtonStatus();
                     }
                 };
 
@@ -92,19 +91,7 @@ public class MainWindow extends javax.swing.JFrame {
                     SwingUtilities.invokeLater(this.updateTableRunnable);
                 }
             });
-        } catch (RemoteException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        try {
-            this.postInit();
-        } catch(Throwable t) {
-        }
-    }
-    
-    private void postInit() {
-        /* Create the edit sensor dialog */
-        this.editSensorDialog = new EditSensorDialog(this, true);
 
         this.sensorTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -141,7 +128,6 @@ public class MainWindow extends javax.swing.JFrame {
         
         this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
         this.sensorTable.validate();
-        this.updateButtonStatus();
     }
     
     private void updateTableValues() {
@@ -159,7 +145,6 @@ public class MainWindow extends javax.swing.JFrame {
         
         this.sensorTable.repaint();
         this.suppressSensorTableModelSelectionEvents = false;
-        this.updateButtonStatus();
     }
     
     private void updateButtonStatus() {
@@ -679,6 +664,7 @@ public class MainWindow extends javax.swing.JFrame {
             } catch (RemoteException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
+            this.updateButtonStatus();
         }
     }//GEN-LAST:event_resetAlarmButtonActionPerformed
 
