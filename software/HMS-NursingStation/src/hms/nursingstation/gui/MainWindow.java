@@ -39,6 +39,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void alarmReceived(final AlarmReceivedEvent event) {
             SwingUtilities.invokeLater(new Runnable() {
+
                 @Override
                 public void run() {
                     /* Log alarm */
@@ -53,6 +54,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void alarmReset(final AlarmResetEvent event) {
             SwingUtilities.invokeLater(new Runnable() {
+
                 @Override
                 public void run() {
                     /* Log reset */
@@ -67,6 +69,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void callButtonRequestReceived(final CallButtonReceivedEvent event) {
             SwingUtilities.invokeLater(new Runnable() {
+
                 @Override
                 public void run() {
                     /* Log call button push */
@@ -81,6 +84,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void callButtonRequestReset(final CallButtonResetEvent event) {
             SwingUtilities.invokeLater(new Runnable() {
+
                 @Override
                 public void run() {
                     /* Log call button reset */
