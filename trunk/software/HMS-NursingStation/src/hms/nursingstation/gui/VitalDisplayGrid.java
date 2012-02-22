@@ -9,7 +9,7 @@ package hms.nursingstation.gui;
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.events.DataReceivedEvent;
 import hms.nursingstation.listeners.DataReceivedListener;
-import java.awt.GridBagConstraints;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,14 +24,15 @@ import javax.swing.SwingUtilities;
  * @author Jackson Lamp (jal2633)
  */
 public class VitalDisplayGrid extends javax.swing.JPanel {
-    
+
     private MonitorProxy monitor;
     private Map<String, Integer> data;
     private List<VitalDisplayPanel> panels = new ArrayList<VitalDisplayPanel>();
     private int previousColumnCount = 0;
     private int defaultVDPanelMinWidth = (new VitalDisplayPanel().getMinimumSize().width);
-    
+    private int defaultVDPanelHeight = (new VitalDisplayPanel().getPreferredSize().height);
     private DataReceivedListener dataReceivedListener = new DataReceivedListener() {
+
         @Override
         public void dataReceived(final DataReceivedEvent event) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -43,108 +44,137 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             });
         }
     };
-    
-    /* Used to reduce number of redundant "invokeWait()" calls to
-     * arrangeGrid() when resizing/etc */
-    private boolean gridArrangeInvokeWaiting = true;
+    private Runnable arrangeGridInvoker = new Runnable() {
+        @Override
+        public void run() {
+            VitalDisplayGrid.this.arrangeGrid();
+        }
+    };
+    private boolean arrangeGridInvokeWaiting = false;
+    private boolean arrangeGridInProgress = false;
 
     /** Creates new form VitalDisplayGrid */
     public VitalDisplayGrid(MonitorProxy monitor) {
         initComponents();
         this.setMonitor(monitor);
     }
-    
+
     public VitalDisplayGrid() {
         initComponents();
     }
-    
+
     public final void setMonitor(MonitorProxy monitor) {
-        if(this.monitor != null) {
+        if (this.monitor != null) {
             this.monitor.removeDataReceivedListener(dataReceivedListener);
         }
         this.monitor = monitor;
-        if(this.monitor != null) {
+        if (this.monitor != null) {
             this.monitor.addDataReceivedListener(this.dataReceivedListener);
         }
         this.setData(new HashMap<String, Integer>());
     }
-    
+
     public void setData(Map<String, Integer> data) {
         this.data = data;
-        this.arrangeGrid();
+        invoke_arrangeGrid();
     }
     
-    private void arrangeGrid() {
-        this.gridArrangeInvokeWaiting = false;
-        
-        if(data != null) {
-            Set<String> keys = this.data.keySet();
-            Set<String> knownKeys = new TreeSet<String>();
-            
-            GridBagConstraints gbContraints = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
-            int columnCount = Math.max(this.basePanel.getWidth() / defaultVDPanelMinWidth, 1);
-            int index = 0;
-            
-            boolean panelListChanged = false;
-            boolean columnCountChanged = columnCount != this.previousColumnCount;
-            this.previousColumnCount = columnCount;
-            
-            /* Cull unused panels and update existing ones */
-            while(index < this.panels.size()) {
-                VitalDisplayPanel panel = this.panels.get(index);
-                if(!data.containsKey(panel.getVitalName())) {
-                    /* Remove from list and display panel */
-                    this.panels.remove(index);
-                    this.basePanel.remove(panel);
-                    panelListChanged = true;
-                } else {
-                    /* Update panel data */
-                    panel.setVitalValue(data.get(panel.getVitalName()).toString());
-                    
-                    /* Update panel position parameters (if necessary) */
-                    if(panelListChanged || columnCountChanged) {
-                        boolean hasFocus = panel.hasFocus();
-                        this.basePanel.remove(panel);
-                        this.basePanel.add(panel, gbContraints);
-                        if(hasFocus) {
-                            panel.requestFocus();
-                        }
-                    }
-                    
-                    /* Update contraints object */
-                    index++;
-                    gbContraints.gridx = index % columnCount;
-                    gbContraints.gridy = index / columnCount;
-                    
-                    /* Add to set of known keys */
-                    knownKeys.add(panel.getVitalName());
-                }
-            }
-            
-            /* Add new panels to the end of the list */
-            for(String key : keys) {
-                if(!knownKeys.contains(key)) {
-                    /* Add a new panel */
-                    VitalDisplayPanel panel = new VitalDisplayPanel(key, this.data.get(key).toString());
-                    this.panels.add(panel);
-                    this.basePanel.add(panel, gbContraints);
-                    
-                    /* Update contraints object */
-                    index++;
-                    gbContraints.gridx = index % columnCount;
-                    gbContraints.gridy = index / columnCount;
-                }
-            }
-        } else {
-            if(!this.panels.isEmpty()) {
-                /* Clear grid */
-                this.basePanel.removeAll();
-                this.panels.clear();
-            }
+    private void invoke_arrangeGrid() {
+        if(!this.arrangeGridInvokeWaiting) {
+            this.arrangeGridInvokeWaiting = true;
+            SwingUtilities.invokeLater(this.arrangeGridInvoker);
         }
-        
-        this.validate();
-        this.repaint();
+    }
+
+    private void arrangeGrid() {
+        if(!arrangeGridInProgress) {
+            this.arrangeGridInProgress = true;
+            this.arrangeGridInvokeWaiting = false;
+            int index = 0;
+            Insets insets = this.getInsets();
+            int width = this.getWidth() - insets.left - insets.right;
+
+            if (data != null) {
+                Set<String> keys = this.data.keySet();
+                Set<String> knownKeys = new TreeSet<String>();
+
+                int columnCount = width / defaultVDPanelMinWidth;
+                columnCount = Math.min(columnCount, this.data.size());
+                columnCount = Math.max(columnCount, 1);
+
+                boolean panelListChanged = false;
+                boolean columnCountChanged = columnCount != this.previousColumnCount;
+                this.previousColumnCount = columnCount;
+
+                /* Build column boundary array */
+                int[] columnBounds = new int[columnCount + 1];
+                for (int i = 0; i < columnBounds.length; i++) {
+                    columnBounds[i] = width * i / columnCount;
+                }
+
+                /* Cull unused panels and update existing ones */
+                while (index < this.panels.size()) {
+                    VitalDisplayPanel panel = this.panels.get(index);
+                    if (!data.containsKey(panel.getVitalName())) {
+                        /* Remove from list and display panel */
+                        this.panels.remove(index);
+                        this.remove(panel);
+                        panelListChanged = true;
+                    } else {
+                        int row = index / columnCount;
+                        int col = index % columnCount;
+
+                        /* Update panel data */
+                        panel.setVitalValue(data.get(panel.getVitalName()).toString());
+
+                        /* Update panel position parameters*/
+                        panel.setBounds(insets.left + columnBounds[col], insets.top + row * this.defaultVDPanelHeight, columnBounds[col + 1] - columnBounds[col], this.defaultVDPanelHeight);
+
+                        /* Update index */
+                        index++;
+
+                        /* Add to set of known keys */
+                        knownKeys.add(panel.getVitalName());
+                    }
+                }
+
+                /* Add new panels to the end of the list */
+                for (String key : keys) {
+                    if (!knownKeys.contains(key)) {
+                        int row = index / columnCount;
+                        int col = index % columnCount;
+
+                        /* Add a new panel */
+                        VitalDisplayPanel panel = new VitalDisplayPanel(key, this.data.get(key).toString());
+                        this.panels.add(panel);
+                        this.add(panel);
+                        panel.setBounds(insets.left + columnBounds[col], insets.top + row * this.defaultVDPanelHeight, columnBounds[col + 1] - columnBounds[col], this.defaultVDPanelHeight);
+
+                        /* Update index */
+                        index++;
+                    }
+                }
+            } else {
+                if (!this.panels.isEmpty()) {
+                    /* Clear grid */
+                    this.removeAll();
+                    this.panels.clear();
+                }
+            }
+
+            Dimension size = this.getPreferredSize();
+            if (this.data != null) {
+                size.height = (this.data.size() / this.defaultVDPanelMinWidth + 1) * this.defaultVDPanelHeight;
+                size.height += insets.bottom + insets.bottom;
+            } else {
+                size.height = insets.bottom + insets.bottom;
+            }
+            this.setPreferredSize(size);
+
+            this.validate();
+            this.repaint();
+            this.arrangeGridInProgress = false;
+        }
     }
 
     /** This method is called from within the constructor to
@@ -156,33 +186,19 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        basePanel = new javax.swing.JPanel();
-
-        setLayout(new java.awt.GridLayout(1, 0));
-
-        basePanel.setBackground(java.awt.SystemColor.controlDkShadow);
-        basePanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+        setBackground(new java.awt.Color(105, 105, 105));
+        addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                basePanelComponentResized(evt);
+                formComponentResized(evt);
             }
         });
-        basePanel.setLayout(new java.awt.GridBagLayout());
-        add(basePanel);
+        setLayout(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void basePanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_basePanelComponentResized
-        if(!this.gridArrangeInvokeWaiting) {
-            this.gridArrangeInvokeWaiting = true;
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    VitalDisplayGrid.this.arrangeGrid();
-                }
-            });
-        }
-    }//GEN-LAST:event_basePanelComponentResized
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        this.invoke_arrangeGrid();
+    }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel basePanel;
     // End of variables declaration//GEN-END:variables
 }
