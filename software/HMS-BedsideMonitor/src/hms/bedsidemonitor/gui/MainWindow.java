@@ -141,6 +141,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
         this.sensorTable.validate();
+        this.updateButtonStatus();
     }
     
     private void updateTableValues() {
@@ -158,6 +159,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         this.sensorTable.repaint();
         this.suppressSensorTableModelSelectionEvents = false;
+        this.updateButtonStatus();
     }
     
     private void updateButtonStatus() {
