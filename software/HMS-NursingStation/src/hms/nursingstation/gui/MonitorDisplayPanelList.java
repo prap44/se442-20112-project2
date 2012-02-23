@@ -20,17 +20,19 @@ import hms.nursingstation.gui.MonitorDisplayPanel.EditPanelEvent;
 import hms.nursingstation.listeners.MonitorStatusChangedListener;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Scrollable;
 
 /**
  *
  * @author Jackson Lamp (jal2633)
  */
-public class MonitorDisplayPanelList extends javax.swing.JPanel {
+public class MonitorDisplayPanelList extends javax.swing.JPanel implements Scrollable {
 
     private MonitorDisplayPanel.DeletePanelListener deletePanelListener = new MonitorDisplayPanel.DeletePanelListener() {
 
@@ -123,7 +125,7 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                 MonitorDisplayPanel panel = this.panels.get(i);
                 if (!this.nursingStation.containsMonitor(panel.getMonitor())) {
                     this.panels.remove(panel);
-                    this.basePanel.remove(panel);
+                    this.remove(panel);
                     panel.removeDeletePanelListener(this.deletePanelListener);
                     panel.removeEditPanelListener(this.editPanelListener);
                     panel.removeDisplayExpandedListener(this.displayExpandedListener);
@@ -147,12 +149,12 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                         /* Swap panel at index 'i' with panel at index 'panelIndex' */
                         this.panels.set(panelIndex, this.panels.get(i));
                         this.panels.set(i, panel);
-                        this.basePanel.add(panel);
+                        this.add(panel);
                     }
 
                     /* Position and size panel */
-                    panel.validate();
-                    panel.setBounds(0, yAccum, this.scrollPanel.getViewport().getWidth(), panel.getPreferredSize().height);
+                    panel.revalidate();
+                    panel.setBounds(0, yAccum, this.getWidth(), panel.getPreferredSize().height);
                     yAccum += panel.getHeight() + 1;
                 } else {
                     /* Panel does not exist, add it to the list */
@@ -162,18 +164,21 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
                     panel.addDisplayExpandedListener(this.displayExpandedListener);
                     panel.addComponentListener(this.panelComponentListener);
                     this.panels.add(i, panel);
-                    this.basePanel.add(panel);
+                    this.add(panel);
 
                     /* Position and size panel */
-                    panel.validate();
-                    panel.setBounds(0, yAccum, this.scrollPanel.getViewport().getWidth(), panel.getPreferredSize().height);
+                    panel.revalidate();
+                    panel.setBounds(0, yAccum, this.getWidth(), panel.getPreferredSize().height);
                     yAccum += panel.getHeight() + 1;
                 }
             }
 
-            Dimension viewSize = new Dimension(this.scrollPanel.getViewport().getWidth(), yAccum);
-            this.basePanel.setSize(viewSize);
-            this.basePanel.setPreferredSize(viewSize);
+            Dimension viewSize = this.getPreferredSize();
+            viewSize.height = yAccum;
+            this.setPreferredSize(viewSize);
+            
+            this.validate();
+            this.repaint();
         }
     }
 
@@ -185,43 +190,44 @@ public class MonitorDisplayPanelList extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
-        scrollPanel = new javax.swing.JScrollPane();
-        basePanel = new javax.swing.JPanel();
-
-        setLayout(new java.awt.GridLayout(1, 0));
-
-        scrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPanel.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+        addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                scrollPanelComponentResized(evt);
+                formComponentResized(evt);
             }
         });
-
-        basePanel.setLayout(null);
-        scrollPanel.setViewportView(basePanel);
-
-        add(scrollPanel);
+        setLayout(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void scrollPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_scrollPanelComponentResized
-        int viewportWidth = this.scrollPanel.getViewport().getWidth();
-
-        for (MonitorDisplayPanel panel : this.panels) {
-            panel.setMinimumSize(new Dimension(viewportWidth, panel.getPreferredSize().height));
-        }
-
-        this.basePanel.setPreferredSize(new Dimension(viewportWidth, this.basePanel.getPreferredSize().height));
-        this.basePanel.setMaximumSize(new Dimension(viewportWidth, Integer.MAX_VALUE));
-
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         this.refreshList();
+    }//GEN-LAST:event_formComponentResized
 
-        this.validate();
-    }//GEN-LAST:event_scrollPanelComponentResized
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel basePanel;
-    private javax.swing.JScrollPane scrollPanel;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        return this.getPreferredSize();
+    }
+
+    @Override
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 20;
+    }
+
+    @Override
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 20;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+        return true;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
+    }
 }
