@@ -12,6 +12,8 @@ import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
 import hms.nursingstation.events.InformationChangeReceivedEvent;
 import hms.nursingstation.listeners.InformationChangeReceivedListener;
 import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.EventListener;
@@ -342,6 +344,8 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         basePanel.add(vitalDisplayGrid, gridBagConstraints);
 
@@ -366,11 +370,13 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_vitalDisplayGridComponentResized
 
     private void vitalDisplayGridPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_vitalDisplayGridPropertyChange
-        if(evt.getPropertyName().equals("preferredSize")) {
+        if (evt.getPropertyName().equals("preferredSize")) {
             revalidate();
+            for(PropertyChangeListener l : this.getPropertyChangeListeners()) {
+                l.propertyChange(new PropertyChangeEvent(this, "preferredSize", this.getPreferredSize(), this.getPreferredSize()));
+            }
         }
     }//GEN-LAST:event_vitalDisplayGridPropertyChange
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel basePanel;
     private javax.swing.JButton editButton;
