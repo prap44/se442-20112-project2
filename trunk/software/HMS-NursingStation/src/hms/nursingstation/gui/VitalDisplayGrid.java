@@ -217,7 +217,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel implements Scrollable {
 
     @Override
     public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return 20;
+        return this.defaultVDPanelHeight;
     }
 
     @Override
