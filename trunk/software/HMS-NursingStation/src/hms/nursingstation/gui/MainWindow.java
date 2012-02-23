@@ -17,6 +17,7 @@ import hms.nursingstation.listeners.AlarmResetListener;
 import hms.nursingstation.listeners.CallButtonReceivedListener;
 import hms.nursingstation.listeners.CallButtonResetListener;
 import hms.nursingstation.listeners.MonitorStatusChangedListener;
+import java.awt.Color;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
@@ -97,17 +98,20 @@ public class MainWindow extends javax.swing.JFrame {
 
     public MainWindow(NursingStationImpl nursingStation) {
         initComponents();
-        this.loggingList.setModel(loggingListModel);
-        this.notificationDialog = new MonitorNotificationDialog(this, true);
-        this.setNursingStation(nursingStation);
+        this.postInit(nursingStation);
     }
 
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
+        this.postInit(new NursingStationImpl());
+    }
+    
+    private void postInit(NursingStationImpl nursingStation) {
         this.loggingList.setModel(loggingListModel);
         this.notificationDialog = new MonitorNotificationDialog(this, true);
-        this.setNursingStation(new NursingStationImpl());
+        this.setNursingStation(nursingStation);
+        this.monitorDisplayScrollPanel.getViewport().setBackground(new Color(105, 105, 105));
     }
 
     private void setNursingStation(NursingStationImpl nursingStation) {
@@ -192,6 +196,9 @@ public class MainWindow extends javax.swing.JFrame {
         monitoringBasePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Monitor"));
         monitoringBasePanel.setLayout(new java.awt.GridBagLayout());
 
+        monitorDisplayScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        monitorDisplayPanelList.setOpaque(false);
         monitorDisplayScrollPanel.setViewportView(monitorDisplayPanelList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
