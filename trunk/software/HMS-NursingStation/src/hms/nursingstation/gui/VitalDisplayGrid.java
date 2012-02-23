@@ -11,19 +11,22 @@ import hms.nursingstation.events.DataReceivedEvent;
 import hms.nursingstation.listeners.DataReceivedListener;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Jackson Lamp (jal2633)
  */
-public class VitalDisplayGrid extends javax.swing.JPanel {
+public class VitalDisplayGrid extends javax.swing.JPanel implements Scrollable {
 
     private MonitorProxy monitor;
     private Map<String, Integer> data;
@@ -45,6 +48,7 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
         }
     };
     private Runnable arrangeGridInvoker = new Runnable() {
+
         @Override
         public void run() {
             VitalDisplayGrid.this.arrangeGrid();
@@ -78,27 +82,27 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
         this.data = data;
         invoke_arrangeGrid();
     }
-    
+
     private void invoke_arrangeGrid() {
-        if(!this.arrangeGridInvokeWaiting) {
+        if (!this.arrangeGridInvokeWaiting) {
             this.arrangeGridInvokeWaiting = true;
             SwingUtilities.invokeLater(this.arrangeGridInvoker);
         }
     }
 
     private void arrangeGrid() {
-        if(!arrangeGridInProgress) {
+        if (!arrangeGridInProgress) {
             this.arrangeGridInProgress = true;
             this.arrangeGridInvokeWaiting = false;
             int index = 0;
             Insets insets = this.getInsets();
             int width = this.getWidth() - insets.left - insets.right;
+            int columnCount = width / defaultVDPanelMinWidth;
 
             if (data != null) {
                 Set<String> keys = this.data.keySet();
                 Set<String> knownKeys = new TreeSet<String>();
 
-                int columnCount = width / defaultVDPanelMinWidth;
                 columnCount = Math.min(columnCount, this.data.size());
                 columnCount = Math.max(columnCount, 1);
 
@@ -163,11 +167,11 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
             }
 
             Dimension size = this.getPreferredSize();
-            if (this.data != null) {
-                size.height = (this.data.size() / this.defaultVDPanelMinWidth + 1) * this.defaultVDPanelHeight;
-                size.height += insets.bottom + insets.bottom;
+            if (this.data != null && !this.data.isEmpty()) {
+                size.height = ((this.data.size() - 1) / columnCount + 1) * this.defaultVDPanelHeight;
+                size.height += insets.top + insets.bottom;
             } else {
-                size.height = insets.bottom + insets.bottom;
+                size.height = insets.top + insets.bottom;
             }
             this.setPreferredSize(size);
 
@@ -198,7 +202,31 @@ public class VitalDisplayGrid extends javax.swing.JPanel {
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         this.invoke_arrangeGrid();
     }//GEN-LAST:event_formComponentResized
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        return this.getPreferredSize();
+    }
+
+    @Override
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 10;
+    }
+
+    @Override
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 20;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+        return true;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
+    }
 }

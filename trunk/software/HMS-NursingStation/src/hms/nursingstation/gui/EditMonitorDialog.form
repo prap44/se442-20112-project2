@@ -218,7 +218,6 @@
             <Container class="javax.swing.JScrollPane" name="vitalDisplayScrollPanel">
               <Properties>
                 <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
-                <Property name="verticalScrollBarPolicy" type="int" value="22"/>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[112, 122]"/>
                 </Property>
@@ -238,6 +237,12 @@
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
                 <Component class="hms.nursingstation.gui.VitalDisplayGrid" name="vitalDisplayGrid">
+                  <Properties>
+                    <Property name="opaque" type="boolean" value="false"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="vitalDisplayGridPropertyChange"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
