@@ -157,7 +157,8 @@ public class MainWindow extends javax.swing.JFrame {
         if(selectedRow < this.sensorTableModel.getRowCount()) {
             this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
         } else {
-            this.sensorTable.getSelectionModel().setSelectionInterval(-1, -1);
+            selectedRow = this.sensorTableModel.getRowCount() - 1;
+            this.sensorTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
         }
         this.sensorTable.validate();
     }

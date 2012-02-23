@@ -54,8 +54,8 @@ public class VitalDisplayPanel extends javax.swing.JPanel {
         vitalValueField = new javax.swing.JTextField();
 
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        setMinimumSize(new java.awt.Dimension(140, 32));
-        setPreferredSize(new java.awt.Dimension(140, 32));
+        setMinimumSize(new java.awt.Dimension(140, 28));
+        setPreferredSize(new java.awt.Dimension(140, 28));
         setLayout(new java.awt.GridLayout(1, 0));
 
         basePanel.setMinimumSize(new java.awt.Dimension(140, 32));
@@ -70,7 +70,7 @@ public class VitalDisplayPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         basePanel.add(vitalNameLabel, gridBagConstraints);
 
         vitalValueField.setEditable(false);
@@ -83,7 +83,7 @@ public class VitalDisplayPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
         basePanel.add(vitalValueField, gridBagConstraints);
 
         add(basePanel);

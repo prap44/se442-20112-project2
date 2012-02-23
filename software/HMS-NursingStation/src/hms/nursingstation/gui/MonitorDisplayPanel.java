@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* $Id$
  * 
  * PatientDisplayPanel.java
@@ -28,57 +23,63 @@ import java.util.logging.Logger;
  * @author Jackson Lamp (jal2633)
  */
 public class MonitorDisplayPanel extends javax.swing.JPanel {
-    
+
     public class DeletePanelEvent {
+
         private MonitorDisplayPanel panel;
-        
+
         public DeletePanelEvent(MonitorDisplayPanel panel) {
             this.panel = panel;
         }
-        
+
         public MonitorDisplayPanel getPanel() {
             return this.panel;
         }
     }
-    
+
     public interface DeletePanelListener extends EventListener {
+
         public void deletePanelButtonPressed(DeletePanelEvent event);
     }
-    
+
     public class EditPanelEvent {
+
         private MonitorDisplayPanel panel;
-        
+
         public EditPanelEvent(MonitorDisplayPanel panel) {
             this.panel = panel;
         }
-        
+
         public MonitorDisplayPanel getPanel() {
             return this.panel;
         }
     }
-    
+
     public interface EditPanelListener extends EventListener {
+
         public void editPanelButtonPressed(EditPanelEvent event);
     }
-    
+
     public class DisplayExpandedEvent {
+
         private MonitorDisplayPanel panel;
-        
+
         public DisplayExpandedEvent(MonitorDisplayPanel panel) {
             this.panel = panel;
         }
-        
+
         public MonitorDisplayPanel getPanel() {
             return this.panel;
         }
     }
-    
+
     public interface DisplayExpandedListener extends EventListener {
+
         public void displayExpaned(DisplayExpandedEvent event);
     }
-    
     private MonitorProxy monitor = null;
     private InformationChangeReceivedListener infoChangedListener = new InformationChangeReceivedListener() {
+
         @Override
         public void informationChangeReceived(InformationChangeReceivedEvent event) {
             try {
@@ -92,14 +93,14 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     /** Creates new form PatientDisplayPanel */
     public MonitorDisplayPanel(MonitorProxy monitor) {
         initComponents();
-        
+
         this.setMonitor(monitor);
         this.postInit();
     }
-    
+
     public MonitorDisplayPanel() {
         initComponents();
-        
+
         try {
             this.setMonitor(new MonitorProxy());
         } catch (IOException ex) {
@@ -107,10 +108,10 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
         }
         this.postInit();
     }
-    
+
     private void postInit() {
         this.vitalDisplayGrid.setVisible(false);
-        
+
 //        Map<String, Integer> data = new TreeMap<String, Integer>();
 //        data.put("Vital Stat 1", 50);
 //        data.put("Vital Stat 2", 9000);
@@ -125,7 +126,7 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
 //        data.put("Vital Stat 11", 9000);
 //        data.put("Vital Stat 12", 2);
 //        this.vitalDisplayGrid.setData(data);
-        
+
         try {
             /* Set the monitor's ID and patient's name from monitor reference */
             this.updateIdentifyingData();
@@ -133,15 +134,15 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
             Logger.getLogger(MonitorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void updateIdentifyingData() throws RemoteException {
-        if(this.monitor != null && this.monitor.isConnected()) {
+        if (this.monitor != null && this.monitor.isConnected()) {
             try {
                 this.monitorIDValueLabel.setText(monitor.getMonitorID());
                 this.monitorIDValueLabel.setFont(this.monitorIDValueLabel.getFont().deriveFont(Font.PLAIN));
-                
+
                 Patient patient = this.monitor.getPatient();
-                if(this.monitor.getPatient() != null) {
+                if (this.monitor.getPatient() != null) {
                     this.patientNameValueLabel.setText((patient.getPatientLastName() + ", " + patient.getPatientFirstName() + " " + patient.getPatientMiddleName()).trim());
                     this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.PLAIN));
                 } else {
@@ -158,60 +159,60 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
             this.patientNameValueLabel.setFont(this.patientNameValueLabel.getFont().deriveFont(Font.ITALIC));
         }
     }
-    
+
     public final void setMonitor(MonitorProxy monitor) {
-        if(this.monitor != null) {
+        if (this.monitor != null) {
             /* TODO: Remove listeners when monitor is changed */
         }
-        
+
         this.monitor = monitor;
         this.vitalDisplayGrid.setMonitor(monitor);
-        
+
         this.monitor.addInformationChangeReceivedListener(this.infoChangedListener);
     }
-    
+
     public final MonitorProxy getMonitor() {
         return this.monitor;
     }
-    
+
     public void addDeletePanelListener(DeletePanelListener l) {
         this.listenerList.add(DeletePanelListener.class, l);
     }
-    
+
     public void removeDeletePanelListener(DeletePanelListener l) {
         this.listenerList.remove(DeletePanelListener.class, l);
     }
-    
+
     private void raiseDeletePanelEvent(DeletePanelEvent e) {
-        for(DeletePanelListener l : this.listenerList.getListeners(DeletePanelListener.class)) {
+        for (DeletePanelListener l : this.listenerList.getListeners(DeletePanelListener.class)) {
             l.deletePanelButtonPressed(e);
         }
     }
-    
+
     public void addEditPanelListener(EditPanelListener l) {
         this.listenerList.add(EditPanelListener.class, l);
     }
-    
+
     public void removeEditPanelListener(EditPanelListener l) {
         this.listenerList.remove(EditPanelListener.class, l);
     }
-    
+
     private void raiseEditPanelEvent(EditPanelEvent e) {
-        for(EditPanelListener l : this.listenerList.getListeners(EditPanelListener.class)) {
+        for (EditPanelListener l : this.listenerList.getListeners(EditPanelListener.class)) {
             l.editPanelButtonPressed(e);
         }
     }
-    
+
     public void addDisplayExpandedListener(DisplayExpandedListener l) {
         this.listenerList.add(DisplayExpandedListener.class, l);
     }
-    
+
     public void removeDisplayExpandedListener(DisplayExpandedListener l) {
         this.listenerList.remove(DisplayExpandedListener.class, l);
     }
-    
+
     private void raiseDisplayExpandedEvent(DisplayExpandedEvent e) {
-        for(DisplayExpandedListener l : this.listenerList.getListeners(DisplayExpandedListener.class)) {
+        for (DisplayExpandedListener l : this.listenerList.getListeners(DisplayExpandedListener.class)) {
             l.displayExpaned(e);
         }
     }
@@ -360,7 +361,6 @@ public class MonitorDisplayPanel extends javax.swing.JPanel {
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         this.raiseDeletePanelEvent(new DeletePanelEvent(this));
     }//GEN-LAST:event_removeButtonActionPerformed
-
     private void vitalDisplayGridComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_vitalDisplayGridComponentResized
         revalidate();
     }//GEN-LAST:event_vitalDisplayGridComponentResized

@@ -8,7 +8,7 @@ package hms.nursingstation.gui;
 
 import hms.nursingstation.MonitorProxy;
 import hms.nursingstation.MonitorProxy.MonitorDisconnectedException;
-import java.awt.Dimension;
+import java.awt.Color;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -22,12 +22,12 @@ import java.util.logging.Logger;
 public class EditMonitorDialog extends javax.swing.JDialog {
 
     private boolean returnStatus;
-    
+
     /** Creates new form EditMonitorDialog */
     public EditMonitorDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
         try {
 //            Map<String, Integer> data = new TreeMap<String, Integer>();
 //            data.put("Vital Stat 1", 50);
@@ -43,24 +43,26 @@ public class EditMonitorDialog extends javax.swing.JDialog {
 //            data.put("Vital Stat 11", 9000);
 //            data.put("Vital Stat 12", 2);
 //            this.vitalDisplayGrid.setData(data);
-
-            synchronized(this.getTreeLock()) {
-                this.validateTree();
-            }
-        } catch(Throwable t) {
+//
+//            synchronized (this.getTreeLock()) {
+//                this.validateTree();
+//            }
+            
+            this.vitalDisplayScrollPanel.getViewport().setBackground(new java.awt.Color(105, 105, 105));
+        } catch (Throwable t) {
         }
     }
-    
+
     public boolean showEditDialogModal(MonitorProxy monitor) {
         this.returnStatus = false;
-        
+
         this.monitorIDField.setText(monitor.getMonitorID());
         this.monitorAddressField.setText(monitor.getMonitorAddress());
         this.vitalDisplayGrid.setMonitor(monitor);
-        
-        if(monitor.isConnected()) {
+
+        if (monitor.isConnected()) {
             try {
-                if(monitor.getPatient() == null) {
+                if (monitor.getPatient() == null) {
                     this.patientFirstNameField.setText("");
                     this.patientMiddleNameField.setText("");
                     this.patientLastNameField.setText("");
@@ -90,17 +92,17 @@ public class EditMonitorDialog extends javax.swing.JDialog {
             this.patientAssignedCheckbox.setEnabled(false);
             this.updatePatientFieldsStatus();
         }
-        
+
         this.setModal(true);
         this.pack();
         this.setLocationRelativeTo(this.getParent());
         this.setVisible(true);
-        
+
         this.vitalDisplayGrid.setMonitor(null);
-        
-        if(this.returnStatus) {
-            if(this.patientAssignedCheckbox.isSelected()) {
-                if(monitor.isConnected()) {
+
+        if (this.returnStatus) {
+            if (this.patientAssignedCheckbox.isSelected()) {
+                if (monitor.isConnected()) {
                     try {
                         monitor.assignPatient(this.patientFirstNameField.getText(),
                                 this.patientMiddleNameField.getText(),
@@ -114,7 +116,7 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                     }
                 }
             } else {
-                if(monitor.isConnected()) {
+                if (monitor.isConnected()) {
                     try {
                         monitor.unassignPatient();
                     } catch (RemoteException ex) {
@@ -127,36 +129,36 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                 }
             }
         }
-        
+
         return this.returnStatus;
     }
-    
+
     public MonitorProxy showAddDialogModal() {
         MonitorProxy monitor = null;
-        
+
         this.returnStatus = false;
-        
+
         this.monitorIDField.setText("hms.bedsidemonitor");
         this.monitorAddressField.setText("127.0.0.1:1099");
-        
+
         this.patientFirstNameField.setText("");
         this.patientMiddleNameField.setText("");
         this.patientLastNameField.setText("");
         this.patientAssignedCheckbox.setSelected(false);
         this.patientAssignedCheckbox.setEnabled(false);
         this.updatePatientFieldsStatus();
-        
+
         this.setModal(true);
         this.pack();
         this.setLocationRelativeTo(this.getParent());
         this.setVisible(true);
-        
-        if(this.returnStatus) {
+
+        if (this.returnStatus) {
             try {
                 monitor = new MonitorProxy();
                 monitor.connectToMonitor();
 
-                if(!monitor.isConnected()) {
+                if (!monitor.isConnected()) {
                     ConnectionFailedDialog cfd = new ConnectionFailedDialog(this, true);
                     cfd.showModal();
 //                    return null;
@@ -169,10 +171,10 @@ public class EditMonitorDialog extends javax.swing.JDialog {
                 ex.printStackTrace();
             }
         }
-        
+
         return monitor;
     }
-    
+
     private void updatePatientFieldsStatus() {
         boolean arePatientFieldsEnabled = this.patientAssignedCheckbox.isSelected();
         this.patientFirstNameField.setEnabled(arePatientFieldsEnabled);
@@ -341,12 +343,18 @@ public class EditMonitorDialog extends javax.swing.JDialog {
         vitalStatisticsPanel.setLayout(new java.awt.GridBagLayout());
 
         vitalDisplayScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        vitalDisplayScrollPanel.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         vitalDisplayScrollPanel.setMinimumSize(new java.awt.Dimension(112, 122));
         vitalDisplayScrollPanel.setPreferredSize(new java.awt.Dimension(112, 122));
         vitalDisplayScrollPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 vitalDisplayScrollPanelComponentResized(evt);
+            }
+        });
+
+        vitalDisplayGrid.setOpaque(false);
+        vitalDisplayGrid.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                vitalDisplayGridPropertyChange(evt);
             }
         });
         vitalDisplayScrollPanel.setViewportView(vitalDisplayGrid);
@@ -446,9 +454,15 @@ public class EditMonitorDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_patientAssignedCheckboxActionPerformed
 
     private void vitalDisplayScrollPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_vitalDisplayScrollPanelComponentResized
-        int viewportWidth = this.vitalDisplayScrollPanel.getViewport().getWidth();
-        this.vitalDisplayGrid.setPreferredSize(new Dimension(viewportWidth, this.vitalDisplayGrid.getPreferredSize().height));
+//        int viewportWidth = this.vitalDisplayScrollPanel.getViewport().getWidth();
+//        this.vitalDisplayGrid.setPreferredSize(new Dimension(viewportWidth, this.vitalDisplayGrid.getPreferredSize().height));
     }//GEN-LAST:event_vitalDisplayScrollPanelComponentResized
+
+    private void vitalDisplayGridPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_vitalDisplayGridPropertyChange
+        if(evt.getPropertyName().equals("preferredSize")) {
+            this.vitalDisplayScrollPanel.validate();
+        }
+    }//GEN-LAST:event_vitalDisplayGridPropertyChange
 
     /**
      * @param args the command line arguments
