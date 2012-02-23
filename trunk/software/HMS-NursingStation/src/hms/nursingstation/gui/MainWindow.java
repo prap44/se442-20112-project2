@@ -164,6 +164,7 @@ public class MainWindow extends javax.swing.JFrame {
         basePanel = new javax.swing.JPanel();
         basePanelSpliltPanel = new javax.swing.JSplitPane();
         monitoringBasePanel = new javax.swing.JPanel();
+        monitorDisplayScrollPanel = new javax.swing.JScrollPane();
         monitorDisplayPanelList = new hms.nursingstation.gui.MonitorDisplayPanelList();
         monitoringButtonPanel = new javax.swing.JPanel();
         addMonitorButton = new javax.swing.JButton();
@@ -190,13 +191,16 @@ public class MainWindow extends javax.swing.JFrame {
 
         monitoringBasePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Monitor"));
         monitoringBasePanel.setLayout(new java.awt.GridBagLayout());
+
+        monitorDisplayScrollPanel.setViewportView(monitorDisplayPanelList);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        monitoringBasePanel.add(monitorDisplayPanelList, gridBagConstraints);
+        monitoringBasePanel.add(monitorDisplayScrollPanel, gridBagConstraints);
 
         monitoringButtonPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -329,6 +333,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JList loggingList;
     private javax.swing.JScrollPane loggingScrollPanel;
     private hms.nursingstation.gui.MonitorDisplayPanelList monitorDisplayPanelList;
+    private javax.swing.JScrollPane monitorDisplayScrollPanel;
     private javax.swing.JPanel monitoringBasePanel;
     private javax.swing.JPanel monitoringButtonPanel;
     private javax.swing.JPanel monitoringButtonPanelSpacer;
